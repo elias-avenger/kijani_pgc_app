@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kijani_pmc_app/models/branch.dart';
 import 'package:kijani_pmc_app/services/http_airtable.dart';
@@ -32,14 +33,38 @@ class UserController extends GetxController {
       branchData = RxMap(data['data']);
       var stored = await myPrefs.storeData(key: "userData", data: data['data']);
       if (stored) {
+        Get.snackbar(
+          'Success',
+          'User authenticated successfully',
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
         return "Success";
       } else {
+        Get.snackbar(
+          'Error',
+          'Failed to store user data',
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
         return "Not Stored";
       }
     } else if (data['msg'] == 'Not Found') {
+      Get.snackbar(
+        'Invalid Credentials',
+        'Please check your email and code and try again.',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return data['msg'];
     } else {
-      return "Failure";
+      Get.snackbar(
+        'Error',
+        'Failed to authenticate user',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return "Error";
     }
   }
 

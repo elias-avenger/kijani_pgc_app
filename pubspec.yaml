@@ -25,6 +25,7 @@ dependencies:
     git:
       url: https://github.com/elias-avenger/s3_storage_package
       ref: master
+  airtable_crud: ^1.1.2
 
 dev_dependencies:
   flutter_test:

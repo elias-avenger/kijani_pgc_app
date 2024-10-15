@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kijani_pmc_app/controllers/user_controller.dart';
+import 'package:kijani_pmc_app/services/internet_check.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 import 'main_screen.dart';
@@ -17,6 +18,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final emailFieldController = TextEditingController();
   final codeFieldController = TextEditingController();
+
+  //global key
+  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   String errorMessage = '';
   String loadingText = '';
@@ -49,7 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             child: Center(
               child: Form(
-                //key: _formKey,
+                key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -196,60 +200,29 @@ class _LoginScreenState extends State<LoginScreen> {
                           LoadingAnimationWidget.fourRotatingDots(
                               color: Colors.white, size: 30),
                       onPressed: () async {
-                        String msg = await myPMC.authenticate(
-                          email: emailFieldController.text.toLowerCase(),
-                          code: codeFieldController.text.trim(),
-                        );
-                        print("Message: $msg");
-                        if (msg == 'Success') {
-                          Map<String, dynamic> userData =
-                              await myPMC.getBranchData();
-                          Get.to(const MainScreen());
-                          // Navigator.pushReplacement(
-                          //   context,
-                          //   MaterialPageRoute(
-                          //     builder: (context) => const MainScreen(),
-                          //   ),
-                          // );
-                          print("UserData: $userData");
+                        if (_formKey.currentState!.validate()) {
+                          var internetStatus =
+                              await InternetCheck().getAirtableConMessage();
+                          if (internetStatus == 'connected') {
+                            String msg = await myPMC.authenticate(
+                              email: emailFieldController.text.toLowerCase(),
+                              code: codeFieldController.text.trim(),
+                            );
+                            if (msg == 'Success') {
+                              Map<String, dynamic> userData =
+                                  await myPMC.getBranchData();
+                              Get.to(const MainScreen());
+                            }
+                          } else {
+                            Get.snackbar(
+                              "No internet",
+                              "Please check your internet connection and try again",
+                              backgroundColor: Colors.red,
+                              colorText: Colors.white,
+                              duration: const Duration(seconds: 5),
+                            );
+                          }
                         }
-                        //checkUser = CheckUser(email: emailFieldController.text);
-                        // var internetStatus =
-                        //     await kInternetConnection.getAirtableConMessage();
-                        // if (internetStatus == 'connected') {
-                        //   var dataMap = await kActions.authenticate(
-                        //       email: emailFieldController.text
-                        //           .trim()
-                        //           .toLowerCase(),
-                        //       code: codeFieldController.text.trim());
-                        //   if (dataMap == null) {
-                        //     setState(() {
-                        //       errorMessage = "Failed to find user data";
-                        //     });
-                        //   } else if (dataMap.runtimeType == String) {
-                        //     //print("Error: $dataMap");
-                        //     setState(() {
-                        //       errorMessage = dataMap;
-                        //     });
-                        //   } else {
-                        //     Navigator.pushReplacement(
-                        //       context,
-                        //       MaterialPageRoute(
-                        //         builder: (context) => LoginDataLoadingScreen(
-                        //           dataMap: dataMap,
-                        //         ),
-                        //       ),
-                        //     );
-                        //     setState(() {
-                        //       errorMessage = '';
-                        //     });
-                        //   }
-                        // } else {
-                        //   setState(() {
-                        //     errorMessage =
-                        //         'Failed to reach destination address. Check your internet connection!';
-                        //   });
-                        // }
                       },
                     ),
                     const SizedBox(
