@@ -6,6 +6,7 @@ import 'package:kijani_pmc_app/app/data/models/parish_model.dart';
 import 'package:kijani_pmc_app/app/data/providers/parish_provider.dart';
 import 'package:kijani_pmc_app/app/routes/routes.dart';
 import 'package:kijani_pmc_app/global/services/airtable_service.dart';
+import 'package:kijani_pmc_app/global/services/appUpdate.dart';
 import 'package:kijani_pmc_app/global/services/network_services.dart';
 import 'package:kijani_pmc_app/global/services/storage_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -25,9 +26,12 @@ class AuthController extends GetxController {
   Future<void> login(String email, String password) async {
     isButtonLoading.value = true; // Show "Checking user..."
     try {
-      var bcFilter = 'AND({BC-Email}="$email", {Branch-code}="$password")';
-      var melFilter = 'AND({MEL-Email}="$email", {Branch-code}="$password")';
-      var pmcFilter = 'AND({PMC Email}="$email", {Branch-code}="$password")';
+      var bcFilter =
+          'AND({BC-Email}="$email", {Branch-code}="$password", {Status}="Active")';
+      var melFilter =
+          'AND({MEL-Email}="$email", {Branch-code}="$password", {Status}="Active")';
+      var pmcFilter =
+          'AND({PMC Email}="$email", {Branch-code}="$password", {Status}="Active")';
 
       // Attempt login for each role
       if (kDebugMode) {
@@ -136,6 +140,8 @@ class AuthController extends GetxController {
       userRole.value = await storageService.getString('userRole');
       userData.value = await storageService.getData(key: 'user');
 
+      await AppUpdate().checkUpdate(); //update the app
+
       if (isAuthenticated.value) {
         // First load cached parishes and redirect
         List<Parish>? loadedParishes =
@@ -148,9 +154,22 @@ class AuthController extends GetxController {
         // Then refresh data
         //check if internet is conect
         if (await NetworkServices().checkAirtableConnection()) {
-          String? email = userData['BC-Email'] ??
-              userData['MEL-Email'] ??
-              userData['PMC Email'];
+          // Select the email field based on the stored user role
+          String? email;
+          switch (userRole.value) {
+            case 'bc':
+              email = userData['BC-Email'];
+              break;
+            case 'mel':
+              email = userData['MEL-Email'];
+              break;
+            case 'pmc':
+              email = userData['PMC Email'];
+              break;
+            default:
+              email = null;
+          }
+
           String? branchCode = userData['Branch-code'];
           if (email != null && branchCode != null) {
             isUpdating.value = true;

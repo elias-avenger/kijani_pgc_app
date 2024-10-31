@@ -2,7 +2,7 @@ import 'package:easy_loading_button/easy_loading_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:kijani_pmc_app/app/modules/bc/controllers/report_controller.dart';
+import 'package:kijani_pmc_app/app/modules/bc/controllers/report_UI_controller.dart';
 import 'package:kijani_pmc_app/global/enums/colors.dart';
 import 'dart:io';
 

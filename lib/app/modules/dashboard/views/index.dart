@@ -158,7 +158,7 @@ class Dashboard extends StatelessWidget {
                       title: "Reports Submitted",
                       count: '25',
                       icon: Icons.assignment_turned_in,
-                      color: Colors.green,
+                      color: kfGreen,
                     ),
                     _buildSummaryCard(
                       title: "Parishes Assigned",
@@ -168,6 +168,7 @@ class Dashboard extends StatelessWidget {
                     ),
                   ],
                 ),
+                Obx(() => Text("${authController.userRole}")),
 
                 const SizedBox(height: 20),
                 const Text(
