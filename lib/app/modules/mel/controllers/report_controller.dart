@@ -1,9 +1,16 @@
+import 'package:airtable_crud/airtable_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
+import 'package:kijani_pmc_app/app/modules/auth/controllers/auth_controller.dart';
+import 'package:kijani_pmc_app/global/services/airtable_service.dart';
+import 'package:kijani_pmc_app/global/services/aws_service.dart';
+
 class MELReportController extends GetxController {
+  final AuthController authData = Get.put(AuthController());
+
   final highlights = ''.obs;
   final planForTomorrow = ''.obs;
   final otherActivity = ''.obs;
@@ -15,9 +22,9 @@ class MELReportController extends GetxController {
   final selectedChallenges = <String>[].obs;
   final images = <XFile>[].obs;
   final isLoading = false.obs;
+  final selectedParishes = <String>[].obs;
 
   final ImagePicker _picker = ImagePicker();
-
   final List<String> predefinedActivities = [
     "PC training",
     "Catch-up",
@@ -80,34 +87,57 @@ class MELReportController extends GetxController {
     }
   }
 
-  void submitForm() {
+  void submitForm() async {
     // Form Validation
     if (_isFormValid()) {
-      if (selectedActivities.contains("Other")) {
-        selectedActivities.add("Other: ${otherActivity.value}");
-      }
-      if (selectedObservations.contains("Other")) {
-        selectedObservations.add("Other: ${otherObservation.value}");
-      }
-      if (selectedChallenges.contains("Other")) {
-        selectedChallenges.add("Other: ${otherChallenge.value}");
-      }
+      // Prepare report data with conditional addition of "Other" options
 
-      // Prepare report data
-      final reportData = {
-        "Highlights": highlights.value,
-        "Activities": selectedActivities,
-        "On-Site Observations": selectedObservations,
-        "Challenges": selectedChallenges,
-        "Plan for Tomorrow": planForTomorrow.value,
-        "Photos": images.map((image) => image.path).toList(),
-      };
+      try {
+        List<String> imageUrls = [];
+        //https://2024-app-uploads.s3.amazonaws.com/scaled_1000042417.webp, https://2024-app-uploads.s3.amazonaws.com/scaled_1000042418.webp, https://2024-app-uploads.s3.amazonaws.com/scaled_1000042417.webp
 
-      // Handle form submission (e.g., send data to backend)
-      print("Report Data: $reportData");
+        for (var image in images) {
+          //call aws to submit
+          String res = await AWSService().uploadToS3(image.path, image.name);
+          if (res == 'IMAGE UPLOADED') {
+            imageUrls.add(
+                "https://2024-app-uploads.s3.amazonaws.com/${image.path.split('/').last}");
+          }
+        }
+        final reportData = {
+          "MEL":
+              "${authData.userData['MEL Officer'].trim()} -- ${authData.userData['Branch'].trim()}",
+          "Location:": selectedParishes,
+          "Activities implemented": selectedActivities,
+          if (selectedActivities.contains("Other") && otherActivity.isNotEmpty)
+            "Others activities": otherActivity.value,
+          "Highlights:": highlights.value,
+          "On-Site Observations:": selectedObservations,
+          if (selectedObservations.contains("Other") &&
+              otherObservation.isNotEmpty)
+            "Other Observations": otherObservation.value,
+          "Challenges encountered if any:": selectedChallenges,
+          if (selectedChallenges.contains("Other") && otherChallenge.isNotEmpty)
+            "Other Challenges": otherChallenge.value,
+          "Plan For tomorrow’s activity:": planForTomorrow.value,
+          "photo URLs": imageUrls.join(', '),
+        };
+        print("Report Data: $reportData");
+        reportData.forEach((key, value) {
+          print('$key: $value');
+        });
+        var res =
+            await currentGardenBase.createRecord('MEL Reports', reportData);
+        print(res.fields);
+      } on AirtableException catch (e) {
+        print("AIRATBALE ERROR: ${e.message}");
+        print("AIRATBALE ERROR: ${e.details}");
+      } catch (e) {
+        print(e.toString());
+      }
 
       // Clear data after submission
-      clearForm();
+      //clearForm();
     } else {
       // Show error message if form is not valid
       Get.snackbar(

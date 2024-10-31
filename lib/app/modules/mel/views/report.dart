@@ -2,6 +2,7 @@ import 'package:easy_loading_button/easy_loading_button.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:kijani_pmc_app/app/modules/auth/controllers/auth_controller.dart';
 import 'package:kijani_pmc_app/app/modules/mel/controllers/report_controller.dart';
 import 'package:kijani_pmc_app/global/enums/colors.dart';
 import 'dart:io';
@@ -14,6 +15,7 @@ class MELReportFormScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final MELReportController controller = Get.put(MELReportController());
+    final AuthController authData = Get.put(AuthController());
 
     return Scaffold(
       appBar: AppBar(
@@ -29,6 +31,36 @@ class MELReportFormScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Text(
+                "${authData.userData['MEL Officer']}--${authData.userData['Branch']}",
+                style: GoogleFonts.lato(
+                  color: const Color(0xff23566d),
+                  fontSize: 18,
+                ),
+              ),
+              _buildSectionTitle("Select Parishes"),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kfBlack,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  padding: const EdgeInsets.all(20),
+                ),
+                onPressed: () => _showSelectionDialog(
+                  controller,
+                  authData.parishData
+                      .map((parish) => parish.id)
+                      .toList(), // List of predefined parishes
+                  controller.selectedParishes, // Selected parishes list
+                  "Select Parishes",
+                  isActivity:
+                      false, // Set false to avoid reassigning activities
+                ),
+                child: const Text("Select Parishes"),
+              ),
+              Obx(() => _buildSelectedItems(controller.selectedParishes)),
               _buildSectionTitle("Activities Implemented"),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
@@ -49,7 +81,7 @@ class MELReportFormScreen extends StatelessWidget {
               ),
               Obx(() => _buildSelectedItems(controller.selectedActivities)),
               Obx(() {
-                if (controller.selectedActivities.contains("other")) {
+                if (controller.selectedActivities.contains("Other")) {
                   return TextField(
                     onChanged: (value) =>
                         controller.otherActivity.value = value,
@@ -117,7 +149,7 @@ class MELReportFormScreen extends StatelessWidget {
               ),
               Obx(() => _buildSelectedItems(controller.selectedChallenges)),
               Obx(() {
-                if (controller.selectedChallenges.contains("other")) {
+                if (controller.selectedChallenges.contains("Other")) {
                   return TextField(
                     onChanged: (value) =>
                         controller.otherChallenge.value = value,

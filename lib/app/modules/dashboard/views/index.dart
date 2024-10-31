@@ -206,13 +206,17 @@ class Dashboard extends StatelessWidget {
                                 color: kfGreen,
                               ),
                             ),
-                            title: Text(
-                              parish.name,
-                              style: GoogleFonts.lato(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
+                            title: Column(
+                              children: [
+                                Text(
+                                  parish.name,
+                                  style: GoogleFonts.lato(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
                             ),
                             trailing: const Icon(Icons.arrow_forward_ios),
                           ),
