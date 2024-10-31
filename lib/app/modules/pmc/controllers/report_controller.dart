@@ -2,12 +2,14 @@ import 'package:airtable_crud/airtable_plugin.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kijani_pmc_app/app/modules/pmc/controllers/pmc_controller.dart';
 import 'package:kijani_pmc_app/global/services/airtable_service.dart';
 import 'package:kijani_pmc_app/global/services/aws_service.dart';
 import 'package:kijani_pmc_app/global/services/network_services.dart';
 import 'package:kijani_pmc_app/global/services/storage_service.dart';
 
 class ReportsController extends GetxController {
+  final PmcController pmcController = Get.put(PmcController());
   final LocalStorage myPrefs = LocalStorage();
   final AWSService awsAccess = AWSService();
   final NetworkServices internetCheck = NetworkServices();
@@ -54,6 +56,7 @@ class ReportsController extends GetxController {
           dataToSubmit,
         );
         if (response.id != null) {
+          await pmcController.fetchReports();
           Get.back();
           Get.snackbar(
             'Success',

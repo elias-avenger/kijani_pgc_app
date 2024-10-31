@@ -141,7 +141,7 @@ class MELReportController extends GetxController {
 
       // Clear data after submission
       clearForm();
-      melUpdate.fetchReports();
+      await melUpdate.fetchReports();
       Get.offAndToNamed(Routes.dashboard);
       Get.snackbar(
         'Success',
