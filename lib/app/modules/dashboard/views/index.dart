@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:kijani_pmc_app/app/data/providers/greetings.dart';
+import 'package:kijani_pmc_app/app/data/providers/userdata_provider.dart';
 import 'package:kijani_pmc_app/app/modules/auth/controllers/auth_controller.dart';
 import 'package:kijani_pmc_app/app/modules/mel/controllers/mel_controller.dart';
 import 'package:kijani_pmc_app/app/modules/pmc/controllers/pmc_controller.dart';
@@ -16,8 +17,7 @@ class Dashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthController authController = Get.find<AuthController>();
-    final MelController melControler = Get.find<MelController>();
-    final PmcController pmcControler = Get.find<PmcController>();
+    final UserdataProvider userReports = Get.find<UserdataProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -161,11 +161,7 @@ class Dashboard extends StatelessWidget {
                     Obx(
                       () => _buildSummaryCard(
                         title: "Reports Submitted",
-                        count: authController.userRole == "mel"
-                            ? melControler.reports.toString()
-                            : authController.userRole == "pmc"
-                                ? pmcControler.reports.toString()
-                                : "0",
+                        count: userReports.reports.toString(),
                         icon: Icons.assignment_turned_in,
                         color: kfGreen,
                       ),
