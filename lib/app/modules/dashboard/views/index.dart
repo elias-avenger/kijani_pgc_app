@@ -4,6 +4,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:kijani_pmc_app/app/data/providers/greetings.dart';
 import 'package:kijani_pmc_app/app/modules/auth/controllers/auth_controller.dart';
+import 'package:kijani_pmc_app/app/modules/mel/controllers/mel_controller.dart';
+import 'package:kijani_pmc_app/app/modules/pmc/controllers/pmc_controller.dart';
 import 'package:kijani_pmc_app/app/routes/routes.dart';
 import 'package:kijani_pmc_app/global/enums/colors.dart';
 import 'package:kijani_pmc_app/global/widgets/linear_progress.dart';
@@ -14,6 +16,8 @@ class Dashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AuthController authController = Get.find<AuthController>();
+    final MelController melControler = Get.find<MelController>();
+    final PmcController pmcControler = Get.find<PmcController>();
 
     return Scaffold(
       appBar: AppBar(
@@ -154,11 +158,17 @@ class Dashboard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    _buildSummaryCard(
-                      title: "Reports Submitted",
-                      count: '25',
-                      icon: Icons.assignment_turned_in,
-                      color: kfGreen,
+                    Obx(
+                      () => _buildSummaryCard(
+                        title: "Reports Submitted",
+                        count: authController.userRole == "mel"
+                            ? melControler.reports.toString()
+                            : authController.userRole == "pmc"
+                                ? pmcControler.reports.toString()
+                                : "0",
+                        icon: Icons.assignment_turned_in,
+                        color: kfGreen,
+                      ),
                     ),
                     _buildSummaryCard(
                       title: "Parishes Assigned",
@@ -168,7 +178,6 @@ class Dashboard extends StatelessWidget {
                     ),
                   ],
                 ),
-                Obx(() => Text("${authController.userRole}")),
 
                 const SizedBox(height: 20),
                 const Text(

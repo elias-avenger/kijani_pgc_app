@@ -31,13 +31,6 @@ class MELReportFormScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                "${authData.userData['MEL Officer']}--${authData.userData['Branch']}",
-                style: GoogleFonts.lato(
-                  color: const Color(0xff23566d),
-                  fontSize: 18,
-                ),
-              ),
               _buildSectionTitle("Select Parishes"),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(

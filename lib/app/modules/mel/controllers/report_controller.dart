@@ -5,11 +5,14 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 import 'package:kijani_pmc_app/app/modules/auth/controllers/auth_controller.dart';
+import 'package:kijani_pmc_app/app/modules/mel/controllers/mel_controller.dart';
+import 'package:kijani_pmc_app/app/routes/routes.dart';
 import 'package:kijani_pmc_app/global/services/airtable_service.dart';
 import 'package:kijani_pmc_app/global/services/aws_service.dart';
 
 class MELReportController extends GetxController {
   final AuthController authData = Get.put(AuthController());
+  final MelController melUpdate = Get.put(MelController());
 
   final highlights = ''.obs;
   final planForTomorrow = ''.obs;
@@ -137,7 +140,15 @@ class MELReportController extends GetxController {
       }
 
       // Clear data after submission
-      //clearForm();
+      clearForm();
+      melUpdate.fetchReports();
+      Get.offAndToNamed(Routes.dashboard);
+      Get.snackbar(
+        'Success',
+        'Report was successfully Submitted',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
     } else {
       // Show error message if form is not valid
       Get.snackbar(

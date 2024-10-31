@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kijani_pmc_app/app/data/models/parish_model.dart';
 import 'package:kijani_pmc_app/app/data/providers/parish_provider.dart';
+import 'package:kijani_pmc_app/app/data/providers/userdata_provider.dart';
 import 'package:kijani_pmc_app/app/routes/routes.dart';
 import 'package:kijani_pmc_app/global/services/airtable_service.dart';
 import 'package:kijani_pmc_app/global/services/appUpdate.dart';
