@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:kijani_pmc_app/app/data/providers/greetings.dart';
 import 'package:kijani_pmc_app/app/data/providers/userdata_provider.dart';
 import 'package:kijani_pmc_app/app/modules/auth/controllers/auth_controller.dart';
+import 'package:kijani_pmc_app/app/modules/bc/controllers/bc_controller.dart';
 import 'package:kijani_pmc_app/app/modules/mel/controllers/mel_controller.dart';
 import 'package:kijani_pmc_app/app/modules/pmc/controllers/pmc_controller.dart';
 import 'package:kijani_pmc_app/app/routes/routes.dart';
@@ -18,6 +19,7 @@ class Dashboard extends StatelessWidget {
   Widget build(BuildContext context) {
     final AuthController authController = Get.find<AuthController>();
     final UserdataProvider userReports = Get.find<UserdataProvider>();
+    final BcController bcController = Get.find<BcController>();
 
     return Scaffold(
       appBar: AppBar(
@@ -57,7 +59,7 @@ class Dashboard extends StatelessWidget {
                         color: kfGreen,
                       ),
                       const SizedBox(width: 16),
-                      Text('Submit Report', style: GoogleFonts.lato()),
+                      Text('Submit Daily Report', style: GoogleFonts.lato()),
                     ],
                   ),
                 ),

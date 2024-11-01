@@ -15,6 +15,7 @@ import 'package:kijani_pmc_app/app/modules/mel/bindings/form_binding.dart';
 import 'package:kijani_pmc_app/app/modules/mel/views/report.dart';
 import 'package:kijani_pmc_app/app/modules/parish/bindings/parish_bindings.dart';
 import 'package:kijani_pmc_app/app/modules/parish/views/index.dart';
+import 'package:kijani_pmc_app/app/modules/parish/views/report.dart';
 import 'package:kijani_pmc_app/app/modules/pmc/bindings/bc_bindngs.dart';
 import 'package:kijani_pmc_app/app/modules/pmc/views/report.dart';
 import 'package:kijani_pmc_app/app/routes/routes.dart';
@@ -88,9 +89,16 @@ class AppPages {
       middlewares: [RoleGuard('bc')],
     ),
     GetPage(
-        name: Routes.melReport,
-        page: () => const MELReportFormScreen(),
-        binding: MelReportBinding(),
-        middlewares: [RoleGuard('mel')])
+      name: Routes.melReport,
+      page: () => const MELReportFormScreen(),
+      binding: MelReportBinding(),
+      middlewares: [RoleGuard('mel')],
+    ),
+    GetPage(
+      name: Routes.parishReport,
+      page: () => const ParishReportFormScreen(),
+      binding: ParishBinding(),
+      middlewares: [RoleGuard('bc')],
+    )
   ];
 }

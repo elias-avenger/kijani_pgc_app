@@ -29,12 +29,34 @@ class ParishDetailScreen extends StatelessWidget {
         ),
         backgroundColor: kfGreen,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert, color: Colors.white),
-            onPressed: () {
-              // Add action if needed
+          PopupMenuButton(
+            onSelected: (value) {
+              if (value == 'report') {
+                Get.toNamed(Routes.parishReport, arguments: parish);
+              }
             },
-          ),
+            iconColor: Colors.white,
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem(
+                  value: 'report',
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.report,
+                        color: kfGreen,
+                      ),
+                      const SizedBox(width: 16),
+                      Text(
+                        'Submit Daily Parish Report',
+                        style: GoogleFonts.lato(),
+                      ),
+                    ],
+                  ),
+                )
+              ];
+            },
+          )
         ],
       ),
       body: SingleChildScrollView(
@@ -76,7 +98,7 @@ class ParishDetailScreen extends StatelessWidget {
         Text(
           "${parish.name} Parish",
           style: GoogleFonts.lato(fontSize: 18),
-        )
+        ),
       ],
     );
   }

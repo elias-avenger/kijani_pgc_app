@@ -37,20 +37,27 @@ class UserdataProvider extends GetxController {
   // Function to fetch reports based on report type
   Future<void> fetchReports(String reportType) async {
     String filter;
+    String tableName;
+    var base;
 
-    // Set filter based on the report type and user data
+    // Set filter and table name based on the report type and user data
     switch (reportType) {
       case 'pmc':
         filter =
             'AND({Coordinator}="${auth.userData['Branch'].trim()} | ${auth.userData['PMC'].trim()}")';
+        tableName = 'PMC Reports';
+        base = currentGardenBase;
         break;
       case 'mel':
         filter =
             'AND({MEL}="${auth.userData['MEL Officer'].trim()} -- ${auth.userData['Branch'].trim()}")';
+        tableName = 'MEL Reports';
+        base = currentGardenBase;
         break;
       case 'bc':
-        filter =
-            'AND({BC}="${auth.userData['BC Officer'].trim()} -- ${auth.userData['Branch'].trim()}")';
+        filter = 'AND({BC Email}="${auth.userData['BC-Email'].trim()}")';
+        tableName = 'BCs Daily Reports';
+        base = currentNurseryBase;
         break;
       default:
         print("Unknown report type: $reportType");
@@ -58,8 +65,7 @@ class UserdataProvider extends GetxController {
     }
 
     try {
-      var res = await currentGardenBase.fetchRecordsWithFilter(
-          '$reportType Reports', filter);
+      var res = await base.fetchRecordsWithFilter(tableName, filter);
       print("REPORT LENGTH for $reportType: ${res.length}");
 
       // Update the main reports count and save it to storage

@@ -25,7 +25,7 @@ class Parish {
     try {
       print('Parsing Parish: $json'); // Log raw JSON data
       return Parish(
-        id: json['ID'] ?? 'no ID',
+        id: json['ID'] ?? json['id'],
         parishId: json['Parish'] ?? json['parishId'],
         name: json['Parish Name'] ?? json['name'],
         groups: (json['groups'] as List<dynamic>?)
