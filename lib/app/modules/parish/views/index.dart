@@ -38,22 +38,23 @@ class ParishDetailScreen extends StatelessWidget {
             iconColor: Colors.white,
             itemBuilder: (BuildContext context) {
               return [
-                PopupMenuItem(
-                  value: 'report',
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.report,
-                        color: kfGreen,
-                      ),
-                      const SizedBox(width: 16),
-                      Text(
-                        'Submit Daily Parish Report',
-                        style: GoogleFonts.lato(),
-                      ),
-                    ],
-                  ),
-                )
+                if (Get.find<AuthController>().userRole == 'bc')
+                  PopupMenuItem(
+                    value: 'report',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.report,
+                          color: kfGreen,
+                        ),
+                        const SizedBox(width: 16),
+                        Text(
+                          'Submit Daily Parish Report',
+                          style: GoogleFonts.lato(),
+                        ),
+                      ],
+                    ),
+                  )
               ];
             },
           )

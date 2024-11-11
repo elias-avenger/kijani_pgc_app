@@ -44,7 +44,7 @@ class UserdataProvider extends GetxController {
     switch (reportType) {
       case 'pmc':
         filter =
-            'AND({Coordinator}="${auth.userData['Branch'].trim()} | ${auth.userData['PMC'].trim()}")';
+            'AND({PMC}="${auth.userData['Branch']} | ${auth.userData['PMC']}")';
         tableName = 'PMC Reports';
         base = currentGardenBase;
         break;
@@ -66,6 +66,7 @@ class UserdataProvider extends GetxController {
 
     try {
       var res = await base.fetchRecordsWithFilter(tableName, filter);
+      print("FILTER::: $filter");
       print("REPORT LENGTH for $reportType: ${res.length}");
 
       // Update the main reports count and save it to storage

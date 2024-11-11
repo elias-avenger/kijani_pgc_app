@@ -199,7 +199,7 @@ class _LoginViewState extends State<LoginView> {
                                     },
                               child: Text(
                                 authController.isButtonLoading.value
-                                    ? 'Checking user...'
+                                    ? 'Authenticating...'
                                     : 'Login',
                                 style: GoogleFonts.lato(
                                   fontSize: 20,
