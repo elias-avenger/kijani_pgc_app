@@ -9,8 +9,8 @@ class UserController extends GetxController {
   // final String code;
   HttpAirtable useAirtable = HttpAirtable();
 
-  String myBase = "app9yul6FMnVUm7L4";
-  String myTable = "Parishes";
+  String myBase = "appJBOIeM2ZA5nhnV";
+  String myTable = "PGCs";
 
   LocalStorage myPrefs = LocalStorage();
 
@@ -50,7 +50,7 @@ class UserController extends GetxController {
     required String table,
   }) async {
     //String view = 'To MEL App';
-    String filter = 'AND({PMC Email}="$email", {Branch-code}="$code")';
+    String filter = 'AND({Email}="$email", {AppCode}="$code")';
     // HttpAirtable airtable = HttpAirtable(
     //     apiKey: airtableAccessToken, baseId: myBase, tableName: myTable);
     Map data = await useAirtable.fetchDataWithFilter(
@@ -65,10 +65,9 @@ class UserController extends GetxController {
     } else {
       for (var record in data['records']) {
         //print("Record Fields: ${record['fields']['ID']}");
-        parishes.add(record['fields']['ID']);
+        parishes.addAll(record['fields']['Parishes IDs'].split(", "));
         userData = {
-          'branch': record['fields']['Branch'],
-          'coordinator': record['fields']['PMC'],
+          'id': record['fields']['ID'],
           'parishes': parishes,
         };
       }
