@@ -5,6 +5,7 @@ class Routes {
   static const pmcDashboard = '/pmcdashboard';
   static const melDashboard = '/meldashboard';
   static const parish = '/parish';
+  static const parishReport = '/parishreport';
   static const pmcReport = '/pmcreport';
   static const bcReport = '/bcreport';
   static const melReport = '/melreport';

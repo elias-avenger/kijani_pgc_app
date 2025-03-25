@@ -1,10 +1,25 @@
+import 'package:airtable_crud/airtable_plugin.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kijani_pmc_app/app/data/providers/userdata_provider.dart';
+import 'dart:io';
+
+import 'package:kijani_pmc_app/app/modules/auth/controllers/auth_controller.dart';
+import 'package:kijani_pmc_app/app/modules/bc/controllers/bc_controller.dart';
+import 'package:kijani_pmc_app/app/routes/routes.dart';
+import 'package:kijani_pmc_app/global/services/airtable_service.dart';
+import 'package:kijani_pmc_app/global/services/aws_service.dart';
 import 'package:kijani_pmc_app/global/services/image_services.dart';
 
 class BCReportController extends GetxController {
+  final AuthController authData = Get.put(AuthController());
+  final BcController bcData = Get.put(BcController());
+  final UserdataProvider userData = Get.put(UserdataProvider());
+
   final pcReports = ''.obs;
+  final explanationForLessReports = ''.obs;
   final description = ''.obs;
   final otherActivity = ''.obs;
   final otherChallenge = ''.obs;
@@ -14,8 +29,8 @@ class BCReportController extends GetxController {
   final selectedChallenges = <String>[].obs;
   final images = <XFile>[].obs;
 
-  final ImageServices _imageServices =
-      ImageServices(); // Use the new ImageServices
+  final ImagePicker _picker = ImagePicker();
+  final ImageServices _imageServices = ImageServices();
 
   final List<String> predefinedActivities = [
     "Transporting seedlings from Central nurseries",
@@ -105,32 +120,92 @@ class BCReportController extends GetxController {
     return true;
   }
 
-  void submitForm() {
+  void submitForm() async {
     if (!validateForm()) return; // Validate form before submission
 
-    // Append other activity/challenge details to the list if they are provided
-    if (selectedActivities.contains("Other(s) Specify") &&
-        otherActivity.value.isNotEmpty) {
-      selectedActivities.add("Other: ${otherActivity.value}");
+    isLoading.value = true; // Show loading indicator
+
+    try {
+      // Upload images to AWS S3 and collect the URLs
+      List<String> imageUrls = [];
+
+      for (var image in images) {
+        String res = await AWSService().uploadToS3(image.path, image.name);
+        if (res == 'IMAGE UPLOADED') {
+          imageUrls.add(
+              "https://2024-app-uploads.s3.amazonaws.com/${image.path.split('/').last}");
+        } else {
+          throw Exception("Failed to upload image: ${image.name}");
+        }
+      }
+
+      // Prepare report data with conditional addition of "Other" options
+      final reportData = {
+        "Name of BC": bcData.bcId.value.trim(),
+        "PC reports": pcReports.value.trim(),
+        if (pcReports.value.trim().isNotEmpty &&
+            int.parse(pcReports.value.trim()) < 6)
+          "Why less reports?": explanationForLessReports.value,
+        "Activities": selectedActivities,
+        if (selectedActivities.contains("Other(s) Specify") &&
+            otherActivity.value.isNotEmpty)
+          "Other Activities": otherActivity.value,
+        "Challenges": selectedChallenges,
+        if (selectedChallenges.contains("Others (specify)") &&
+            otherChallenge.value.isNotEmpty)
+          "Other Challenge": otherChallenge.value,
+        "Description": description.value,
+        "photo URLs": imageUrls.join(', '),
+      };
+
+      reportData.forEach((key, value) {
+        if (kDebugMode) {
+          print("$key: $value");
+        }
+      });
+      // Submit data to Airtable
+      var res = await currentNurseryBase.createRecord(
+          'BCs Daily Reports', reportData);
+      if (kDebugMode) {
+        print(res.fields);
+      }
+
+      //Clear data after submission
+      clearForm();
+
+      //Optionally, fetch updated reports or navigate to another screen
+      await userData.loadReportsFromStorage();
+      Get.offAndToNamed(Routes.dashboard);
+
+      // Show success message
+      Get.snackbar(
+        'Success',
+        'Report was successfully submitted',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } on AirtableException catch (e) {
+      // Handle Airtable-specific exceptions
+      print("Airtable Error: ${e.message}");
+      print("Airtable Details: ${e.details}");
+      Get.snackbar(
+        'Submission Failed',
+        'Error: ${e.message}',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      // Handle other exceptions
+      print("Error: ${e.toString()}");
+      Get.snackbar(
+        'Submission Failed',
+        'Error: ${e.toString()}',
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    } finally {
+      isLoading.value = false; // Hide loading indicator
     }
-    if (selectedChallenges.contains("Others (specify)") &&
-        otherChallenge.value.isNotEmpty) {
-      selectedChallenges.add("Other: ${otherChallenge.value}");
-    }
-
-    final reportData = {
-      "PC Reports": pcReports.value,
-      "Activities": selectedActivities,
-      "Challenges": selectedChallenges,
-      "Description": description.value,
-      "Photos": images.map((image) => image.path).toList(),
-    };
-
-    // Handle form submission (e.g., send data to backend)
-    print("Report Data: $reportData");
-
-    // Clear data after submission
-    clearForm();
   }
 
   void clearForm() {
