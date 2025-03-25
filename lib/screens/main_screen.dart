@@ -76,7 +76,7 @@ class MainScreen extends StatelessWidget {
                 style: const TextStyle(fontSize: 20),
               ),
               Text(
-                "${pmcCtrl.branchData['coordinator'].split(" | ")[1]}",
+                "${pmcCtrl.branchData['id'].split(" -- ")[0].split(" | ")[1]}",
                 style: const TextStyle(
                   color: Color(0xff23566d),
                   fontSize: 24,
@@ -85,7 +85,7 @@ class MainScreen extends StatelessWidget {
               ),
               const SizedBox(height: 6),
               Text(
-                "${pmcCtrl.branchData['branch']}",
+                "${pmcCtrl.branchData['id'].split(" -- ")[1]}",
                 style: const TextStyle(
                   color: Color(0xff23566d),
                   fontSize: 18,

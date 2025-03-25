@@ -9,8 +9,8 @@ class Branch {
   });
   factory Branch.getData(Map<String, dynamic> data) {
     return Branch(
-      coordinator: data['coordinator'],
-      branch: data['branch'],
+      coordinator: data['id'].split(" -- ")[0],
+      branch: data['id'].split(" -- ")[1],
       parishes: data['parishes'],
     );
   }
