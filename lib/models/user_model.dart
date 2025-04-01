@@ -1,30 +1,37 @@
-class UserModel {
+class User {
   final String id;
+  final String parishes;
   final String name;
   final String email;
-  final String password;
+  final String branch;
 
-  UserModel({
-    required this.id,
+  User({
     required this.name,
+    required this.id,
+    required this.parishes,
     required this.email,
-    required this.password,
+    required this.branch,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
-    return UserModel(
-      id: json['id'],
-      name: json['name'],
-      email: json['email'],
-      password: json['code'],
+  factory User.fromJson(Map<String, dynamic> json) {
+    return User(
+      id: json['ID'] ?? "",
+      name: json['ID'] != null
+          ? json['ID'].split(" | ").last.split(" -- ").first
+          : "",
+      email: json['Email'] ?? "",
+      branch: json['ID'] != null
+          ? json['ID'].split(" | ").last.split(" -- ").last
+          : "",
+      parishes: json['Parishes IDs'] ?? "No assigned parishes",
     );
   }
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'name': name,
-      'email': email,
-      'code': password,
+      'ID': id,
+      'Email': email,
+      'Parishes IDs': parishes,
+      'Branch': branch,
     };
   }
 }

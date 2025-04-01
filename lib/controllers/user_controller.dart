@@ -1,87 +1,76 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kijani_pmc_app/models/branch.dart';
-import 'package:kijani_pmc_app/services/http_airtable.dart';
-
+import 'package:kijani_pmc_app/models/user_model.dart';
+import 'package:kijani_pmc_app/repositories/user_repository.dart';
 import '../services/local_storage.dart';
 
 class UserController extends GetxController {
-  // final String email;
-  // final String code;
-  HttpAirtable useAirtable = HttpAirtable();
+  final UserRepository _userRepo = UserRepository();
+  final LocalStorage _localStorage = LocalStorage();
 
-  String myBase = "appJBOIeM2ZA5nhnV";
-  String myTable = "PGCs";
+  final emailController = TextEditingController();
+  final codeController = TextEditingController();
 
-  LocalStorage myPrefs = LocalStorage();
+  final branchData = <String, dynamic>{}.obs;
+  final Rx<User?> currentUser = Rx<User?>(null);
 
-  var branchData = <String, dynamic>{}.obs;
-  //var userType = " -- ".obs;
-  Future<String> authenticate({
-    required String email,
-    required String code,
-  }) async {
-    Map<String, dynamic> data = await checkUser(
-      email: email,
-      code: code,
-      baseId: myBase,
-      table: myTable,
-    );
-    if (data['msg'] == 'Found') {
-      final userBranch = Branch.getData(data['data']);
+  Future<void> authenticate() async {
+    try {
+      final user = await _userRepo.checkUser(
+        email: emailController.text,
+        code: codeController.text,
+      );
 
-      branchData = RxMap(data['data']);
-      var stored = await myPrefs.storeData(key: "userData", data: data['data']);
-      if (stored) {
-        return "Success";
-      } else {
-        return "Not Stored";
+      if (user == null) {
+        _showSnackbar("Wrong Credentials", "Check Email or Code",
+            isError: true);
+        return;
       }
-    } else if (data['msg'] == 'Not Found') {
-      return data['msg'];
-    } else {
-      return "Failure";
-    }
-  }
 
-  Future<Map<String, dynamic>> checkUser({
-    required String email,
-    required String code,
-    required String baseId,
-    required String table,
-  }) async {
-    //String view = 'To MEL App';
-    String filter = 'AND({Email}="$email", {AppCode}="$code")';
-    // HttpAirtable airtable = HttpAirtable(
-    //     apiKey: airtableAccessToken, baseId: myBase, tableName: myTable);
-    Map data = await useAirtable.fetchDataWithFilter(
-      filter: filter,
-      baseId: baseId,
-      table: table,
-    );
-    Map<String, dynamic>? userData;
-    List parishes = [];
-    if (data['records'].isEmpty) {
-      return {"msg": "Not Found"};
-    } else {
-      for (var record in data['records']) {
-        //print("Record Fields: ${record['fields']['ID']}");
-        parishes.addAll(record['fields']['Parishes IDs'].split(", "));
-        userData = {
-          'id': record['fields']['ID'],
-          'parishes': parishes,
-        };
+      branchData.assignAll(user.toJson());
+
+      final stored = await _localStorage.storeData(
+        key: "userData",
+        data: user.toJson(),
+      );
+
+      if (!stored) {
+        _showSnackbar("Storage Error", "Failed to store user data",
+            isError: true);
+        return;
       }
-      return {"msg": "Found", "data": userData ?? {}};
+
+      _showSnackbar("Welcome", "Welcome ${user.name}");
+      Get.offAllNamed('/home');
+    } catch (e) {
+      _showSnackbar("Error", "Something went wrong. Please try again.",
+          isError: true);
+      if (kDebugMode) {
+        print("Auth error: $e");
+      }
     }
   }
 
   Future<Map<String, dynamic>> getBranchData() async {
-    Map<String, dynamic> storedData = await myPrefs.getData(key: 'userData');
-    branchData = RxMap(storedData);
+    final storedData = await _localStorage.getData(key: 'userData');
+    branchData.assignAll(storedData);
     return storedData;
   }
 
   Future<bool> logout() {
-    return myPrefs.removeEverything();
+    return _localStorage.removeEverything();
+  }
+
+  void _showSnackbar(String title, String message, {bool isError = false}) {
+    Get.snackbar(
+      title,
+      message,
+      duration: const Duration(seconds: 2),
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: isError ? Colors.red : Colors.green,
+      colorText: Colors.white,
+    );
+
   }
 }

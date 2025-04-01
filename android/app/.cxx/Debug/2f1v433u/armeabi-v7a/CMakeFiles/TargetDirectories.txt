@@ -1,0 +1,2 @@
+C:/Users/kf-24/Desktop/Mobile apps/originals/kijani_pmc_app/android/app/.cxx/Debug/2f1v433u/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/kf-24/Desktop/Mobile apps/originals/kijani_pmc_app/android/app/.cxx/Debug/2f1v433u/armeabi-v7a/CMakeFiles/rebuild_cache.dir

@@ -11,3 +11,4 @@ ButtonStyle kBlackButtonStyle = ButtonStyle(
 Color kijaniBlue = const Color(0xff23566d);
 Color kijaniGreen = const Color(0xff265e3c);
 Color kijaniBrown = const Color(0xff7c3d1c);
+Color kGreyText = const Color(0XFFBFBFBF);

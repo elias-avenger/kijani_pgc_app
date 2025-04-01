@@ -25,6 +25,11 @@ dependencies:
     git:
       url: https://github.com/elias-avenger/s3_storage_package
       ref: master
+  native_exif: ^0.6.0
+  path_provider: ^2.1.5
+  hugeicons: ^0.0.10
+  airtable_crud: ^1.2.4
+  badges: ^3.1.2
 
 dev_dependencies:
   flutter_test:

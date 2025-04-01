@@ -7,7 +7,7 @@ class Branch {
     required this.branch,
     required this.parishes,
   });
-  factory Branch.getData(Map<String, dynamic> data) {
+  factory Branch.fromJson(Map<String, dynamic> data) {
     return Branch(
       coordinator: data['id'].split(" -- ")[0],
       branch: data['id'].split(" -- ")[1],
