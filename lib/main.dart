@@ -66,7 +66,7 @@ class _MyAppState extends State<MyApp> {
       }
     } catch (e) {
       if (kDebugMode) {
-        print("Update check failed: $e");
+        print("Update check failed: updated $e");
       }
     }
   }
