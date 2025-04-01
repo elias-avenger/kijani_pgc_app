@@ -20,32 +20,6 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = User.fromJson(userController.branchData);
-    final dashboardTiles = [
-      DashboardTileData(
-        title: 'Parishes',
-        icon: HugeIcons.strokeRoundedLocation08,
-        count: user.parishes.split(',').length,
-        color: const Color(0xFF204B5F),
-      ),
-      DashboardTileData(
-        title: 'Reports',
-        icon: HugeIcons.strokeRoundedSchoolReportCard,
-        count: 0,
-        color: const Color(0xFF6B3B1E),
-      ),
-      DashboardTileData(
-        title: 'Farmers',
-        icon: HugeIcons.strokeRoundedLocationUser03,
-        count: 0,
-        color: Colors.black,
-      ),
-      DashboardTileData(
-        title: 'Gardens',
-        icon: HugeIcons.strokeRoundedPlant03,
-        count: 00,
-        color: const Color(0xFF285C3D),
-      ),
-    ];
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(

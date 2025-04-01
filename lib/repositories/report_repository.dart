@@ -1,5 +1,3 @@
-import 'package:image_picker/image_picker.dart';
-
 class ReportRepository {
   static const List<String> activities = <String>[
     "Plantation Growth Garden Visits",
