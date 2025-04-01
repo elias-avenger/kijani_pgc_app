@@ -71,5 +71,6 @@ class UserController extends GetxController {
       backgroundColor: isError ? Colors.red : Colors.green,
       colorText: Colors.white,
     );
+
   }
 }
