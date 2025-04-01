@@ -46,22 +46,22 @@ class Locator {
     }
   }
 
-  Future<String> getPosition() async {
+  Future<Position?> getPosition() async {
     if (await checkPermission()) {
       Position? currentPosition = await _getCurrentPosition();
-      return '${currentPosition?.latitude}, ${currentPosition?.longitude}';
+      return currentPosition;
     } else {
-      return "Permission Denied";
+      return null;
     }
-    // Position? currentPosition = await _getCurrentPosition();
-    // return '${currentPosition?.latitude}, ${currentPosition?.longitude}';
   }
 
   Future<Position?> _getCurrentPoint() async {
     try {
       LocationPermission permission = await Geolocator.requestPermission();
       Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.bestForNavigation);
+        locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.bestForNavigation),
+      );
 
       return position;
     } catch (e) {
