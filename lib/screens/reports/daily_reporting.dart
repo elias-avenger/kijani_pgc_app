@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:kijani_pmc_app/controllers/form_controller.dart';
+import 'package:kijani_pmc_app/controllers/report_controller.dart';
 import 'package:kijani_pmc_app/components/widgets/buttons/primary_button.dart';
 import 'package:kijani_pmc_app/components/widgets/dropdown_field.dart';
 import 'package:kijani_pmc_app/components/widgets/file_upload_field.dart';
@@ -15,7 +15,7 @@ class DailyReportScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(FormController());
+    final controller = Get.put(ReportController());
     final UserController userdata = Get.put(UserController());
 
     return Scaffold(
