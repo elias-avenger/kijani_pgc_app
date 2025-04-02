@@ -9,4 +9,4 @@ String kPGCsTable = "PGCs";
 String kPGCReportTable = "PGC Report";
 
 AirtableCrud uGGardensBase = AirtableCrud(apiKey, kUGGardensBaseID);
-AirtableCrud currentGardensBase = AirtableCrud(apiKey, kUGCurrentGardensBaseID);
+AirtableCrud currentGardensBase = AirtableCrud(apiKey, kUGGardensBaseID);
