@@ -27,7 +27,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _loadUserData();
     _checkForUpdate();
   }
 
@@ -35,7 +34,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      initialBinding: InitialBinding(),
+      initialBinding: UserBinding(),
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.pages,
       home: Obx(() {
@@ -49,12 +48,6 @@ class _MyAppState extends State<MyApp> {
         return userData.isEmpty ? LoginScreen() : HomeScreen();
       }),
     );
-  }
-
-  void _loadUserData() async {
-    final data = await userController.getBranchData();
-    userController.branchData.assignAll(data);
-    isLoading.value = false;
   }
 
   Future<void> _checkForUpdate() async {
