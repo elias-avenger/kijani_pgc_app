@@ -39,8 +39,8 @@ class AWSService {
   }) async {
     Map<String, dynamic> response = {};
     Map<String, dynamic> photosUrls = {};
-    String connMsg = await InternetCheck().getAWSConMessage();
-    if (connMsg == 'connected') {
+    bool connMsg = await InternetCheck().isAWSConnected();
+    if (connMsg) {
       int imagesUploaded = 0;
       for (String image in photosData.keys) {
         String imgPath = photosData[image]['imagePath'];
