@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kijani_pmc_app/models/user_model.dart';
 import 'package:kijani_pmc_app/repositories/user_repository.dart';
+import 'package:kijani_pmc_app/routes/app_pages.dart';
 import '../services/local_storage.dart';
 
 class UserController extends GetxController {
@@ -14,6 +15,23 @@ class UserController extends GetxController {
 
   final branchData = <String, dynamic>{}.obs;
   final Rx<User?> currentUser = Rx<User?>(null);
+
+  @override
+  void onInit() {
+    super.onInit();
+    checkIfUserIsLoggedIn();
+  }
+
+  // Method to check if a user is logged in
+  Future<void> checkIfUserIsLoggedIn() async {
+    User? localUser = await _userRepo.getBranchData();
+    if (localUser != null) {
+      branchData.value = localUser.toJson();
+      Get.offAllNamed(Routes.HOME);
+    } else {
+      Get.offAllNamed(Routes.LOGIN);
+    }
+  }
 
   Future<void> authenticate() async {
     try {
@@ -52,12 +70,6 @@ class UserController extends GetxController {
     }
   }
 
-  Future<Map<String, dynamic>> getBranchData() async {
-    final storedData = await _localStorage.getData(key: 'userData');
-    branchData.assignAll(storedData);
-    return storedData;
-  }
-
   Future<bool> logout() {
     return _localStorage.removeEverything();
   }
@@ -71,6 +83,5 @@ class UserController extends GetxController {
       backgroundColor: isError ? Colors.red : Colors.green,
       colorText: Colors.white,
     );
-
   }
 }
