@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kijani_pmc_app/models/report.dart';
 import 'package:kijani_pmc_app/repositories/report_repository.dart';
 
 class ReportController extends GetxController {
@@ -35,14 +36,16 @@ class ReportController extends GetxController {
   }
 
   Future<void> submitForm() async {
-    //call the repository to submit the form
-    bool isSubmitted = await reportRepo.submitDailyReport({
+    DailyReport data = DailyReport.fromJson({
+      'pgc': "Katoemmanuel",
       'parish': selectedParish.value,
       'activities': selectedActivities,
       'details': details.value,
       'nextActivities': nextActivities,
-      'attachments': attachments,
+      'images': attachments,
     });
+    //call the repository to submit the form
+    bool isSubmitted = await reportRepo.submitDailyReport(data);
     //submit the form
     if (!isSubmitted) {
       Get.snackbar("Error", "Failed to submit form");
