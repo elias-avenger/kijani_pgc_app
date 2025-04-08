@@ -1,5 +1,5 @@
 import 'package:airtable_crud/airtable_plugin.dart';
-import 'package:kijani_pmc_app/models/photo.dart';
+import 'package:flutter/foundation.dart';
 import 'package:kijani_pmc_app/models/report.dart';
 import 'package:kijani_pmc_app/services/airtable_services.dart';
 import 'package:kijani_pmc_app/services/aws.dart';
@@ -42,7 +42,9 @@ class ReportRepository {
 
   // Function to submit daily report
   Future<bool> submitDailyReport(DailyReport data) async {
-    print('Submitting daily report...');
+    if (kDebugMode) {
+      print('Submitting daily report...');
+    }
     // Check internet connection
     bool isConnected = await internetCheck.isAirtableConnected();
     if (!isConnected) {
@@ -60,7 +62,9 @@ class ReportRepository {
 
     // Convert uploaded photos URLs to a comma-separated string
     String photosString = uploadedPhotos.join(", ");
-    print('Uploaded photos: $photosString');
+    if (kDebugMode) {
+      print('Uploaded photos: $photosString');
+    }
 
     try {
       // Prepare data for Airtable
@@ -85,7 +89,9 @@ class ReportRepository {
         throw AirtableSubmissionException('Failed to create Airtable record');
       }
 
-      print('Report submitted successfully with ID: ${record.id}');
+      if (kDebugMode) {
+        print('Report submitted successfully with ID: ${record.id}');
+      }
       return true;
     } on AirtableException catch (e) {
       throw AirtableSubmissionException('Airtable error: ${e.message}');
