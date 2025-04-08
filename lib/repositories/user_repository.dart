@@ -44,10 +44,12 @@ class UserRepository {
       );
 
       // Verify if the data was stored by reading it back
-      User? storedUser = await fetchLocalUser() as User;
-      return storedUser != null
-          ? Data.success(storedUser)
-          : Data.failure("Failed to save user data locally");
+      Data storedUser = await fetchLocalUser();
+      if (storedUser.status) {
+        return Data.success(storedUser.data);
+      } else {
+        return Data.failure("Failed to save user data locally");
+      }
     } catch (e) {
       if (kDebugMode) {
         print('Error saving user: $e');
