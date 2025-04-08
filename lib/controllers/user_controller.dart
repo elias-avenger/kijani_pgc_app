@@ -1,19 +1,24 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kijani_pmc_app/models/parish.dart';
+import 'package:kijani_pmc_app/models/return_data.dart';
 import 'package:kijani_pmc_app/models/user_model.dart';
+import 'package:kijani_pmc_app/repositories/parish_repository.dart';
 import 'package:kijani_pmc_app/repositories/user_repository.dart';
 import 'package:kijani_pmc_app/routes/app_pages.dart';
-import '../services/local_storage.dart';
+import 'package:kijani_pmc_app/services/getx_storage.dart';
 
 class UserController extends GetxController {
   final UserRepository _userRepo = UserRepository();
-  final LocalStorage _localStorage = LocalStorage();
+  final StorageService _storageService = StorageService();
+  final ParishRepository _parishRepo = ParishRepository();
 
-  final emailController = TextEditingController();
-  final codeController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController codeController = TextEditingController();
 
   final branchData = <String, dynamic>{}.obs;
+  final RxList<Parish> parishes = <Parish>[].obs;
   final Rx<User?> currentUser = Rx<User?>(null);
 
   @override
@@ -24,36 +29,56 @@ class UserController extends GetxController {
 
   // Method to check if a user is logged in
   Future<void> checkIfUserIsLoggedIn() async {
-    User? localUser = await _userRepo.getBranchData();
+    Data response = await _userRepo.fetchLocalUser();
+    User? localUser = response.data as User?;
     if (localUser != null) {
       branchData.value = localUser.toJson();
+      //fetch parishes
+      List<Parish>? localParishes = await _parishRepo.fetchLocalParishes();
+      if (localParishes != null) {
+        parishes.assignAll(localParishes);
+      }
       Get.offAllNamed(Routes.HOME);
     } else {
       Get.offAllNamed(Routes.LOGIN);
     }
   }
 
-  Future<void> authenticate() async {
+  Future<void> login() async {
     try {
-      final user = await _userRepo.checkUser(
+      Data response = await _userRepo.checkUser(
         email: emailController.text,
         code: codeController.text,
       );
-
-      if (user == null) {
+      if (!response.status) {
         _showSnackbar("Wrong Credentials", "Check Email or Code",
             isError: true);
         return;
       }
 
+      User? user = response.data as User;
+
+      //fetch parishes
+      List<Parish> parishes =
+          await _parishRepo.fetchParishes(user.parishes.split(','));
+
+      if (parishes.isNotEmpty) {
+        //assign parishes to the observable list
+        this.parishes.assignAll(parishes);
+        //store parishes locally
+        bool stored = await _parishRepo.saveParishes(parishes);
+        if (!stored) {
+          _showSnackbar("Storage Error", "Failed to store parishes data",
+              isError: true);
+          return;
+        }
+      }
+
+      //save parishes locally
+
       branchData.assignAll(user.toJson());
-
-      final stored = await _localStorage.storeData(
-        key: "userData",
-        data: user.toJson(),
-      );
-
-      if (!stored) {
+      Data saveResponse = await _userRepo.saveUser(user);
+      if (!saveResponse.status) {
         _showSnackbar("Storage Error", "Failed to store user data",
             isError: true);
         return;
@@ -71,7 +96,7 @@ class UserController extends GetxController {
   }
 
   Future<bool> logout() {
-    return _localStorage.removeEverything();
+    return _storageService.clearAll();
   }
 
   void _showSnackbar(String title, String message, {bool isError = false}) {
@@ -83,5 +108,13 @@ class UserController extends GetxController {
       backgroundColor: isError ? Colors.red : Colors.green,
       colorText: Colors.white,
     );
+  }
+
+  //dispose controllers
+  @override
+  void onClose() {
+    emailController.dispose();
+    codeController.dispose();
+    super.onClose();
   }
 }
