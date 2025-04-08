@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:kijani_pmc_app/components/app_drawer.dart';
 import 'package:kijani_pmc_app/controllers/user_controller.dart';
-import 'package:kijani_pmc_app/models/dashboard_tile.dart';
 import 'package:kijani_pmc_app/models/user_model.dart';
 import 'package:kijani_pmc_app/components/widgets/grid_card.dart';
 import 'package:kijani_pmc_app/components/widgets/list_tile.dart';
@@ -21,13 +20,7 @@ class HomeScreen extends StatelessWidget {
 
     return Obx(() {
       final user = User.fromJson(userController.branchData);
-      // Check if user is valid, otherwise redirect to login
-      if (user.name.isEmpty) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          Get.offAllNamed(Routes.LOGIN);
-        });
-        return const Center(child: CircularProgressIndicator());
-      }
+      final parishes = userController.parishes;
 
       return Scaffold(
         backgroundColor: const Color(0xFFF5F5F5),
@@ -119,19 +112,29 @@ class HomeScreen extends StatelessWidget {
                 ),
                 SizedBox(height: Get.height * 0.02),
                 SizedBox(
-                  height: user.parishes.split(",").length * 70,
+                  height: parishes.length * 70,
                   child: ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
-                    itemCount: user.parishes.split(",").length,
+                    itemCount: parishes.length,
                     itemBuilder: (context, index) {
-                      final parish = user.parishes.split(",")[index];
+                      final parish = parishes[index];
                       return CustomListItem(
-                        title: "$parish Parish",
+                        title: "${parish.name} Parish",
+                        subtitle: "${parish.groupIDs.length} Groups",
+                        trailing: index < 1
+                            ? const Icon(
+                                HugeIcons.strokeRoundedAccess,
+                                color: Colors.green,
+                              )
+                            : const Icon(
+                                HugeIcons.strokeRoundedSquareLock02,
+                                color: Colors.red,
+                              ),
                         onTap: () {
-                          Get.toNamed(
-                            '/parish',
-                            arguments: parish,
-                          );
+                          // Get.toNamed(
+                          //   '/parish',
+                          //   arguments: parish,
+                          // );
                         },
                       );
                     },
