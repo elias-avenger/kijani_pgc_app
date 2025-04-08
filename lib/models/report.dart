@@ -1,11 +1,11 @@
-import 'package:image_picker/image_picker.dart';
+import 'package:kijani_pmc_app/models/photo.dart';
 
 class DailyReport {
   final String userID;
   final String parish;
   final List<String> activities;
   final String details;
-  final List<XFile> images;
+  List<Photo> images;
   final List<String> nextActivities;
 
   DailyReport({
@@ -24,7 +24,9 @@ class DailyReport {
       parish: json['parish'] as String,
       activities: List<String>.from(json['activities'] as List),
       details: json['details'] as String,
-      images: json['images'] as List<XFile>,
+      images: (json['images'] as List)
+          .map<Photo>((image) => Photo.fromPath(image as String))
+          .toList(),
       nextActivities: json['nextActivities'] as List<String>,
     );
   }
@@ -36,7 +38,7 @@ class DailyReport {
       'parish': parish,
       'activities': activities,
       'details': details,
-      'images': images,
+      'images': images.map((photo) => photo.path).toList(), // List<String>
       'nextActivities': nextActivities,
     };
   }
