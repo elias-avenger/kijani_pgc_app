@@ -37,7 +37,10 @@ class Locator {
 
     try {
       Position position = await Geolocator.getCurrentPosition(
-          desiredAccuracy: LocationAccuracy.bestForNavigation);
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.bestForNavigation,
+        ),
+      );
 
       return position;
     } catch (e) {
@@ -57,7 +60,7 @@ class Locator {
 
   Future<Position?> _getCurrentPoint() async {
     try {
-      LocationPermission permission = await Geolocator.requestPermission();
+      await Geolocator.requestPermission();
       Position position = await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
             accuracy: LocationAccuracy.bestForNavigation),
