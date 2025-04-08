@@ -1,13 +1,14 @@
 import 'package:airtable_crud/airtable_plugin.dart';
 import 'package:flutter/foundation.dart';
+import 'package:kijani_pmc_app/models/return_data.dart';
 import 'package:kijani_pmc_app/models/user_model.dart';
 import 'package:kijani_pmc_app/services/airtable_services.dart';
-import 'package:kijani_pmc_app/services/local_storage.dart';
+import 'package:kijani_pmc_app/services/getx_storage.dart';
 
 class UserRepository {
-  final LocalStorage _localStorage = LocalStorage();
+  final StorageService storageService = StorageService();
   //check if user exists
-  Future<User?> checkUser({required String email, required String code}) async {
+  Future<Data> checkUser({required String email, required String code}) async {
     try {
       String filter =
           'AND({Email}="$email", {AppCode}="$code", {Status}="Active")';
@@ -17,25 +18,58 @@ class UserRepository {
       if (data.isNotEmpty) {
         AirtableRecord record = data.first;
         User user = User.fromJson(record.fields);
-        return user;
+        return Data.success(user);
       }
-      return null;
+      return Data.failure("User not found or inactive");
     } on AirtableException catch (e) {
       if (kDebugMode) {
         print("Airtable Exception: ${e.message}");
       }
-      return null;
+      return Data.failure("Airtable Error");
     } catch (e) {
       if (kDebugMode) {
         print("Exception: $e");
       }
-      return null;
+      return Data.failure("An error occurred while checking user");
     }
   }
 
-  //get user data from local storage
-  Future<User> getBranchData() async {
-    final storedData = await _localStorage.getData(key: 'userData');
-    return User.fromJson(storedData);
+  Future<Data> saveUser(User user) async {
+    try {
+      await storageService.saveEntity(
+        kUserDataKey,
+        'current',
+        user,
+        user.toJson,
+      );
+
+      // Verify if the data was stored by reading it back
+      User? storedUser = await fetchLocalUser() as User;
+      return storedUser != null
+          ? Data.success(storedUser)
+          : Data.failure("Failed to save user data locally");
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error saving user: $e');
+      }
+      return Data.failure("Failed to save user data locally");
+    }
+  }
+
+  Future<Data> fetchLocalUser() async {
+    try {
+      User? data = storageService.fetchEntity(
+          kUserDataKey, 'current', User.fromJson) as User?;
+      if (data != null) {
+        return Data.success(data);
+      } else {
+        return Data.failure("No user data found locally");
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching user: $e');
+      }
+      return Data.failure("Failed to fetch user data locally");
+    }
   }
 }
