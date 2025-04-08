@@ -1,8 +1,5 @@
 import 'package:airtable_crud/airtable_plugin.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:kijani_pmc_app/models/photo.dart';
 import 'package:kijani_pmc_app/models/report.dart';
 import 'package:kijani_pmc_app/services/airtable_services.dart';
 import 'package:kijani_pmc_app/services/aws.dart';
@@ -10,11 +7,27 @@ import 'package:kijani_pmc_app/services/http_airtable.dart';
 import 'package:kijani_pmc_app/services/internet_check.dart';
 import 'package:kijani_pmc_app/services/local_storage.dart';
 
+// Custom exceptions
+class NoInternetException implements Exception {
+  final String message;
+  NoInternetException(this.message);
+}
+
+class PhotoUploadException implements Exception {
+  final String message;
+  PhotoUploadException(this.message);
+}
+
+class AirtableSubmissionException implements Exception {
+  final String message;
+  AirtableSubmissionException(this.message);
+}
+
 class ReportRepository {
   // Dependencies
   final HttpAirtable airtableAccess = HttpAirtable();
   final LocalStorage myPrefs = LocalStorage();
-  final AWSService awsAccess = AWSService();
+  final AWSService awsService = AWSService();
   final InternetCheck internetCheck = InternetCheck();
 
   // Static list of activities
@@ -27,143 +40,58 @@ class ReportRepository {
     "Other assignment",
   ];
 
-  // Submit a report to Airtable or store locally if failed
+  // Function to submit daily report
   Future<bool> submitDailyReport(DailyReport data) async {
-    // Handle photo uploads if present
+    print('Submitting daily report...');
+    // Check internet connection
+    bool isConnected = await internetCheck.isAirtableConnected();
+    if (!isConnected) {
+      throw NoInternetException('No internet connection available');
+    }
+
+    // Handle photos (can be empty)
+    List<String> uploadedPhotos = [];
     if (data.images.isNotEmpty) {
-      final uploadResult = await _uploadPhotos(data.images);
-      if (uploadResult['msg'] != 'success') {
-        await _handleFailedSubmission(data, uploadResult['msg']);
+      uploadedPhotos = await awsService.uploadPhotos(data.images);
+      if (uploadedPhotos.isEmpty) {
+        throw PhotoUploadException('Failed to upload any photos');
       }
     }
 
-    // Check internet and submit or store
-    if (await internetCheck.isAirtableConnected()) {
-      try {
-        AirtableRecord response = await currentGardensBase.createRecord(
-          kPGCReportTable,
-          data.toJson(),
-        );
-        if (kDebugMode) {
-          print(response.fields);
-        }
-        return true;
-      } on AirtableException catch (e) {
-        if (kDebugMode) {
-          print("ERROR CREATING REPORT IN AIRTABLE: $e");
-        }
-        return false;
-      } catch (e) {
-        if (kDebugMode) {
-          print("ERROR CREATING REPORT INTO AIRTABLE: $e");
-        }
-        return false;
-      }
-    } else {
-      return false;
-    }
-  }
+    // Convert uploaded photos URLs to a comma-separated string
+    String photosString = uploadedPhotos.join(", ");
+    print('Uploaded photos: $photosString');
 
-  // Store a failed report locally
-  Future<bool> storeFailedReport({required DailyReport data}) async {
-    final storedReports = await myPrefs.getData(key: 'failedReports');
-    final nextIndex = storedReports.isEmpty
-        ? 1
-        : int.parse(storedReports.keys.last.split('-').last) + 1;
-    storedReports['report-$nextIndex'] = data;
-    return myPrefs.storeData(key: 'failedReports', data: storedReports);
-  }
+    try {
+      // Prepare data for Airtable
+      Map<String, dynamic> dataToSubmit = {
+        "Plantation Growth Coordinators Name": data.userID,
+        "Parish Visited": data.parish,
+        "Activity carried out (multiple select)": data.activities,
+        "3.   Provide more details about the activity and any general feedback":
+            data.details,
+        "Photo Urls": photosString,
+        "5.  Next days activities": data.nextActivities,
+      };
 
-  // Count unsynced reports
-  Future<void> countUnSyncedReports() async {
-    final reportsData = await myPrefs.getData(key: 'failedReports');
-    unSyncedReports.value = reportsData.length;
-  }
-
-  // Sync unsynced reports with Airtable
-  Future<void> uploadUnSyncedReports() async {
-    final awsAccessMsg = await internetCheck.isAWSConnected();
-    final airtableAccessMsg = await internetCheck.isAirtableConnected();
-
-    if (!awsAccessMsg || !airtableAccessMsg) {
-      _showConnectionError();
-      return;
-    }
-
-    var reportsData = await myPrefs.getData(key: 'failedReports');
-    while (reportsData.isNotEmpty &&
-        await internetCheck.isAWSConnected() &&
-        await internetCheck.isAirtableConnected()) {
-      final firstKey = reportsData.keys.first;
-      final targetData = Map<String, dynamic>.from(reportsData[firstKey]);
-      final dataToSubmit = await _prepareDataForSync(targetData);
-
-      final response = await airtableAccess.createRecord(
-        data: dataToSubmit,
-        baseId: 'appoW7X8Lz3bIKpEE',
-        table: 'PMC Reports',
+      // Submit to Airtable
+      AirtableRecord record = await currentGardensBase.createRecord(
+        kPGCReportTable,
+        dataToSubmit,
       );
 
-      if (response.keys.first == 'success') {
-        await myPrefs.removeUnSyncedData(type: 'failedReports', key: firstKey);
-        if (kDebugMode) print("Data removed: $firstKey");
+      // Verify successful submission
+      if (record.id.isEmpty) {
+        throw AirtableSubmissionException('Failed to create Airtable record');
       }
 
-      reportsData = await myPrefs.getData(key: 'failedReports');
+      print('Report submitted successfully with ID: ${record.id}');
+      return true;
+    } on AirtableException catch (e) {
+      throw AirtableSubmissionException('Airtable error: ${e.message}');
+    } catch (e) {
+      throw AirtableSubmissionException(
+          'Unexpected error during submission: $e');
     }
-    await countUnSyncedReports();
-  }
-
-  Future<Map<String, dynamic>> _uploadPhotos(List<XFile> photosData) async {
-    Map<String, dynamic> photos = {};
-
-    for (var photo in photosData) {
-      String photoName = photo.name.isNotEmpty
-          ? "${photo.name}-pgc-report"
-          : DateTime.now().millisecondsSinceEpoch.toString();
-      photos[photoName] = photo.path;
-    }
-    return await awsAccess.uploadPhotosMap(
-      photosData: photos,
-      numPhotos: photosData.length,
-    );
-  }
-
-  // Helper: Convert uploaded photo URLs to a comma-separated string
-  String _convertPhotosToString(Map<String, dynamic> photosUrls) {
-    return photosUrls.values.join(", ");
-  }
-
-  // Helper: Handle failed submission by storing locally
-  Future<String> _handleFailedSubmission(
-      DailyReport data, String errorMsg) async {
-    final stored = await storeFailedReport(data: data.toJson());
-    return stored ? "$errorMsg. Stored!" : "$errorMsg. Failed to store!";
-  }
-
-  // Helper: Prepare data for syncing (handles photo uploads)
-  Future<Map<String, dynamic>> _prepareDataForSync(
-      Map<String, dynamic> targetData) async {
-    final dataToSubmit = Map<String, dynamic>.from(targetData);
-    if (targetData['Garden challenges photos'] != null) {
-      final uploadResult =
-          await _uploadPhotos(targetData['Garden challenges photos']);
-      if (uploadResult['msg'] == 'success') {
-        dataToSubmit['Garden challenges photos'] =
-            _convertPhotosToString(uploadResult['data']);
-      }
-    }
-    return dataToSubmit;
-  }
-
-  // Helper: Show connection error snackbar
-  void _showConnectionError() {
-    Get.snackbar(
-      "Unable to Sync",
-      "Please check your internet connection",
-      backgroundColor: Colors.red,
-      colorText: Colors.white,
-      duration: const Duration(seconds: 5),
-    );
   }
 }
