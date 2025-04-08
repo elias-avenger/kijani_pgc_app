@@ -29,7 +29,6 @@ class _PrimaryButtonState extends State<PrimaryButton> {
     } catch (e) {
       // Optionally log or handle the error
       print(e);
-      rethrow;
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
