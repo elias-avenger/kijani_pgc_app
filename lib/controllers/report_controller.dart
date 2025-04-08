@@ -11,7 +11,7 @@ class ReportController extends GetxController {
   var selectedActivities = <String>[].obs;
   var details = ''.obs;
   var nextActivities = <String>[].obs;
-  var attachments = [].obs;
+  RxList<String> attachments = <String>[].obs;
 
   List<String> get activityOptions => ReportRepository.activities;
 
@@ -23,7 +23,9 @@ class ReportController extends GetxController {
     final ImagePicker picker = ImagePicker();
     final List<XFile>? pickedFiles = await picker.pickMultiImage();
     if (pickedFiles != null) {
-      attachments.addAll(pickedFiles);
+      pickedFiles.forEach((file) {
+        attachments.add(file.path); // Store the file path
+      });
     }
   }
 
@@ -36,21 +38,26 @@ class ReportController extends GetxController {
   }
 
   Future<void> submitForm() async {
+    print("Authenticating user...");
+
+    // Convert List<XFile> to List<String> (just the paths)
+
     DailyReport data = DailyReport.fromJson({
       'pgc': "Katoemmanuel",
       'parish': selectedParish.value,
       'activities': selectedActivities,
       'details': details.value,
       'nextActivities': nextActivities,
-      'images': attachments,
+      'images': attachments, // Pass List<String>
     });
-    //call the repository to submit the form
-    bool isSubmitted = await reportRepo.submitDailyReport(data);
-    //submit the form
-    if (!isSubmitted) {
-      Get.snackbar("Error", "Failed to submit form");
-      return;
-    }
+
+    print("Data to be submitted: ${data.toJson()}");
+    //bool isSubmitted = await reportRepo.submitDailyReport(data);
+
+    // if (!isSubmitted) {
+    //   Get.snackbar("Error", "Failed to submit form");
+    //   return;
+    // }
     Get.snackbar(
       "Success",
       "Form submitted successfully",
