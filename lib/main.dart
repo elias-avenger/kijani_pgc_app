@@ -7,9 +7,11 @@ import 'package:kijani_pmc_app/routes/app_bindings.dart';
 import 'package:kijani_pmc_app/routes/app_pages.dart';
 import 'package:kijani_pmc_app/screens/auth/login_screen.dart';
 import 'package:kijani_pmc_app/screens/home/home_screen.dart';
+import 'package:kijani_pmc_app/services/getx_storage.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  StorageService storageService = StorageService();
+  await storageService.init();
   runApp(const MyApp());
 }
 
