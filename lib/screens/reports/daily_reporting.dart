@@ -3,12 +3,11 @@ import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:kijani_pmc_app/controllers/report_controller.dart';
 import 'package:kijani_pmc_app/components/widgets/buttons/primary_button.dart';
-import 'package:kijani_pmc_app/components/widgets/dropdown_field.dart';
+import 'package:kijani_pmc_app/components/dropdown_field.dart';
 import 'package:kijani_pmc_app/components/widgets/file_upload_field.dart';
 import 'package:kijani_pmc_app/components/widgets/multi_select_field.dart';
 import 'package:kijani_pmc_app/components/widgets/text_area_field.dart';
 import 'package:kijani_pmc_app/controllers/user_controller.dart';
-import 'package:kijani_pmc_app/models/user_model.dart';
 
 class DailyReportScreen extends StatelessWidget {
   const DailyReportScreen({super.key});
@@ -43,9 +42,9 @@ class DailyReportScreen extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              ModernDropdown(
+              ParishDropdown(
                 label: 'Parish Visited',
-                items: User.fromJson(userdata.branchData).parishes.split(","),
+                parishes: userdata.parishes,
                 onChanged: (value) => {
                   controller.selectedParish.value = value!,
                 },
