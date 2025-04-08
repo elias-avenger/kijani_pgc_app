@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:kijani_pmc_app/models/photo.dart';
 import 'package:kijani_pmc_app/services/internet_check.dart';
 import 'package:s3_storage/io.dart';
 import 'package:s3_storage/s3_storage.dart';
@@ -6,8 +7,9 @@ import 'package:s3_storage/s3_storage.dart';
 import '../utilities/keys.dart';
 
 class AWSService {
-  final kAWSUrl =
+  String kAWSUrl =
       'https://${DateTime.now().year}-app-uploads.s3.amazonaws.com/';
+
   Future<String> uploadToS3(String imgPath, String imgName) async {
     //Print.text("Storage Uploading: ${file.path}");
     final s3 = S3Storage(
@@ -31,6 +33,46 @@ class AWSService {
     } catch (e) {
       return Future.value("ERROR UPLOADING IMAGE: $e");
     }
+  }
+
+  Future<List<String>> uploadPhotos(List<Photo> photos) async {
+    // List to store URLs of successfully uploaded photos
+    List<String> uploadedUrls = [];
+
+    // Check internet connection
+    bool isAwsConnected = await InternetCheck().isAWSConnected();
+    if (!isAwsConnected) {
+      if (kDebugMode) {
+        print('No internet connection - no photos uploaded');
+      }
+      return uploadedUrls; // Returns empty list if no connection
+    }
+
+    // Create upload futures
+    List<Future<void>> uploadFutures = [];
+
+    for (Photo photo in photos) {
+      String photoName = photo.name.isNotEmpty
+          ? "${photo.name.split(".").first}-pgc-report"
+          : "${photo.name.split(".").first}-pgc-report";
+
+      uploadFutures.add(
+        uploadToS3(photo.path, photoName).then((result) {
+          if (result == 'IMAGE UPLOADED') {
+            uploadedUrls.add(kAWSUrl + photoName);
+          }
+        }),
+      );
+    }
+
+    // Wait for all uploads to complete
+    await Future.wait(uploadFutures);
+
+    if (kDebugMode) {
+      print('Uploaded ${uploadedUrls.length} photos: $uploadedUrls');
+    }
+
+    return uploadedUrls;
   }
 
   Future<Map<String, dynamic>> uploadPhotosMap({
