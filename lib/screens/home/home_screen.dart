@@ -3,13 +3,15 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:kijani_pmc_app/components/app_drawer.dart';
+import 'package:kijani_pmc_app/components/reusable_body.dart';
 import 'package:kijani_pmc_app/controllers/user_controller.dart';
+import 'package:kijani_pmc_app/models/grid_item.dart';
 import 'package:kijani_pmc_app/models/user_model.dart';
-import 'package:kijani_pmc_app/components/widgets/grid_card.dart';
 import 'package:kijani_pmc_app/components/widgets/list_tile.dart';
 import 'package:kijani_pmc_app/routes/app_pages.dart';
 import 'package:kijani_pmc_app/utilities/constants.dart';
 import 'package:badges/badges.dart' as badges;
+import 'package:kijani_pmc_app/utilities/greetings.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -17,6 +19,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final UserController userController = Get.find<UserController>();
+
+    final Greetings greetings = Greetings();
 
     return Obx(() {
       final user = User.fromJson(userController.branchData);
@@ -39,7 +43,7 @@ class HomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Tue, 05 Dec",
+                greetings.formattedDate(),
                 style: GoogleFonts.roboto(fontSize: 14, color: kGreyText),
               ),
             ],
@@ -75,73 +79,30 @@ class HomeScreen extends StatelessWidget {
           backgroundColor: Colors.white,
         ),
         drawer: CustomDrawer(),
-        body: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: Get.height * 0.05),
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 10,
-                  childAspectRatio: 1.5,
-                  children: [
-                    gridCard(
-                      "Parishes",
-                      user.parishes.split(",").length,
-                      HugeIcons.strokeRoundedLocation03,
-                      kijaniBlue,
-                    ),
-                    gridCard("", 0, null, kijaniBrown),
-                    gridCard("", 0, null, Colors.black),
-                    gridCard("", 0, null, kijaniGreen),
-                  ],
-                ),
-                SizedBox(height: Get.height * 0.05),
-                Text(
-                  "Assigned Parishes",
-                  style: GoogleFonts.roboto(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey[700],
-                  ),
-                ),
-                SizedBox(height: Get.height * 0.02),
-                SizedBox(
-                  height: parishes.length * 70,
-                  child: ListView.builder(
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: parishes.length,
-                    itemBuilder: (context, index) {
-                      final parish = parishes[index];
-                      return CustomListItem(
-                        title: "${parish.name} Parish",
-                        subtitle: "${parish.groupIDs.length} Groups",
-                        trailing: index < 1
-                            ? const Icon(
-                                HugeIcons.strokeRoundedAccess,
-                                color: Colors.green,
-                              )
-                            : const Icon(
-                                HugeIcons.strokeRoundedSquareLock02,
-                                color: Colors.red,
-                              ),
-                        onTap: () {
-                          // Get.toNamed(
-                          //   '/parish',
-                          //   arguments: parish,
-                          // );
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ],
+        body: ReusableScreenBody(
+          listTitle: "Assigned Parishes",
+          gridItems: [
+            GridItemModel(
+              title: "Parishes",
+              value: user.parishes.split(",").length,
+              icon: HugeIcons.strokeRoundedLocation03,
+              color: kijaniBlue,
             ),
+            GridItemModel(title: "", value: 0, icon: null, color: kijaniBrown),
+            GridItemModel(title: "", value: 0, icon: null, color: Colors.black),
+            GridItemModel(title: "", value: 0, icon: null, color: kijaniGreen),
+          ],
+          items: parishes,
+          itemBuilder: (context, parish, index) => CustomListItem(
+            title: "${parish.name} Parish",
+            subtitle: "${parish.groupIDs.length} Groups",
+            trailing: index < 1
+                ? const Icon(HugeIcons.strokeRoundedAccess, color: Colors.green)
+                : const Icon(HugeIcons.strokeRoundedSquareLock02,
+                    color: Colors.red),
+            onTap: () {
+              // Your logic
+            },
           ),
         ),
       );
