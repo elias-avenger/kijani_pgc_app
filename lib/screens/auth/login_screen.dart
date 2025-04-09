@@ -83,7 +83,7 @@ class LoginScreen extends StatelessWidget {
                         text: "Login",
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            controller.login();
+                            await controller.login();
                           }
                         },
                       ),
