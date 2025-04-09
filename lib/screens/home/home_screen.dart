@@ -53,15 +53,16 @@ class HomeScreen extends StatelessWidget {
               onTap: () => Get.toNamed(Routes.UNSYCEDDATA),
               child: Container(
                 margin: const EdgeInsets.only(right: 18),
-                child: badges.Badge(
-                  badgeContent: Obx(() {
-                    return Text(
+                child: Obx(() {
+                  return badges.Badge(
+                    showBadge: userController.unsyncedReports > 0,
+                    badgeContent: Text(
                       userController.unsyncedReports.toString(),
                       style: GoogleFonts.lato(color: Colors.white),
-                    );
-                  }),
-                  child: const Icon(HugeIcons.strokeRoundedDatabaseSync01),
-                ),
+                    ),
+                    child: const Icon(HugeIcons.strokeRoundedDatabaseSync01),
+                  );
+                }),
               ),
             )
           ],
