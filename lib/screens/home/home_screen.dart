@@ -84,7 +84,7 @@ class HomeScreen extends StatelessWidget {
           gridItems: [
             GridItem(
               title: "Parishes",
-              value: user.parishes.split(",").length,
+              value: parishes.length,
               icon: HugeIcons.strokeRoundedLocation03,
               color: kijaniBlue,
             ),
@@ -96,10 +96,8 @@ class HomeScreen extends StatelessWidget {
           itemBuilder: (context, parish, index) => CustomListItem(
             title: "${parish.name} Parish",
             subtitle: "${parish.groupIDs.length} Groups",
-            trailing: index < 1
-                ? const Icon(HugeIcons.strokeRoundedAccess, color: Colors.green)
-                : const Icon(HugeIcons.strokeRoundedSquareLock02,
-                    color: Colors.red),
+            trailing: const Icon(HugeIcons.strokeRoundedArrowRight01,
+                color: Colors.black),
             onTap: () {
               // Your logic
             },
