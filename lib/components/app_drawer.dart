@@ -130,7 +130,7 @@ class CustomDrawer extends StatelessWidget {
                 style: TextStyle(color: Colors.red),
               ),
               onTap: () async {
-                final confirmed = await Get.defaultDialog(
+                await Get.defaultDialog(
                   title: 'Logout?',
                   titlePadding: const EdgeInsets.all(12),
                   titleStyle: GoogleFonts.roboto(),
