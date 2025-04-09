@@ -5,8 +5,9 @@ class DailyReport {
   final String parish;
   final List<String> activities;
   final String details;
-  List<Photo> images;
+  final List<Photo> images; // Made final for consistency
   final List<String> nextActivities;
+  final String date;
 
   DailyReport({
     required this.userID,
@@ -15,31 +16,44 @@ class DailyReport {
     required this.details,
     required this.images,
     required this.nextActivities,
+    required this.date,
   });
 
-  // Factory constructor to create an instance from JSON
+  /// Creates a [DailyReport] instance from a JSON map with safe type handling.
   factory DailyReport.fromJson(Map<String, dynamic> json) {
     return DailyReport(
-      userID: json['userID'] as String,
-      parish: json['parish'] as String,
-      activities: List<String>.from(json['activities'] as List),
-      details: json['details'] as String,
-      images: (json['images'] as List)
-          .map<Photo>((image) => Photo.fromPath(image as String))
-          .toList(),
-      nextActivities: json['nextActivities'] as List<String>,
+      userID: json['userID'] as String? ?? 'Unknown User',
+      parish: json['parish'] as String? ?? 'Unknown Parish',
+      activities: json['activities'] != null
+          ? (json['activities'] as List<dynamic>)
+              .map((e) => e.toString())
+              .toList()
+          : [],
+      details: json['details'] as String? ?? 'No details provided',
+      images: json['images'] != null
+          ? (json['images'] as List<dynamic>)
+              .map((e) => Photo.fromPath(e.toString()))
+              .toList()
+          : [],
+      nextActivities: json['nextActivities'] != null
+          ? (json['nextActivities'] as List<dynamic>)
+              .map((e) => e.toString())
+              .toList()
+          : [],
+      date: json['date'] as String? ?? DateTime.now().toString(),
     );
   }
 
-  // Method to convert the object to JSON
+  /// Converts the [DailyReport] instance back to a JSON map.
   Map<String, dynamic> toJson() {
     return {
       'userID': userID,
       'parish': parish,
       'activities': activities,
       'details': details,
-      'images': images.map((photo) => photo.path).toList(), // List<String>
+      'images': images.map((photo) => photo.path).toList(),
       'nextActivities': nextActivities,
+      'date': date,
     };
   }
 }
