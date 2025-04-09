@@ -1,10 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kijani_pmc_app/controllers/reports_controller.dart';
 import 'package:kijani_pmc_app/models/parish.dart';
+import 'package:kijani_pmc_app/models/report.dart';
 import 'package:kijani_pmc_app/models/return_data.dart';
 import 'package:kijani_pmc_app/models/user_model.dart';
 import 'package:kijani_pmc_app/repositories/parish_repository.dart';
+import 'package:kijani_pmc_app/repositories/report_repository.dart';
 import 'package:kijani_pmc_app/repositories/user_repository.dart';
 import 'package:kijani_pmc_app/routes/app_pages.dart';
 import 'package:kijani_pmc_app/services/getx_storage.dart';
@@ -13,6 +16,7 @@ class UserController extends GetxController {
   final UserRepository _userRepo = UserRepository();
   final StorageService _storageService = StorageService();
   final ParishRepository _parishRepo = ParishRepository();
+  final ReportRepository _reportRepo = ReportRepository();
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController codeController = TextEditingController();
@@ -20,6 +24,7 @@ class UserController extends GetxController {
   final branchData = <String, dynamic>{}.obs;
   final RxList<Parish> parishes = <Parish>[].obs;
   final Rx<User?> currentUser = Rx<User?>(null);
+  var unsyncedReports = 0.obs;
 
   @override
   void onInit() {
@@ -37,6 +42,14 @@ class UserController extends GetxController {
       Data<List<Parish>> localParishes = await _parishRepo.fetchLocalParishes();
       if (localParishes.status) {
         parishes.assignAll(localParishes.data as Iterable<Parish>);
+      }
+      //fetch unsynced reports
+      Data<List<DailyReport>> unsyncedData =
+          await _reportRepo.fetchLocalReports();
+      if (unsyncedData.status) {
+        unsyncedReports.value = unsyncedData.data!.length;
+      } else {
+        unsyncedReports.value = 0;
       }
       Get.offAllNamed(Routes.HOME);
     } else {
