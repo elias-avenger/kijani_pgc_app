@@ -1,6 +1,7 @@
 import 'package:airtable_crud/airtable_plugin.dart';
 import 'package:flutter/foundation.dart';
 import 'package:kijani_pmc_app/models/parish.dart';
+import 'package:kijani_pmc_app/models/return_data.dart';
 import 'package:kijani_pmc_app/services/airtable_services.dart';
 import 'package:kijani_pmc_app/services/getx_storage.dart';
 
@@ -8,11 +9,23 @@ class ParishRepository {
   final StorageService myPrefs = StorageService();
 
   // Function to fetch parishes from Airtable
-  Future<List<Parish>> fetchParishes(List<String> parishCodes) async {
+  Future<Data<List<Parish>>> fetchParishes(List<String> parishCodes) async {
+    if (kDebugMode) {
+      print('Fetching parishes with codes: ${parishCodes.length}');
+    }
+    List<String> repeatedCodes = [];
+    //find repeated codes
+    for (var code in parishCodes) {
+      if (parishCodes.where((element) => element == code).length > 1) {
+        repeatedCodes.add(code);
+      }
+    }
+
+    print(repeatedCodes);
     try {
       if (parishCodes.isEmpty) {
         print('No parish codes provided, returning empty list');
-        return [];
+        return Data.failure("No parish codes provided");
       }
       String filter =
           'OR(${parishCodes.map((code) => '{Parish} = "${code.trim()}"').join(', ')})';
@@ -24,27 +37,31 @@ class ParishRepository {
 
       if (data.isEmpty) {
         print('No records found for the provided parish codes');
-        return [];
+        return Data.failure("No records found for the provided parish codes");
+      }
+
+      if (kDebugMode) {
+        print('Fetched ${data.length} records from Airtable');
       }
 
       List<Parish> parishes =
           data.map((record) => Parish.fromAirtable(record)).toList();
-      return parishes;
+      return Data.success(parishes);
     } on AirtableException catch (e) {
       if (kDebugMode) {
         print("Airtable Exception: ${e.message}");
       }
-      return [];
+      return Data.failure("Airtable Error: ${e.message}");
     } catch (e) {
       if (kDebugMode) {
         print("Exception: $e");
       }
-      return [];
+      return Data.failure("An error occurred while fetching parishes");
     }
   }
 
   // Function to save parishes data locally
-  Future<bool> saveParishes(List<Parish> parishes) async {
+  Future<Data> saveParishes(List<Parish> parishes) async {
     try {
       for (var parish in parishes) {
         if (kDebugMode) {
@@ -59,21 +76,21 @@ class ParishRepository {
       }
 
       // Verify storage
-      final storedParishes = await fetchLocalParishes();
+      Data<List<Parish>> storedParishes = await fetchLocalParishes();
       if (kDebugMode) {
-        print('Stored ${storedParishes?.length ?? 0} parishes');
+        print('Stored ${storedParishes.data?.length ?? 0} parishes');
       }
-      return storedParishes != null && storedParishes.isNotEmpty;
+      return Data.success(storedParishes);
     } catch (e) {
       if (kDebugMode) {
         print('Error saving parishes: $e');
       }
-      return false;
+      return Data.failure("Failed to save parishes locally");
     }
   }
 
   // Function to fetch parishes data locally
-  Future<List<Parish>?> fetchLocalParishes() async {
+  Future<Data<List<Parish>>> fetchLocalParishes() async {
     try {
       final storedData = myPrefs.fetchAllEntities(
         kParishDataKey,
@@ -87,7 +104,7 @@ class ParishRepository {
         if (kDebugMode) {
           print('No local parishes found');
         }
-        return [];
+        return Data.failure("No Local Parishes found");
       }
 
       // Convert Map values to List
@@ -95,12 +112,13 @@ class ParishRepository {
       if (kDebugMode) {
         print('Fetched ${parishes.length} local parishes');
       }
-      return parishes;
+      return Data.success(parishes);
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching local parishes: $e');
       }
-      return null; // Or return [] if you prefer
+      return Data.failure(
+          'Error fetching local parishes: $e'); // Or return [] if you prefer
     }
   }
 }
