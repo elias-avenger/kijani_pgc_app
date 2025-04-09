@@ -8,22 +8,6 @@ import 'package:kijani_pmc_app/services/http_airtable.dart';
 import 'package:kijani_pmc_app/services/internet_check.dart';
 import 'package:kijani_pmc_app/services/local_storage.dart';
 
-// Custom exceptions
-class NoInternetException implements Exception {
-  final String message;
-  NoInternetException(this.message);
-}
-
-class PhotoUploadException implements Exception {
-  final String message;
-  PhotoUploadException(this.message);
-}
-
-class AirtableSubmissionException implements Exception {
-  final String message;
-  AirtableSubmissionException(this.message);
-}
-
 class ReportRepository {
   // Dependencies
   final HttpAirtable airtableAccess = HttpAirtable();
@@ -66,7 +50,6 @@ class ReportRepository {
         if (kDebugMode) {
           print('Photo upload failed: ${uploadedPhotos.message}');
         }
-        throw PhotoUploadException('Failed to upload any photos');
       }
     }
 
