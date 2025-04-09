@@ -20,7 +20,7 @@ class DailyReport {
   // Factory constructor to create an instance from JSON
   factory DailyReport.fromJson(Map<String, dynamic> json) {
     return DailyReport(
-      userID: json['pgc'] as String,
+      userID: json['userID'] as String,
       parish: json['parish'] as String,
       activities: List<String>.from(json['activities'] as List),
       details: json['details'] as String,
@@ -34,7 +34,7 @@ class DailyReport {
   // Method to convert the object to JSON
   Map<String, dynamic> toJson() {
     return {
-      'pgc': userID,
+      'userID': userID,
       'parish': parish,
       'activities': activities,
       'details': details,
