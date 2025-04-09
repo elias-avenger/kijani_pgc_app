@@ -8,7 +8,8 @@ import 'package:kijani_pmc_app/services/getx_storage.dart';
 class UserRepository {
   final StorageService storageService = StorageService();
   //check if user exists
-  Future<Data> checkUser({required String email, required String code}) async {
+  Future<Data<User>> checkUser(
+      {required String email, required String code}) async {
     try {
       String filter =
           'AND({Email}="$email", {AppCode}="$code", {Status}="Active")';
@@ -34,7 +35,7 @@ class UserRepository {
     }
   }
 
-  Future<Data> saveUser(User user) async {
+  Future<Data<User>> saveUser(User user) async {
     try {
       await storageService.saveEntity(
         kUserDataKey,
@@ -44,9 +45,9 @@ class UserRepository {
       );
 
       // Verify if the data was stored by reading it back
-      Data storedUser = await fetchLocalUser();
+      Data<User> storedUser = await fetchLocalUser();
       if (storedUser.status) {
-        return Data.success(storedUser.data);
+        return Data.success(storedUser.data!);
       } else {
         return Data.failure("Failed to save user data locally");
       }
@@ -58,7 +59,7 @@ class UserRepository {
     }
   }
 
-  Future<Data> fetchLocalUser() async {
+  Future<Data<User>> fetchLocalUser() async {
     try {
       User? data = storageService.fetchEntity(
           kUserDataKey, 'current', User.fromJson) as User?;
