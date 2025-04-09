@@ -95,12 +95,14 @@ class CustomDrawer extends StatelessWidget {
                     title: 'Report Grievance',
                     onTap: () => print('Go to grievance'),
                   ),
-                  AppDrawerItem(
-                    icon: HugeIcons.strokeRoundedDatabaseSync01,
-                    title: 'View Un Synced Dataset',
-                    onTap: () => print('Go to unsynced data'),
-                    badgeCount: 5,
-                  ),
+                  Obx(() {
+                    return AppDrawerItem(
+                      icon: HugeIcons.strokeRoundedDatabaseSync01,
+                      title: 'View Unsynced Dataset',
+                      onTap: () => print('Go to unsynced data'),
+                      badgeCount: userController.unsyncedReports.value,
+                    );
+                  }),
                   AppDrawerItem(
                     icon: HugeIcons.strokeRoundedLocationUpdate02,
                     title: 'Update all App local data',
