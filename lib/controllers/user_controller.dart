@@ -29,14 +29,14 @@ class UserController extends GetxController {
 
   // Method to check if a user is logged in
   Future<void> checkIfUserIsLoggedIn() async {
-    Data response = await _userRepo.fetchLocalUser();
-    User? localUser = response.data as User?;
+    Data<User> response = await _userRepo.fetchLocalUser();
+    User? localUser = response.data;
     if (localUser != null) {
       branchData.value = localUser.toJson();
       //fetch parishes
-      List<Parish>? localParishes = await _parishRepo.fetchLocalParishes();
-      if (localParishes != null) {
-        parishes.assignAll(localParishes);
+      Data<List<Parish>> localParishes = await _parishRepo.fetchLocalParishes();
+      if (localParishes.status) {
+        parishes.assignAll(localParishes.data as Iterable<Parish>);
       }
       Get.offAllNamed(Routes.HOME);
     } else {
@@ -46,7 +46,7 @@ class UserController extends GetxController {
 
   Future<void> login() async {
     try {
-      Data response = await _userRepo.checkUser(
+      Data<User> response = await _userRepo.checkUser(
         email: emailController.text,
         code: codeController.text,
       );
@@ -59,15 +59,15 @@ class UserController extends GetxController {
       User? user = response.data as User;
 
       //fetch parishes
-      List<Parish> parishes =
+      Data<List<Parish>> parishes =
           await _parishRepo.fetchParishes(user.parishes.split(','));
 
-      if (parishes.isNotEmpty) {
+      if (parishes.status) {
         //assign parishes to the observable list
-        this.parishes.assignAll(parishes);
+        this.parishes.assignAll(parishes.data as Iterable<Parish>);
         //store parishes locally
-        bool stored = await _parishRepo.saveParishes(parishes);
-        if (!stored) {
+        Data stored = await _parishRepo.saveParishes(parishes.data!);
+        if (!stored.status) {
           _showSnackbar("Storage Error", "Failed to store parishes data",
               isError: true);
           return;

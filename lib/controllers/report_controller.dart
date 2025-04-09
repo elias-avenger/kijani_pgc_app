@@ -1,11 +1,15 @@
+import 'package:airtable_crud/airtable_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kijani_pmc_app/controllers/user_controller.dart';
 import 'package:kijani_pmc_app/models/report.dart';
+import 'package:kijani_pmc_app/models/return_data.dart';
 import 'package:kijani_pmc_app/repositories/report_repository.dart';
 
 class ReportController extends GetxController {
   ReportRepository reportRepo = ReportRepository();
+  UserController userController = Get.find<UserController>();
 
   var selectedParish = ''.obs;
   var selectedActivities = <String>[].obs;
@@ -23,10 +27,44 @@ class ReportController extends GetxController {
     final ImagePicker picker = ImagePicker();
     final List<XFile>? pickedFiles = await picker.pickMultiImage();
     if (pickedFiles != null) {
-      pickedFiles.forEach((file) {
+      for (var file in pickedFiles) {
         attachments.add(file.path); // Store the file path
-      });
+      }
     }
+  }
+
+  Future<void> submitForm() async {
+    DailyReport data = DailyReport.fromJson({
+      'userID': userController.branchData['ID'],
+      'parish': selectedParish.value,
+      'activities': selectedActivities,
+      'details': details.value,
+      'nextActivities': nextActivities,
+      'images': attachments, // Pass List<String>
+    });
+
+    Data<AirtableRecord> isSubmitted = await reportRepo.submitDailyReport(data);
+
+    if (!isSubmitted.status) {
+      Get.snackbar("Error", "Failed to submit form");
+      return;
+    }
+    Get.snackbar(
+      "Success",
+      "Report submitted successfully",
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+    );
+    // Clear the form after submission
+    selectedParish.value = '';
+    selectedActivities.clear();
+    details.value = '';
+    nextActivities.clear();
+    attachments.clear();
+    detailsController.clear();
+    nextDaysActivitiesController.clear();
+    // Navigate to another screen or perform other actions
+    Get.offAllNamed('/home');
   }
 
   @override
@@ -35,34 +73,5 @@ class ReportController extends GetxController {
     detailsController.dispose();
     nextDaysActivitiesController.dispose();
     super.onClose();
-  }
-
-  Future<void> submitForm() async {
-    print("Authenticating user...");
-
-    // Convert List<XFile> to List<String> (just the paths)
-
-    DailyReport data = DailyReport.fromJson({
-      'pgc': "Katoemmanuel",
-      'parish': selectedParish.value,
-      'activities': selectedActivities,
-      'details': details.value,
-      'nextActivities': nextActivities,
-      'images': attachments, // Pass List<String>
-    });
-
-    print("Data to be submitted: ${data.toJson()}");
-    //bool isSubmitted = await reportRepo.submitDailyReport(data);
-
-    // if (!isSubmitted) {
-    //   Get.snackbar("Error", "Failed to submit form");
-    //   return;
-    // }
-    Get.snackbar(
-      "Success",
-      "Form submitted successfully",
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-    );
   }
 }
