@@ -2,6 +2,7 @@ import 'package:get_storage/get_storage.dart';
 
 const String kUserDataKey = 'user_data';
 const String kParishDataKey = 'parish_data';
+const String kUnsyncedReportsKey = 'unsynced_reports';
 
 class StorageService {
   // Private instance of GetStorage for local key-value storage
