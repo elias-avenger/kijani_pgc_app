@@ -7,7 +7,7 @@ import 'package:kijani_pmc_app/models/grid_item.dart';
 
 class ReusableScreenBody<T> extends StatelessWidget {
   final String? listTitle;
-  final List<GridItemModel> gridItems;
+  final List<GridItem> gridItems;
   final List<T> items;
   final Widget Function(BuildContext, T, int) itemBuilder;
   final int crossAxisCount;

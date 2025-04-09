@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class GridItemModel {
+class GridItem {
   final String title;
   final int value;
   final IconData? icon;
   final Color color;
 
-  GridItemModel({
+  GridItem({
     required this.title,
     required this.value,
     required this.icon,

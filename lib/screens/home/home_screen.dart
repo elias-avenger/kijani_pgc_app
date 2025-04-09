@@ -82,15 +82,15 @@ class HomeScreen extends StatelessWidget {
         body: ReusableScreenBody(
           listTitle: "Assigned Parishes",
           gridItems: [
-            GridItemModel(
+            GridItem(
               title: "Parishes",
               value: user.parishes.split(",").length,
               icon: HugeIcons.strokeRoundedLocation03,
               color: kijaniBlue,
             ),
-            GridItemModel(title: "", value: 0, icon: null, color: kijaniBrown),
-            GridItemModel(title: "", value: 0, icon: null, color: Colors.black),
-            GridItemModel(title: "", value: 0, icon: null, color: kijaniGreen),
+            GridItem(title: "", value: 0, icon: null, color: kijaniBrown),
+            GridItem(title: "", value: 0, icon: null, color: Colors.black),
+            GridItem(title: "", value: 0, icon: null, color: kijaniGreen),
           ],
           items: parishes,
           itemBuilder: (context, parish, index) => CustomListItem(
