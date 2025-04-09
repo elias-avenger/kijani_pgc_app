@@ -54,10 +54,12 @@ class HomeScreen extends StatelessWidget {
               child: Container(
                 margin: const EdgeInsets.only(right: 18),
                 child: badges.Badge(
-                  badgeContent: Text(
-                    "5",
-                    style: GoogleFonts.lato(color: Colors.white),
-                  ),
+                  badgeContent: Obx(() {
+                    return Text(
+                      userController.unsyncedReports.toString(),
+                      style: GoogleFonts.lato(color: Colors.white),
+                    );
+                  }),
                   child: const Icon(HugeIcons.strokeRoundedDatabaseSync01),
                 ),
               ),
