@@ -1,6 +1,7 @@
 import 'package:airtable_crud/airtable_plugin.dart';
 import 'package:flutter/foundation.dart';
 import 'package:kijani_pmc_app/models/report.dart';
+import 'package:kijani_pmc_app/models/return_data.dart';
 import 'package:kijani_pmc_app/services/airtable_services.dart';
 import 'package:kijani_pmc_app/services/aws.dart';
 import 'package:kijani_pmc_app/services/http_airtable.dart';
@@ -41,63 +42,59 @@ class ReportRepository {
   ];
 
   // Function to submit daily report
-  Future<bool> submitDailyReport(DailyReport data) async {
+  Future<Data<AirtableRecord>> submitDailyReport(DailyReport data) async {
     if (kDebugMode) {
       print('Submitting daily report...');
     }
     // Check internet connection
     bool isConnected = await internetCheck.isAirtableConnected();
     if (!isConnected) {
-      throw NoInternetException('No internet connection available');
+      return Data.failure("No internet connection");
     }
 
-    // Handle photos (can be empty)
-    List<String> uploadedPhotos = [];
+    String photosString = "";
+
     if (data.images.isNotEmpty) {
-      uploadedPhotos = await awsService.uploadPhotos(data.images);
-      if (uploadedPhotos.isEmpty) {
+      Data<List<String>> uploadedPhotos =
+          await awsService.uploadPhotos(data.images);
+      //convert list to string
+      photosString = uploadedPhotos.data!.join(',');
+      if (kDebugMode) {
+        print('Uploaded photos: $photosString');
+      }
+      if (!uploadedPhotos.status) {
+        if (kDebugMode) {
+          print('Photo upload failed: ${uploadedPhotos.message}');
+        }
         throw PhotoUploadException('Failed to upload any photos');
       }
-    }
-
-    // Convert uploaded photos URLs to a comma-separated string
-    String photosString = uploadedPhotos.join(", ");
-    if (kDebugMode) {
-      print('Uploaded photos: $photosString');
     }
 
     try {
       // Prepare data for Airtable
       Map<String, dynamic> dataToSubmit = {
-        "Plantation Growth Coordinators Name": data.userID,
-        "Parish Visited": data.parish,
-        "Activity carried out (multiple select)": data.activities,
-        "3.   Provide more details about the activity and any general feedback":
-            data.details,
+        "Plantation Growth Coordinator": data.userID.trim(),
+        "Parish Visited": data.parish.trim(),
+        "Activities": data.activities,
         "Photo Urls": photosString,
-        "5.  Next days activities": data.nextActivities,
+        "Description": data.details,
+        "Next days activities": data.nextActivities.join(", "),
       };
-
       // Submit to Airtable
       AirtableRecord record = await currentGardensBase.createRecord(
         kPGCReportTable,
         dataToSubmit,
       );
-
-      // Verify successful submission
-      if (record.id.isEmpty) {
-        throw AirtableSubmissionException('Failed to create Airtable record');
-      }
-
-      if (kDebugMode) {
-        print('Report submitted successfully with ID: ${record.id}');
-      }
-      return true;
+      return Data.success(record);
     } on AirtableException catch (e) {
-      throw AirtableSubmissionException('Airtable error: ${e.message}');
+      if (kDebugMode) {
+        print('Airtable Exception message: ${e.message}');
+        print('Airtable Exception message Details: ${e.details}');
+      }
+
+      return Data.failure('Airtable error: ${e.message}');
     } catch (e) {
-      throw AirtableSubmissionException(
-          'Unexpected error during submission: $e');
+      return Data.failure('Unexpected error during submission: $e');
     }
   }
 }
