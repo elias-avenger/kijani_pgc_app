@@ -100,7 +100,9 @@ class CustomDrawer extends StatelessWidget {
                       icon: HugeIcons.strokeRoundedDatabaseSync01,
                       title: 'View Unsynced Dataset',
                       onTap: () => print('Go to unsynced data'),
-                      badgeCount: userController.unsyncedReports.value,
+                      badgeCount: userController.unsyncedReports.value > 0
+                          ? userController.unsyncedReports.value
+                          : null,
                     );
                   }),
                   AppDrawerItem(

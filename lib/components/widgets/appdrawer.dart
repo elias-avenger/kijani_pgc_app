@@ -22,7 +22,7 @@ class AppDrawerItem extends StatelessWidget {
       title: Text(title),
       trailing: badgeCount != null
           ? Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
               decoration: BoxDecoration(
                   color: Colors.red, borderRadius: BorderRadius.circular(20)),
               child: Text(
