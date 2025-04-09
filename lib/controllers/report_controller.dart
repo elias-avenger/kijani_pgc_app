@@ -6,6 +6,7 @@ import 'package:kijani_pmc_app/controllers/user_controller.dart';
 import 'package:kijani_pmc_app/models/report.dart';
 import 'package:kijani_pmc_app/models/return_data.dart';
 import 'package:kijani_pmc_app/repositories/report_repository.dart';
+import 'package:kijani_pmc_app/routes/app_pages.dart';
 
 class ReportController extends GetxController {
   ReportRepository reportRepo = ReportRepository();
@@ -41,12 +42,53 @@ class ReportController extends GetxController {
       'details': details.value,
       'nextActivities': nextActivities,
       'images': attachments, // Pass List<String>
+      'date': DateTime.now().toIso8601String(),
     });
 
     Data<AirtableRecord> isSubmitted = await reportRepo.submitDailyReport(data);
 
     if (!isSubmitted.status) {
-      Get.snackbar("Error", "Failed to submit form");
+      //show snackBars
+      if (isSubmitted.message == "No internet, report saved locally") {
+        Get.snackbar(
+          "No internet",
+          "No internet, report saved locally",
+          backgroundColor: Colors.blue,
+          colorText: Colors.white,
+        );
+        userController.unsyncedReports.value += 1;
+        _clearForm();
+        Get.offAllNamed(Routes.HOME);
+        return;
+      } else if (isSubmitted.message ==
+          "Photo upload failed, report saved locally") {
+        Get.snackbar(
+          "Photo upload failed",
+          "Photo upload failed, report saved locally",
+          backgroundColor: Colors.blue,
+          colorText: Colors.white,
+        );
+        _clearForm();
+        Get.offAllNamed(Routes.HOME);
+        return;
+      } else if (isSubmitted.message ==
+          "No internet and failed to save locally") {
+        Get.snackbar(
+          "No internet",
+          "No internet and failed to save locally",
+          backgroundColor: Colors.blue,
+          colorText: Colors.white,
+        );
+        _clearForm();
+        Get.offAllNamed(Routes.HOME);
+        return;
+      }
+      Get.snackbar(
+        "Error",
+        isSubmitted.message!,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return;
     }
     Get.snackbar(
@@ -55,7 +97,12 @@ class ReportController extends GetxController {
       backgroundColor: Colors.green,
       colorText: Colors.white,
     );
-    // Clear the form after submission
+    _clearForm();
+    // Navigate to home screen
+    Get.offAllNamed(Routes.HOME);
+  }
+
+  void _clearForm() {
     selectedParish.value = '';
     selectedActivities.clear();
     details.value = '';
@@ -63,13 +110,10 @@ class ReportController extends GetxController {
     attachments.clear();
     detailsController.clear();
     nextDaysActivitiesController.clear();
-    // Navigate to another screen or perform other actions
-    Get.offAllNamed('/home');
   }
 
   @override
   void onClose() {
-    // ✅ Properly dispose controllers
     detailsController.dispose();
     nextDaysActivitiesController.dispose();
     super.onClose();
