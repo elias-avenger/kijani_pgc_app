@@ -95,12 +95,16 @@ class CustomDrawer extends StatelessWidget {
                     title: 'Report Grievance',
                     onTap: () => print('Go to grievance'),
                   ),
-                  AppDrawerItem(
-                    icon: HugeIcons.strokeRoundedDatabaseSync01,
-                    title: 'View Un Synced Dataset',
-                    onTap: () => print('Go to unsynced data'),
-                    badgeCount: 5,
-                  ),
+                  Obx(() {
+                    return AppDrawerItem(
+                      icon: HugeIcons.strokeRoundedDatabaseSync01,
+                      title: 'View Unsynced Dataset',
+                      onTap: () => print('Go to unsynced data'),
+                      badgeCount: userController.unsyncedReports.value > 0
+                          ? userController.unsyncedReports.value
+                          : null,
+                    );
+                  }),
                   AppDrawerItem(
                     icon: HugeIcons.strokeRoundedLocationUpdate02,
                     title: 'Update all App local data',
@@ -126,7 +130,7 @@ class CustomDrawer extends StatelessWidget {
                 style: TextStyle(color: Colors.red),
               ),
               onTap: () async {
-                final confirmed = await Get.defaultDialog(
+                await Get.defaultDialog(
                   title: 'Logout?',
                   titlePadding: const EdgeInsets.all(12),
                   titleStyle: GoogleFonts.roboto(),

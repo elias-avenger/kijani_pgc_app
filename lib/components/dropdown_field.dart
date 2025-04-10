@@ -1,34 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kijani_pmc_app/models/parish.dart';
 
-class ModernDropdown extends StatefulWidget {
+class ParishDropdown extends StatefulWidget {
   final String label;
-  final List<String> items;
+  final List<Parish> parishes;
   final String? selectedValue;
   final ValueChanged<String?> onChanged;
 
-  const ModernDropdown({
+  const ParishDropdown({
     super.key,
     required this.label,
-    required this.items,
+    required this.parishes,
     this.selectedValue,
     required this.onChanged,
   });
 
   @override
-  _ModernDropdownState createState() => _ModernDropdownState();
+  _ParishDropdownState createState() => _ParishDropdownState();
 }
 
-class _ModernDropdownState extends State<ModernDropdown> {
+class _ParishDropdownState extends State<ParishDropdown> {
   String? _selectedValue;
-  TextEditingController _searchController = TextEditingController();
-  List<String> _filteredItems = [];
+  final TextEditingController _searchController = TextEditingController();
+  List<Parish> _filteredItems = [];
 
   @override
   void initState() {
     super.initState();
     _selectedValue = widget.selectedValue;
-    _filteredItems = widget.items;
+    _filteredItems = widget.parishes;
   }
 
   void _openDropdown() {
@@ -55,9 +56,10 @@ class _ModernDropdownState extends State<ModernDropdown> {
               ),
               onChanged: (query) {
                 setState(() {
-                  _filteredItems = widget.items
-                      .where((item) =>
-                          item.toLowerCase().contains(query.toLowerCase()))
+                  _filteredItems = widget.parishes
+                      .where((parish) => parish.name
+                          .toLowerCase()
+                          .contains(query.toLowerCase()))
                       .toList();
                 });
               },
@@ -67,17 +69,33 @@ class _ModernDropdownState extends State<ModernDropdown> {
               child: ListView.builder(
                 itemCount: _filteredItems.length,
                 itemBuilder: (context, index) {
-                  String item = _filteredItems[index];
+                  Parish item = _filteredItems[index];
                   return ListTile(
-                    title: Text(item),
+                    title: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("${item.name} Parish",
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            )),
+                        Text(
+                          item.pc.split(" | ")[1],
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.black54,
+                          ),
+                        ),
+                      ],
+                    ),
                     trailing: _selectedValue == item
                         ? const Icon(Icons.check_circle, color: Colors.green)
                         : null,
                     onTap: () {
                       setState(() {
-                        _selectedValue = item;
+                        _selectedValue = item.assignmentID;
                       });
-                      widget.onChanged(item);
+                      widget.onChanged(item.assignmentID);
                       Get.back();
                     },
                   );

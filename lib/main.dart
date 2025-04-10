@@ -7,9 +7,11 @@ import 'package:kijani_pmc_app/routes/app_bindings.dart';
 import 'package:kijani_pmc_app/routes/app_pages.dart';
 import 'package:kijani_pmc_app/screens/auth/login_screen.dart';
 import 'package:kijani_pmc_app/screens/home/home_screen.dart';
+import 'package:kijani_pmc_app/services/getx_storage.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  StorageService storageService = StorageService();
+  await storageService.init();
   runApp(const MyApp());
 }
 
@@ -27,7 +29,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _loadUserData();
     _checkForUpdate();
   }
 
@@ -35,7 +36,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      initialBinding: InitialBinding(),
+      initialBinding: UserBinding(),
       initialRoute: AppPages.INITIAL,
       getPages: AppPages.pages,
       home: Obx(() {
@@ -49,12 +50,6 @@ class _MyAppState extends State<MyApp> {
         return userData.isEmpty ? LoginScreen() : HomeScreen();
       }),
     );
-  }
-
-  void _loadUserData() async {
-    final data = await userController.getBranchData();
-    userController.branchData.assignAll(data);
-    isLoading.value = false;
   }
 
   Future<void> _checkForUpdate() async {

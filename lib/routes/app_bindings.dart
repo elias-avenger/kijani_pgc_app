@@ -9,13 +9,6 @@ class UserBinding extends Bindings {
   }
 }
 
-class InitialBinding extends Bindings {
-  @override
-  void dependencies() {
-    Get.put(UserController());
-  }
-}
-
 class DataBinding extends Bindings {
   @override
   void dependencies() {

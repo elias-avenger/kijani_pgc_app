@@ -13,6 +13,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
@@ -38,7 +39,7 @@ class LoginScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 24),
                       const Text(
-                        "Welcome Back",
+                        "Kijani PGC App",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 22,
@@ -82,7 +83,7 @@ class LoginScreen extends StatelessWidget {
                         text: "Login",
                         onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            controller.authenticate();
+                            await controller.login();
                           }
                         },
                       ),

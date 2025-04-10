@@ -1,16 +1,22 @@
+import 'package:airtable_crud/airtable_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:kijani_pmc_app/controllers/user_controller.dart';
+import 'package:kijani_pmc_app/models/report.dart';
+import 'package:kijani_pmc_app/models/return_data.dart';
 import 'package:kijani_pmc_app/repositories/report_repository.dart';
+import 'package:kijani_pmc_app/routes/app_pages.dart';
 
 class ReportController extends GetxController {
   ReportRepository reportRepo = ReportRepository();
+  UserController userController = Get.find<UserController>();
 
   var selectedParish = ''.obs;
   var selectedActivities = <String>[].obs;
   var details = ''.obs;
   var nextActivities = <String>[].obs;
-  var attachments = [].obs;
+  RxList<String> attachments = <String>[].obs;
 
   List<String> get activityOptions => ReportRepository.activities;
 
@@ -22,37 +28,94 @@ class ReportController extends GetxController {
     final ImagePicker picker = ImagePicker();
     final List<XFile>? pickedFiles = await picker.pickMultiImage();
     if (pickedFiles != null) {
-      attachments.addAll(pickedFiles);
+      for (var file in pickedFiles) {
+        attachments.add(file.path); // Store the file path
+      }
     }
   }
 
-  @override
-  void onClose() {
-    // ✅ Properly dispose controllers
-    detailsController.dispose();
-    nextDaysActivitiesController.dispose();
-    super.onClose();
-  }
-
   Future<void> submitForm() async {
-    //call the repository to submit the form
-    bool isSubmitted = await reportRepo.submitDailyReport({
+    DailyReport data = DailyReport.fromJson({
+      'userID': userController.branchData['ID'],
       'parish': selectedParish.value,
       'activities': selectedActivities,
       'details': details.value,
       'nextActivities': nextActivities,
-      'attachments': attachments,
+      'images': attachments, // Pass List<String>
+      'date': DateTime.now().toIso8601String(),
     });
-    //submit the form
-    if (!isSubmitted) {
-      Get.snackbar("Error", "Failed to submit form");
+
+    Data<AirtableRecord> isSubmitted = await reportRepo.submitDailyReport(data);
+
+    if (!isSubmitted.status) {
+      //show snackBars
+      if (isSubmitted.message == "No internet, report saved locally") {
+        Get.snackbar(
+          "No internet",
+          "No internet, report saved locally",
+          backgroundColor: Colors.blue,
+          colorText: Colors.white,
+        );
+        userController.unsyncedReports.value += 1;
+        _clearForm();
+        Get.offAllNamed(Routes.HOME);
+        return;
+      } else if (isSubmitted.message ==
+          "Photo upload failed, report saved locally") {
+        Get.snackbar(
+          "Photo upload failed",
+          "Photo upload failed, report saved locally",
+          backgroundColor: Colors.blue,
+          colorText: Colors.white,
+        );
+        _clearForm();
+        Get.offAllNamed(Routes.HOME);
+        return;
+      } else if (isSubmitted.message ==
+          "No internet and failed to save locally") {
+        Get.snackbar(
+          "No internet",
+          "No internet and failed to save locally",
+          backgroundColor: Colors.blue,
+          colorText: Colors.white,
+        );
+        _clearForm();
+        Get.offAllNamed(Routes.HOME);
+        return;
+      }
+      Get.snackbar(
+        "Error",
+        isSubmitted.message!,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
       return;
     }
     Get.snackbar(
       "Success",
-      "Form submitted successfully",
+      "Report submitted successfully",
       backgroundColor: Colors.green,
       colorText: Colors.white,
     );
+    _clearForm();
+    // Navigate to home screen
+    Get.offAllNamed(Routes.HOME);
+  }
+
+  void _clearForm() {
+    selectedParish.value = '';
+    selectedActivities.clear();
+    details.value = '';
+    nextActivities.clear();
+    attachments.clear();
+    detailsController.clear();
+    nextDaysActivitiesController.clear();
+  }
+
+  @override
+  void onClose() {
+    detailsController.dispose();
+    nextDaysActivitiesController.dispose();
+    super.onClose();
   }
 }

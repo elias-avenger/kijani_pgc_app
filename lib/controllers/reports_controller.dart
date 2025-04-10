@@ -48,7 +48,7 @@ class ReportsController extends GetxController {
       }
     }
     // submit data
-    if (await internetCheck.getAirtableConMessage() == "connected") {
+    if (await internetCheck.isAirtableConnected() == "connected") {
       Map<String, dynamic> response = await airtableAccess.createRecord(
         data: dataToSubmit,
         baseId: 'appoW7X8Lz3bIKpEE',
@@ -89,8 +89,8 @@ class ReportsController extends GetxController {
   Future<void> uploadUnSyncedReports() async {
     Map<String, dynamic> reportsData =
         await myPrefs.getData(key: 'failedReports');
-    String awsAccessMsg = await internetCheck.getAWSConMessage();
-    String airtableAccessMsg = await internetCheck.getAirtableConMessage();
+    bool awsAccessMsg = await internetCheck.isAWSConnected();
+    bool airtableAccessMsg = await internetCheck.isAirtableConnected();
 
     //show snackBar if not connected to internet
     if (awsAccessMsg != "connected" || airtableAccessMsg != "connected") {
@@ -145,8 +145,8 @@ class ReportsController extends GetxController {
         }
       }
       reportsData = await myPrefs.getData(key: 'failedReports');
-      awsAccessMsg = await internetCheck.getAWSConMessage();
-      airtableAccessMsg = await internetCheck.getAirtableConMessage();
+      awsAccessMsg = await internetCheck.isAWSConnected();
+      airtableAccessMsg = await internetCheck.isAirtableConnected();
     }
     countUnSyncedReports();
   }

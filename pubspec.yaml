@@ -30,6 +30,7 @@ dependencies:
   hugeicons: ^0.0.10
   airtable_crud: ^1.2.4
   badges: ^3.1.2
+  get_storage: ^2.1.1
 
 dev_dependencies:
   flutter_test:
