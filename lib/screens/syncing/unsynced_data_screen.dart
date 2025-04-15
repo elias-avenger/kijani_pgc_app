@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_time_ago/get_time_ago.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:kijani_pmc_app/components/widgets/buttons/primary_button.dart';
 import 'package:kijani_pmc_app/components/widgets/cards/unsynced_data_card.dart';
 import 'package:kijani_pmc_app/controllers/syncing_controller.dart';
+import 'package:kijani_pmc_app/controllers/user_controller.dart';
+import 'package:kijani_pmc_app/repositories/report_repository.dart';
 import 'package:kijani_pmc_app/routes/app_pages.dart';
 
 class UnsyncedDataScreen extends StatelessWidget {
@@ -11,6 +15,8 @@ class UnsyncedDataScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final SyncingController controller = Get.put(SyncingController());
+    final UserController userController = Get.find<UserController>();
+    final ReportRepository reportRepo = ReportRepository();
 
     return Scaffold(
       appBar: AppBar(
@@ -33,7 +39,7 @@ class UnsyncedDataScreen extends StatelessWidget {
         () => Column(
           children: [
             Expanded(
-              child: controller.unsyncedDataList.isEmpty
+              child: userController.unsyncedReports < 1
                   ? const _NoUnsyncedDataWidget()
                   : ListView.builder(
                       padding: const EdgeInsets.symmetric(
@@ -42,10 +48,11 @@ class UnsyncedDataScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final data = controller.unsyncedDataList[index];
                         return UnsyncedDataCard(
-                          title: data.title,
-                          lastRecorded: data.lastRecorded,
-                          count: data.count,
-                          icon: data.icon,
+                          title: "Daily Reports",
+                          lastRecorded:
+                              GetTimeAgo.parse(DateTime.parse(data.date)),
+                          count: data.images.length,
+                          icon: HugeIcons.strokeRoundedHugeicons,
                         );
                       },
                     ),
@@ -54,8 +61,8 @@ class UnsyncedDataScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: PrimaryButton(
-                  text: "Sync All",
-                  onPressed: controller.syncAll,
+                  text: "Sync Data",
+                  onPressed: controller.syncReportsData,
                 ),
               ),
           ],

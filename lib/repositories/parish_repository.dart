@@ -6,7 +6,7 @@ import 'package:kijani_pmc_app/services/airtable_services.dart';
 import 'package:kijani_pmc_app/services/getx_storage.dart';
 
 class ParishRepository {
-  final StorageService myPrefs = StorageService();
+  final StorageService storage = StorageService();
 
   // Function to fetch parishes from Airtable
   Future<Data<List<Parish>>> fetchParishes(List<String> parishCodes) async {
@@ -27,8 +27,10 @@ class ParishRepository {
         print('No parish codes provided, returning empty list');
         return Data.failure("No parish codes provided");
       }
-      String filter =
-          'OR(${parishCodes.map((code) => '{Parish} = "${code.trim()}"').join(', ')})';
+      String filter = 'AND('
+          'OR(${parishCodes.map((code) => '{Parish} = "${code.trim()}"').join(', ')}), '
+          '{Status} = "Active"'
+          ')';
 
       List<String> fields = ['ID', 'Parish', 'Parish Name', 'GroupIDs', 'PC'];
 
@@ -67,7 +69,7 @@ class ParishRepository {
         if (kDebugMode) {
           print('Saving Parish: ${parish.name}, ID: ${parish.id}');
         }
-        await myPrefs.saveEntity(
+        await storage.saveEntity(
             kParishDataKey,
             parish.id, // Unique ID for the parish
             parish, // The entity object (not used directly, but for clarity)
@@ -92,7 +94,7 @@ class ParishRepository {
   // Function to fetch parishes data locally
   Future<Data<List<Parish>>> fetchLocalParishes() async {
     try {
-      final storedData = myPrefs.fetchAllEntities(
+      final storedData = storage.fetchAllEntities(
         kParishDataKey,
         (data) => Parish.fromJson(data),
       );
@@ -117,8 +119,7 @@ class ParishRepository {
       if (kDebugMode) {
         print('Error fetching local parishes: $e');
       }
-      return Data.failure(
-          'Error fetching local parishes: $e'); // Or return [] if you prefer
+      return Data.failure('Error fetching local parishes: $e');
     }
   }
 }

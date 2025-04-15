@@ -1,7 +1,9 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:kijani_pmc_app/components/widgets/avatar.dart';
 import 'package:kijani_pmc_app/controllers/user_controller.dart';
 import 'package:kijani_pmc_app/models/user_model.dart';
 import 'package:kijani_pmc_app/components/widgets/appdrawer.dart';
@@ -35,12 +37,11 @@ class CustomDrawer extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      //logo
-                      CircleAvatar(
-                        radius: 34,
-                        backgroundColor: Colors.white,
-                        child: Image.asset('images/kijani_logo.png'),
-                      ),
+                      Obx(() {
+                        return DynamicCircleAvatar(
+                          imageUrl: userController.userAvatar.value,
+                        );
+                      }),
                       //closing icon
                       GestureDetector(
                         child: const Icon(

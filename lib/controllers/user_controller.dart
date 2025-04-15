@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get.dart';
-import 'package:kijani_pmc_app/controllers/reports_controller.dart';
 import 'package:kijani_pmc_app/models/parish.dart';
 import 'package:kijani_pmc_app/models/report.dart';
 import 'package:kijani_pmc_app/models/return_data.dart';
@@ -25,6 +25,7 @@ class UserController extends GetxController {
   final RxList<Parish> parishes = <Parish>[].obs;
   final Rx<User?> currentUser = Rx<User?>(null);
   var unsyncedReports = 0.obs;
+  var userAvatar = ''.obs;
 
   @override
   void onInit() {
@@ -43,6 +44,11 @@ class UserController extends GetxController {
       if (localParishes.status) {
         parishes.assignAll(localParishes.data as Iterable<Parish>);
       }
+      //fetch user photo
+      Data<String> userPhoto = await _userRepo.fetchUserPhoto(localUser);
+      if (userPhoto.status) {
+        userAvatar.value = userPhoto.data!;
+      }
       //fetch unsynced reports
       Data<List<DailyReport>> unsyncedData =
           await _reportRepo.fetchLocalReports();
@@ -60,8 +66,8 @@ class UserController extends GetxController {
   Future<void> login() async {
     try {
       Data<User> response = await _userRepo.checkUser(
-        email: emailController.text,
-        code: codeController.text,
+        email: emailController.text.trim(),
+        code: codeController.text.trim(),
       );
       if (!response.status) {
         _showSnackbar("Wrong Credentials", "Check Email or Code",
@@ -70,6 +76,10 @@ class UserController extends GetxController {
       }
 
       User? user = response.data as User;
+      Data<String> userPhoto = await _userRepo.fetchUserPhoto(user);
+      if (userPhoto.status) {
+        userAvatar.value = userPhoto.data!;
+      }
 
       //fetch parishes
       Data<List<Parish>> parishes =
@@ -98,6 +108,8 @@ class UserController extends GetxController {
       }
 
       _showSnackbar("Welcome", "Welcome ${user.name}");
+      emailController.clear();
+      codeController.clear();
       Get.offAllNamed('/home');
     } catch (e) {
       _showSnackbar("Error", "Something went wrong. Please try again.",
@@ -108,7 +120,8 @@ class UserController extends GetxController {
     }
   }
 
-  Future<bool> logout() {
+  Future<bool> logout() async {
+    await DefaultCacheManager().emptyCache();
     return _storageService.clearAll();
   }
 

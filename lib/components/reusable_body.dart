@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kijani_pmc_app/components/widgets/grid_card.dart';
+import 'package:kijani_pmc_app/controllers/syncing_controller.dart';
 import 'package:kijani_pmc_app/models/grid_item.dart';
+import 'package:kijani_pmc_app/routes/app_pages.dart';
 
 class ReusableScreenBody<T> extends StatelessWidget {
   final String? listTitle;
@@ -28,6 +30,60 @@ class ReusableScreenBody<T> extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Obx(() {
+            final unsyncedReports =
+                Get.put(SyncingController()).unsyncedDataList.length;
+            if (unsyncedReports == 0) {
+              return const SizedBox.shrink();
+            }
+            return Container(
+              padding: const EdgeInsets.all(10),
+              height: Get.height * 0.08,
+              width: Get.width,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: Colors.red[500]!,
+                  width: 1.5,
+                ),
+                color: Colors.red[100],
+              ),
+              child: Row(
+                children: [
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      "You have unsynced data.",
+                      style: GoogleFonts.roboto(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.red[700],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  TextButton(
+                      style: TextButton.styleFrom(
+                        backgroundColor: Colors.black,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50),
+                        ),
+                      ),
+                      onPressed: () {
+                        Get.toNamed(Routes.UNSYCEDDATA);
+                      },
+                      child: Text(
+                        "Sync Now",
+                        style: GoogleFonts.roboto(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                      )),
+                ],
+              ),
+            );
+          }),
           if (gridItems.isNotEmpty) ...[
             SizedBox(height: Get.height * 0.05),
             GridView.count(
