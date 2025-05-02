@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:kijani_pmc_app/utilities/exif_utils.dart';
+import 'package:kijani_pgc_app/utilities/exif_utils.dart';
 
 class ImagePickerBrain {
   final ImagePicker _imagePicker = ImagePicker();

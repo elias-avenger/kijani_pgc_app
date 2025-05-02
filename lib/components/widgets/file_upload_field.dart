@@ -1,8 +1,9 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:kijani_pmc_app/utilities/image_picker.dart';
+import 'package:kijani_pgc_app/utilities/image_picker.dart';
 
 class ImagePickerWidget extends StatefulWidget {
   final ValueChanged<List<String>> onImagesSelected;

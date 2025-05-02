@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kijani_pmc_app/models/dashboard_tile.dart';
-import 'package:kijani_pmc_app/components/widgets/dashboard_tile.dart';
+import 'package:kijani_pgc_app/components/widgets/dashboard_tile.dart';
+import 'package:kijani_pgc_app/models/dashboard_tile.dart';
 
 class DashboardTileGrid extends StatelessWidget {
   final List<DashboardTileData> tiles;

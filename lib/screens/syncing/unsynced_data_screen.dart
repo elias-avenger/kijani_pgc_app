@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kijani_pmc_app/components/widgets/buttons/primary_button.dart';
-import 'package:kijani_pmc_app/components/widgets/cards/unsynced_data_card.dart';
-import 'package:kijani_pmc_app/controllers/syncing_controller.dart';
-import 'package:kijani_pmc_app/routes/app_pages.dart';
+import 'package:kijani_pgc_app/components/widgets/buttons/primary_button.dart';
+import 'package:kijani_pgc_app/components/widgets/cards/unsynced_data_card.dart';
+import 'package:kijani_pgc_app/controllers/syncing_controller.dart';
+import 'package:kijani_pgc_app/routes/app_pages.dart';
 
 class UnsyncedDataScreen extends StatelessWidget {
   const UnsyncedDataScreen({super.key});
