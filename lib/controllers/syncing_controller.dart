@@ -1,6 +1,9 @@
 // controllers/unsynced_data_controller.dart
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kijani_pgc_app/models/data.dart';
+import 'package:kijani_pgc_app/models/report.dart';
+import 'package:kijani_pgc_app/models/return_data.dart';
+import 'package:kijani_pgc_app/repositories/report_repository.dart';
 
 class SyncingController extends GetxController {
   ReportRepository reportRepo = ReportRepository();

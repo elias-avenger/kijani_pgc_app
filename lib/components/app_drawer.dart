@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:kijani_pgc_app/components/widgets/appdrawer.dart';
+import 'package:kijani_pgc_app/components/widgets/avatar.dart';
 import 'package:kijani_pgc_app/controllers/user_controller.dart';
 import 'package:kijani_pgc_app/models/user_model.dart';
 
