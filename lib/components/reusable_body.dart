@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:kijani_pmc_app/components/widgets/grid_card.dart';
-import 'package:kijani_pmc_app/models/grid_item.dart';
+import 'package:kijani_pgc_app/components/widgets/grid_card.dart';
+import 'package:kijani_pgc_app/models/grid_item.dart';
 
 class ReusableScreenBody<T> extends StatelessWidget {
   final String? listTitle;

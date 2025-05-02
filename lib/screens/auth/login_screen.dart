@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kijani_pmc_app/components/widgets/buttons/primary_button.dart';
-import 'package:kijani_pmc_app/components/widgets/text_field.dart';
-import 'package:kijani_pmc_app/controllers/user_controller.dart';
+import 'package:kijani_pgc_app/components/widgets/buttons/primary_button.dart';
+import 'package:kijani_pgc_app/components/widgets/text_field.dart';
+import 'package:kijani_pgc_app/controllers/user_controller.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});

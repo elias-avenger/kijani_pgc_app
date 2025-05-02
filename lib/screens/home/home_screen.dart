@@ -1,17 +1,17 @@
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:kijani_pmc_app/components/app_drawer.dart';
-import 'package:kijani_pmc_app/components/reusable_body.dart';
-import 'package:kijani_pmc_app/controllers/user_controller.dart';
-import 'package:kijani_pmc_app/models/grid_item.dart';
-import 'package:kijani_pmc_app/models/user_model.dart';
-import 'package:kijani_pmc_app/components/widgets/list_tile.dart';
-import 'package:kijani_pmc_app/routes/app_pages.dart';
-import 'package:kijani_pmc_app/utilities/constants.dart';
-import 'package:badges/badges.dart' as badges;
-import 'package:kijani_pmc_app/utilities/greetings.dart';
+import 'package:kijani_pgc_app/components/app_drawer.dart';
+import 'package:kijani_pgc_app/components/reusable_body.dart';
+import 'package:kijani_pgc_app/components/widgets/list_tile.dart';
+import 'package:kijani_pgc_app/controllers/user_controller.dart';
+import 'package:kijani_pgc_app/models/grid_item.dart';
+import 'package:kijani_pgc_app/models/user_model.dart';
+import 'package:kijani_pgc_app/routes/app_pages.dart';
+import 'package:kijani_pgc_app/utilities/constants.dart';
+import 'package:kijani_pgc_app/utilities/greetings.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

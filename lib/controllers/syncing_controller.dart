@@ -1,7 +1,6 @@
 // controllers/unsynced_data_controller.dart
-import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kijani_pmc_app/models/data.dart';
+import 'package:kijani_pgc_app/models/data.dart';
 
 class SyncingController extends GetxController {
   // Reactive list of unsynced data items

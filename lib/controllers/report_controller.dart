@@ -2,11 +2,11 @@ import 'package:airtable_crud/airtable_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:kijani_pmc_app/controllers/user_controller.dart';
-import 'package:kijani_pmc_app/models/report.dart';
-import 'package:kijani_pmc_app/models/return_data.dart';
-import 'package:kijani_pmc_app/repositories/report_repository.dart';
-import 'package:kijani_pmc_app/routes/app_pages.dart';
+import 'package:kijani_pgc_app/controllers/user_controller.dart';
+import 'package:kijani_pgc_app/models/report.dart';
+import 'package:kijani_pgc_app/models/return_data.dart';
+import 'package:kijani_pgc_app/repositories/report_repository.dart';
+import 'package:kijani_pgc_app/routes/app_pages.dart';
 
 class ReportController extends GetxController {
   ReportRepository reportRepo = ReportRepository();

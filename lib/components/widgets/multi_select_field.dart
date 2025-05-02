@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kijani_pmc_app/components/widgets/dialogs/multiselect.dart';
+import 'package:kijani_pgc_app/components/widgets/dialogs/multiselect.dart';
 
 class MultiSelectField extends StatelessWidget {
   final String label;

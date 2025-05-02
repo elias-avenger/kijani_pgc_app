@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
-import 'package:kijani_pmc_app/controllers/syncing_controller.dart';
-import 'package:kijani_pmc_app/controllers/user_controller.dart';
+import 'package:kijani_pgc_app/controllers/syncing_controller.dart';
+import 'package:kijani_pgc_app/controllers/user_controller.dart';
 
 class UserBinding extends Bindings {
   @override
