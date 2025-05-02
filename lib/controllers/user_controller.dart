@@ -1,87 +1,133 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kijani_pmc_app/models/branch.dart';
-import 'package:kijani_pmc_app/services/http_airtable.dart';
-
-import '../services/local_storage.dart';
+import 'package:kijani_pmc_app/controllers/reports_controller.dart';
+import 'package:kijani_pmc_app/models/parish.dart';
+import 'package:kijani_pmc_app/models/report.dart';
+import 'package:kijani_pmc_app/models/return_data.dart';
+import 'package:kijani_pmc_app/models/user_model.dart';
+import 'package:kijani_pmc_app/repositories/parish_repository.dart';
+import 'package:kijani_pmc_app/repositories/report_repository.dart';
+import 'package:kijani_pmc_app/repositories/user_repository.dart';
+import 'package:kijani_pmc_app/routes/app_pages.dart';
+import 'package:kijani_pmc_app/services/getx_storage.dart';
 
 class UserController extends GetxController {
-  // final String email;
-  // final String code;
-  HttpAirtable useAirtable = HttpAirtable();
+  final UserRepository _userRepo = UserRepository();
+  final StorageService _storageService = StorageService();
+  final ParishRepository _parishRepo = ParishRepository();
+  final ReportRepository _reportRepo = ReportRepository();
 
-  String myBase = "appJBOIeM2ZA5nhnV";
-  String myTable = "PGCs";
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController codeController = TextEditingController();
 
-  LocalStorage myPrefs = LocalStorage();
+  final branchData = <String, dynamic>{}.obs;
+  final RxList<Parish> parishes = <Parish>[].obs;
+  final Rx<User?> currentUser = Rx<User?>(null);
+  var unsyncedReports = 0.obs;
 
-  var branchData = <String, dynamic>{}.obs;
-  //var userType = " -- ".obs;
-  Future<String> authenticate({
-    required String email,
-    required String code,
-  }) async {
-    Map<String, dynamic> data = await checkUser(
-      email: email,
-      code: code,
-      baseId: myBase,
-      table: myTable,
-    );
-    if (data['msg'] == 'Found') {
-      final userBranch = Branch.getData(data['data']);
+  @override
+  void onInit() {
+    super.onInit();
+    checkIfUserIsLoggedIn();
+  }
 
-      branchData = RxMap(data['data']);
-      var stored = await myPrefs.storeData(key: "userData", data: data['data']);
-      if (stored) {
-        return "Success";
+  // Method to check if a user is logged in
+  Future<void> checkIfUserIsLoggedIn() async {
+    Data<User> response = await _userRepo.fetchLocalUser();
+    User? localUser = response.data;
+    if (localUser != null) {
+      branchData.value = localUser.toJson();
+      //fetch parishes
+      Data<List<Parish>> localParishes = await _parishRepo.fetchLocalParishes();
+      if (localParishes.status) {
+        parishes.assignAll(localParishes.data as Iterable<Parish>);
+      }
+      //fetch unsynced reports
+      Data<List<DailyReport>> unsyncedData =
+          await _reportRepo.fetchLocalReports();
+      if (unsyncedData.status) {
+        unsyncedReports.value = unsyncedData.data!.length;
       } else {
-        return "Not Stored";
+        unsyncedReports.value = 0;
       }
-    } else if (data['msg'] == 'Not Found') {
-      return data['msg'];
+      Get.offAllNamed(Routes.HOME);
     } else {
-      return "Failure";
+      Get.offAllNamed(Routes.LOGIN);
     }
   }
 
-  Future<Map<String, dynamic>> checkUser({
-    required String email,
-    required String code,
-    required String baseId,
-    required String table,
-  }) async {
-    //String view = 'To MEL App';
-    String filter = 'AND({Email}="$email", {AppCode}="$code")';
-    // HttpAirtable airtable = HttpAirtable(
-    //     apiKey: airtableAccessToken, baseId: myBase, tableName: myTable);
-    Map data = await useAirtable.fetchDataWithFilter(
-      filter: filter,
-      baseId: baseId,
-      table: table,
-    );
-    Map<String, dynamic>? userData;
-    List parishes = [];
-    if (data['records'].isEmpty) {
-      return {"msg": "Not Found"};
-    } else {
-      for (var record in data['records']) {
-        //print("Record Fields: ${record['fields']['ID']}");
-        parishes.addAll(record['fields']['Parishes IDs'].split(", "));
-        userData = {
-          'id': record['fields']['ID'],
-          'parishes': parishes,
-        };
+  Future<void> login() async {
+    try {
+      Data<User> response = await _userRepo.checkUser(
+        email: emailController.text,
+        code: codeController.text,
+      );
+      if (!response.status) {
+        _showSnackbar("Wrong Credentials", "Check Email or Code",
+            isError: true);
+        return;
       }
-      return {"msg": "Found", "data": userData ?? {}};
-    }
-  }
 
-  Future<Map<String, dynamic>> getBranchData() async {
-    Map<String, dynamic> storedData = await myPrefs.getData(key: 'userData');
-    branchData = RxMap(storedData);
-    return storedData;
+      User? user = response.data as User;
+
+      //fetch parishes
+      Data<List<Parish>> parishes =
+          await _parishRepo.fetchParishes(user.parishes.split(','));
+
+      if (parishes.status) {
+        //assign parishes to the observable list
+        this.parishes.assignAll(parishes.data as Iterable<Parish>);
+        //store parishes locally
+        Data stored = await _parishRepo.saveParishes(parishes.data!);
+        if (!stored.status) {
+          _showSnackbar("Storage Error", "Failed to store parishes data",
+              isError: true);
+          return;
+        }
+      }
+
+      //save parishes locally
+
+      branchData.assignAll(user.toJson());
+      Data saveResponse = await _userRepo.saveUser(user);
+      if (!saveResponse.status) {
+        _showSnackbar("Storage Error", "Failed to store user data",
+            isError: true);
+        return;
+      }
+
+      _showSnackbar("Welcome", "Welcome ${user.name}");
+      Get.offAllNamed('/home');
+    } catch (e) {
+      _showSnackbar("Error", "Something went wrong. Please try again.",
+          isError: true);
+      if (kDebugMode) {
+        print("Auth error: $e");
+      }
+    }
   }
 
   Future<bool> logout() {
-    return myPrefs.removeEverything();
+    return _storageService.clearAll();
+  }
+
+  void _showSnackbar(String title, String message, {bool isError = false}) {
+    Get.snackbar(
+      title,
+      message,
+      duration: const Duration(seconds: 2),
+      snackPosition: SnackPosition.TOP,
+      backgroundColor: isError ? Colors.red : Colors.green,
+      colorText: Colors.white,
+    );
+  }
+
+  //dispose controllers
+  @override
+  void onClose() {
+    emailController.dispose();
+    codeController.dispose();
+    super.onClose();
   }
 }
