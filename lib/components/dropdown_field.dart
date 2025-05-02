@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kijani_pmc_app/models/parish.dart';
+import 'package:kijani_pgc_app/models/parish.dart';
 
 class ParishDropdown extends StatefulWidget {
   final String label;

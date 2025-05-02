@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kijani_pmc_app/services/aws.dart';
-import 'package:kijani_pmc_app/services/http_airtable.dart';
-import 'package:kijani_pmc_app/services/internet_check.dart';
+import 'package:kijani_pgc_app/services/aws.dart';
+import 'package:kijani_pgc_app/services/http_airtable.dart';
+import 'package:kijani_pgc_app/services/internet_check.dart';
 
 import '../services/local_storage.dart';
 

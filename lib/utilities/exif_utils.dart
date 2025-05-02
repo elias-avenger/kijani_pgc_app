@@ -1,8 +1,9 @@
 // lib/utilities/exif_utils.dart
 import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:kijani_pmc_app/services/location.dart';
+import 'package:kijani_pgc_app/services/location.dart';
 import 'package:native_exif/native_exif.dart';
 import 'package:path_provider/path_provider.dart';
 

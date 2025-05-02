@@ -1,4 +1,4 @@
-import 'package:kijani_pmc_app/models/photo.dart';
+import 'package:kijani_pgc_app/models/photo.dart';
 
 class DailyReport {
   final String userID;
