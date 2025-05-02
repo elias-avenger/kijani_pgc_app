@@ -21,17 +21,17 @@ class UserRepository {
         User user = User.fromJson(record.fields);
         return Data.success(user);
       }
-      return Data.failure("User not found or inactive");
+      return Data<User>.failure("User not found or inactive");
     } on AirtableException catch (e) {
       if (kDebugMode) {
         print("Airtable Exception: ${e.message}");
       }
-      return Data.failure("Airtable Error");
+      return Data<User>.failure("Airtable Error");
     } catch (e) {
       if (kDebugMode) {
         print("Exception: $e");
       }
-      return Data.failure("An error occurred while checking user");
+      return Data<User>.failure("An error occurred while checking user");
     }
   }
 
@@ -47,15 +47,15 @@ class UserRepository {
       // Verify if the data was stored by reading it back
       Data<User> storedUser = await fetchLocalUser();
       if (storedUser.status) {
-        return Data.success(storedUser.data!);
+        return Data<User>.success(storedUser.data!);
       } else {
-        return Data.failure("Failed to save user data locally");
+        return Data<User>.failure("Failed to save user data locally");
       }
     } catch (e) {
       if (kDebugMode) {
         print('Error saving user: $e');
       }
-      return Data.failure("Failed to save user data locally");
+      return Data<User>.failure("Failed to save user data locally");
     }
   }
 
@@ -64,15 +64,15 @@ class UserRepository {
       User? data = storageService.fetchEntity(
           kUserDataKey, 'current', User.fromJson) as User?;
       if (data != null) {
-        return Data.success(data);
+        return Data<User>.success(data);
       } else {
-        return Data.failure("No user data found locally");
+        return Data<User>.failure("No user data found locally");
       }
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching user: $e');
       }
-      return Data.failure("Failed to fetch user data locally");
+      return Data<User>.failure("Failed to fetch user data locally");
     }
   }
 
@@ -90,20 +90,21 @@ class UserRepository {
         AirtableRecord record = data.first;
         List<dynamic> attachments =
             record.fields["Attach Passport Photo"] ?? [];
-        return Data.success(attachments.first['url']);
+        return Data<String>.success(attachments.first['url']);
       }
-      return Data.failure("User photo not found");
+      return Data<String>.failure("User photo not found");
     } on AirtableException catch (e) {
       if (kDebugMode) {
         print("Airtable Exception: ${e.message}");
         print("Airtable Exception details: ${e.details}");
       }
-      return Data.failure("Airtable Error");
+      return Data<String>.failure("Airtable Error");
     } catch (e) {
       if (kDebugMode) {
         print("Exception: $e");
       }
-      return Data.failure("An error occurred while fetching user photo");
+      return Data<String>.failure(
+          "An error occurred while fetching user photo");
     }
   }
 }

@@ -13,9 +13,9 @@ class ParishRepository {
     if (kDebugMode) {
       print('Fetching parishes with codes: ${parishCodes.length}');
     }
-    List<String> repeatedCodes = [];
+    List<String> repeatedCodes = <String>[];
     //find repeated codes
-    for (var code in parishCodes) {
+    for (String code in parishCodes) {
       if (parishCodes.where((element) => element == code).length > 1) {
         repeatedCodes.add(code);
       }
@@ -25,21 +25,28 @@ class ParishRepository {
     try {
       if (parishCodes.isEmpty) {
         print('No parish codes provided, returning empty list');
-        return Data.failure("No parish codes provided");
+        return Data<List<Parish>>.failure("No parish codes provided");
       }
       String filter = 'AND('
-          'OR(${parishCodes.map((code) => '{Parish} = "${code.trim()}"').join(', ')}), '
+          'OR(${parishCodes.map<String>((code) => '{Parish} = "${code.trim()}"').join(', ')}), '
           '{Status} = "Active"'
           ')';
 
-      List<String> fields = ['ID', 'Parish', 'Parish Name', 'GroupIDs', 'PC'];
+      List<String> fields = <String>[
+        'ID',
+        'Parish',
+        'Parish Name',
+        'GroupIDs',
+        'PC'
+      ];
 
       List<AirtableRecord> data = await uGGardensBase
           .fetchRecordsWithFilter("Parishes", filter, fields: fields);
 
       if (data.isEmpty) {
         print('No records found for the provided parish codes');
-        return Data.failure("No records found for the provided parish codes");
+        return Data<List<Parish>>.failure(
+            "No records found for the provided parish codes");
       }
 
       if (kDebugMode) {
@@ -48,17 +55,18 @@ class ParishRepository {
 
       List<Parish> parishes =
           data.map((record) => Parish.fromAirtable(record)).toList();
-      return Data.success(parishes);
+      return Data<List<Parish>>.success(parishes);
     } on AirtableException catch (e) {
       if (kDebugMode) {
         print("Airtable Exception: ${e.message}");
       }
-      return Data.failure("Airtable Error: ${e.message}");
+      return Data<List<Parish>>.failure("Airtable Error: ${e.message}");
     } catch (e) {
       if (kDebugMode) {
         print("Exception: $e");
       }
-      return Data.failure("An error occurred while fetching parishes");
+      return Data<List<Parish>>.failure(
+          "An error occurred while fetching parishes");
     }
   }
 
@@ -94,7 +102,7 @@ class ParishRepository {
   // Function to fetch parishes data locally
   Future<Data<List<Parish>>> fetchLocalParishes() async {
     try {
-      final storedData = storage.fetchAllEntities(
+      final Map<String, dynamic> storedData = storage.fetchAllEntities(
         kParishDataKey,
         (data) => Parish.fromJson(data),
       );
@@ -106,15 +114,15 @@ class ParishRepository {
         if (kDebugMode) {
           print('No local parishes found');
         }
-        return Data.failure("No Local Parishes found");
+        return Data<List<Parish>>.failure("No Local Parishes found");
       }
 
       // Convert Map values to List
-      final parishes = storedData.values.toList().cast<Parish>();
+      final List<Parish> parishes = storedData.values.toList().cast<Parish>();
       if (kDebugMode) {
         print('Fetched ${parishes.length} local parishes');
       }
-      return Data.success(parishes);
+      return Data<List<Parish>>.success(parishes);
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching local parishes: $e');
