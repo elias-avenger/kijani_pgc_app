@@ -14,14 +14,20 @@ class ReportController extends GetxController {
 
   var selectedParish = ''.obs;
   var selectedActivities = <String>[].obs;
+  var otherActivities = "".obs;
   var details = ''.obs;
   var nextActivities = <String>[].obs;
+  var otherNextActivities = "".obs;
   RxList<String> attachments = <String>[].obs;
 
   List<String> get activityOptions => ReportRepository.activities;
 
   final TextEditingController detailsController = TextEditingController();
   final TextEditingController nextDaysActivitiesController =
+      TextEditingController();
+  final TextEditingController otherNextActivitiesController =
+      TextEditingController();
+  final TextEditingController otherActivitiesController =
       TextEditingController();
 
   void pickFiles() async {
@@ -39,8 +45,10 @@ class ReportController extends GetxController {
       'PGC': userController.branchData['ID'].trim(),
       'Parish': selectedParish.value.trim(),
       'Activities': selectedActivities,
+      'Other activities': otherActivities.value,
       'Activity details': details.value,
       'Next activities': nextActivities.join(", "),
+      'Other next activities': otherNextActivities.value,
       'Photo Urls': attachments, // Pass List<String>
       'Date': DateTime.now().toIso8601String(),
     });
