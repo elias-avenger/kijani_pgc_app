@@ -39,8 +39,9 @@ class ReportRepository {
       }
       Data<String> saveResult = await saveReport(data);
       return saveResult.status
-          ? Data.failure("No internet, report saved locally")
-          : Data.failure("No internet and failed to save locally");
+          ? Data<AirtableRecord>.failure("No internet, report saved locally")
+          : Data<AirtableRecord>.failure(
+              "No internet and failed to save locally");
     }
 
     String photosString = "";
@@ -50,10 +51,12 @@ class ReportRepository {
         if (kDebugMode) {
           print('Photo upload failed: ${uploadedPhotos.message}');
         }
-        final saveResult = await saveReport(data);
+        final Data<String> saveResult = await saveReport(data);
         return saveResult.status
-            ? Data.failure("Photo upload failed, report saved locally")
-            : Data.failure("Photo upload failed and failed to save locally");
+            ? Data<AirtableRecord>.failure(
+                "Photo upload failed, report saved locally")
+            : Data<AirtableRecord>.failure(
+                "Photo upload failed and failed to save locally");
       }
       photosString = uploadedPhotos.data!.join(',');
     }
@@ -64,28 +67,31 @@ class ReportRepository {
       dataToSubmit['Photo Urls'] = photosString;
 
       // Submit to Airtable
-      final record = await currentGardensBase.createRecord(
+      final AirtableRecord record = await currentGardensBase.createRecord(
         kPGCReportTable,
         dataToSubmit,
       );
-      return Data.success(record);
+      return Data<AirtableRecord>.success(record);
     } on AirtableException catch (e) {
       if (kDebugMode) {
         print('Airtable Exception: ${e.message}, Details: ${e.details}');
       }
-      final saveResult = await saveReport(data);
+      final Data<String> saveResult = await saveReport(data);
       return saveResult.status
-          ? Data.failure("Airtable error, report saved locally: ${e.message}")
-          : Data.failure(
+          ? Data<AirtableRecord>.failure(
+              "Airtable error, report saved locally: ${e.message}")
+          : Data<AirtableRecord>.failure(
               "Airtable error and failed to save locally: ${e.message}");
     } catch (e) {
       if (kDebugMode) {
         print('Unexpected error: $e');
       }
-      final saveResult = await saveReport(data);
+      final Data<String> saveResult = await saveReport(data);
       return saveResult.status
-          ? Data.failure("Submission error, report saved locally: $e")
-          : Data.failure("Submission error and failed to save locally: $e");
+          ? Data<AirtableRecord>.failure(
+              "Submission error, report saved locally: $e")
+          : Data<AirtableRecord>.failure(
+              "Submission error and failed to save locally: $e");
     }
   }
 
@@ -93,7 +99,7 @@ class ReportRepository {
   Future<Data<String>> saveReport(DailyReport report) async {
     try {
       // Generate a unique key using timestamp to avoid collisions
-      final uniqueKey =
+      final String uniqueKey =
           '${report.date}_${report.userID}_${DateTime.now().millisecondsSinceEpoch}';
       if (kDebugMode) {
         print('Saving report locally with key: $uniqueKey');
@@ -109,12 +115,12 @@ class ReportRepository {
       if (kDebugMode) {
         print('Report saved locally: ${report.toJson()}');
       }
-      return Data.success(uniqueKey);
+      return Data<String>.success(uniqueKey);
     } catch (e) {
       if (kDebugMode) {
         print('Error saving report locally: $e');
       }
-      return Data.failure('Failed to save report locally: $e');
+      return Data<String>.failure('Failed to save report locally: $e');
     }
   }
 
@@ -127,7 +133,8 @@ class ReportRepository {
         if (kDebugMode) {
           print('No internet for sync');
         }
-        return Data.failure('No internet connection for syncing reports');
+        return Data<List<AirtableRecord>>.failure(
+            'No internet connection for syncing reports');
       }
 
       // Fetch all local reports
@@ -140,7 +147,7 @@ class ReportRepository {
         if (kDebugMode) {
           print('No local reports to sync');
         }
-        return Data.success([]);
+        return Data<List<AirtableRecord>>.success(<AirtableRecord>[]);
       }
 
       final reports = storedData.values.toList().cast<DailyReport>();
@@ -148,14 +155,14 @@ class ReportRepository {
         print('Found ${reports.length} local reports to sync');
       }
 
-      final syncedRecords = <AirtableRecord>[];
-      final failedReports = <String, DailyReport>{};
+      final List<AirtableRecord> syncedRecords = <AirtableRecord>[];
+      final Map<String, DailyReport> failedReports = <String, DailyReport>{};
 
       // Sync each report
       for (final entry in storedData.entries) {
-        final key = entry.key;
-        final report = entry.value as DailyReport;
-        final result = await submitDailyReport(report);
+        final String key = entry.key;
+        final DailyReport report = entry.value as DailyReport;
+        final Data<AirtableRecord> result = await submitDailyReport(report);
         if (result.status) {
           syncedRecords.add(result.data!);
           // Remove successfully synced report
@@ -178,14 +185,14 @@ class ReportRepository {
       }
 
       if (failedReports.isNotEmpty) {
-        return Data.success(syncedRecords);
+        return Data<List<AirtableRecord>>.success(syncedRecords);
       }
-      return Data.success(syncedRecords);
+      return Data<List<AirtableRecord>>.success(syncedRecords);
     } catch (e) {
       if (kDebugMode) {
         print('Error syncing reports: $e');
       }
-      return Data.failure('Failed to sync reports: $e');
+      return Data<List<AirtableRecord>>.failure('Failed to sync reports: $e');
     }
   }
 
@@ -201,19 +208,22 @@ class ReportRepository {
         if (kDebugMode) {
           print('No local reports found');
         }
-        return Data.success([]); // Return empty list instead of failure
+        return Data<List<DailyReport>>.success(
+            <DailyReport>[]); // Return empty list instead of failure
       }
 
-      final reports = storedData.values.toList().cast<DailyReport>();
+      final List<DailyReport> reports =
+          storedData.values.toList().cast<DailyReport>();
       if (kDebugMode) {
         print('Fetched ${reports.length} local reports');
       }
-      return Data.success(reports);
+      return Data<List<DailyReport>>.success(reports);
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching local reports: $e');
       }
-      return Data.failure("Failed to fetch local reports: $e");
+      return Data<List<DailyReport>>.failure(
+          "Failed to fetch local reports: $e");
     }
   }
 }

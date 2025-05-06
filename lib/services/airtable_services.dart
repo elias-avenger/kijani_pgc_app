@@ -16,3 +16,4 @@ String kPGCReportTable =
 AirtableCrud uGGardensBase = AirtableCrud(apiKey, kUGGardensBaseID);
 AirtableCrud currentGardensBase = AirtableCrud(apiKey, kUGCurrentGardensBaseID);
 AirtableCrud uGOperationsBase = AirtableCrud(apiKey, kUGOperationsBaseID);
+AirtableCrud hrBase = AirtableCrud(apiKey, kHrBaseID);
