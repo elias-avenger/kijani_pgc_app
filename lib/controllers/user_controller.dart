@@ -45,10 +45,7 @@ class UserController extends GetxController {
         parishes.assignAll(localParishes.data as Iterable<Parish>);
       }
       //fetch user photo
-      Data<String> userPhoto = await _userRepo.fetchUserPhoto(localUser);
-      if (userPhoto.status) {
-        userAvatar.value = userPhoto.data!;
-      }
+
       //fetch unsynced reports
       Data<List<DailyReport>> unsyncedData =
           await _reportRepo.fetchLocalReports();
@@ -76,10 +73,6 @@ class UserController extends GetxController {
       }
 
       User? user = response.data as User;
-      Data<String> userPhoto = await _userRepo.fetchUserPhoto(user);
-      if (userPhoto.status) {
-        userAvatar.value = userPhoto.data!;
-      }
 
       //fetch parishes
       Data<List<Parish>> parishes =

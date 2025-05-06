@@ -75,36 +75,4 @@ class UserRepository {
       return Data<User>.failure("Failed to fetch user data locally");
     }
   }
-
-  //fecth user id photo
-  Future<Data<String>> fetchUserPhoto(User user) async {
-    String fullid = user.id.split(" -- ").first.trim();
-    String firstId = fullid.split("|").first.trim();
-    String id = "$firstId | ${fullid.split("|").last.trim()}";
-
-    try {
-      String filter = 'SEARCH("$id", {ID}) > 0';
-      List<AirtableRecord> data =
-          await hrBase.fetchRecordsWithFilter(kUserPhotosTable, filter);
-      if (data.isNotEmpty) {
-        AirtableRecord record = data.first;
-        List<dynamic> attachments =
-            record.fields["Attach Passport Photo"] ?? [];
-        return Data<String>.success(attachments.first['url']);
-      }
-      return Data<String>.failure("User photo not found");
-    } on AirtableException catch (e) {
-      if (kDebugMode) {
-        print("Airtable Exception: ${e.message}");
-        print("Airtable Exception details: ${e.details}");
-      }
-      return Data<String>.failure("Airtable Error");
-    } catch (e) {
-      if (kDebugMode) {
-        print("Exception: $e");
-      }
-      return Data<String>.failure(
-          "An error occurred while fetching user photo");
-    }
-  }
 }
