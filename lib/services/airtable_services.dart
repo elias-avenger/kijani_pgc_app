@@ -10,10 +10,8 @@ String kParishesTable = "Geo_Parishes";
 String kUGGardensBaseID = "appJBOIeM2ZA5nhnV";
 String kUGCurrentGardensBaseID = "appoW7X8Lz3bIKpEE";
 String kPGCsTable = "PGCs";
-String kPGCReportTable =
-    "PGC Report"; //TOD: change the table name to the correct one
+String kPGCReportTable = "PGC Report";
 
 AirtableCrud uGGardensBase = AirtableCrud(apiKey, kUGGardensBaseID);
 AirtableCrud currentGardensBase = AirtableCrud(apiKey, kUGCurrentGardensBaseID);
 AirtableCrud uGOperationsBase = AirtableCrud(apiKey, kUGOperationsBaseID);
-AirtableCrud hrBase = AirtableCrud(apiKey, kHrBaseID);
