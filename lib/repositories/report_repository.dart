@@ -63,15 +63,8 @@ class ReportRepository {
 
     try {
       // Prepare data for Airtable
-      final dataToSubmit = {
-        "Plantation Growth Coordinator": data.userID.trim(),
-        "Parish Visited": data.parish.trim(),
-        "Activities": data.activities,
-        "Photo Urls": photosString,
-        "Description": data.details,
-        "Next days activities": data.nextActivities.join(", "),
-        "Created Date": data.date,
-      };
+      final dataToSubmit = data.toJson();
+      dataToSubmit['Photo Urls'] = photosString;
 
       // Submit to Airtable
       final AirtableRecord record = await currentGardensBase.createRecord(
@@ -113,7 +106,7 @@ class ReportRepository {
       }
 
       await myPrefs.saveEntity(
-        kUnsyncedReportsKey,
+        kUnSyncedReportsKey,
         uniqueKey,
         report,
         report.toJson,
@@ -145,8 +138,8 @@ class ReportRepository {
       }
 
       // Fetch all local reports
-      final Map<String, dynamic> storedData = myPrefs.fetchAllEntities(
-        kUnsyncedReportsKey,
+      final storedData = myPrefs.fetchAllEntities(
+        kUnSyncedReportsKey,
         (data) => DailyReport.fromJson(data),
       );
 
@@ -173,8 +166,7 @@ class ReportRepository {
         if (result.status) {
           syncedRecords.add(result.data!);
           // Remove successfully synced report
-          final bool deleted =
-              await myPrefs.deleteEntity(kUnsyncedReportsKey, key);
+          final deleted = await myPrefs.deleteEntity(kUnSyncedReportsKey, key);
           if (deleted) {
             if (kDebugMode) {
               print('Synced and removed report: $key');
@@ -207,8 +199,8 @@ class ReportRepository {
   //function to fetch locally saved reports
   Future<Data<List<DailyReport>>> fetchLocalReports() async {
     try {
-      final Map<String, dynamic> storedData = myPrefs.fetchAllEntities(
-        kUnsyncedReportsKey,
+      final storedData = myPrefs.fetchAllEntities(
+        kUnSyncedReportsKey,
         (data) => DailyReport.fromJson(data),
       );
 

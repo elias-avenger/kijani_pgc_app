@@ -22,7 +22,7 @@ class DailyReportScreen extends StatelessWidget {
         title: const Text("Daily Activity Report"),
         leading: GestureDetector(
           onTap: () => Get.back(),
-          child: HugeIcon(
+          child: const HugeIcon(
             icon: HugeIcons.strokeRoundedCircleArrowLeft01,
             color: Colors.black,
             size: 30,
