@@ -36,13 +36,13 @@ class ReportController extends GetxController {
 
   Future<void> submitForm() async {
     DailyReport data = DailyReport.fromJson({
-      'userID': userController.branchData['ID'],
-      'parish': selectedParish.value,
-      'activities': selectedActivities,
-      'details': details.value,
-      'nextActivities': nextActivities,
-      'images': attachments, // Pass List<String>
-      'date': DateTime.now().toIso8601String(),
+      'PGC': userController.branchData['ID'].trim(),
+      'Parish': selectedParish.value.trim(),
+      'Activities': selectedActivities,
+      'Activity details': details.value,
+      'Next activities': nextActivities.join(", "),
+      'Photo Urls': attachments, // Pass List<String>
+      'Date': DateTime.now().toIso8601String(),
     });
 
     Data<AirtableRecord> isSubmitted = await reportRepo.submitDailyReport(data);

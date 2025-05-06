@@ -1,8 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 
 const String kUserDataKey = 'user_data';
 const String kParishDataKey = 'parish_data';
-const String kUnsyncedReportsKey = 'unsynced_reports';
+const String kUnSyncedReportsKey = 'unsynced_reports';
 
 class StorageService {
   // Private instance of GetStorage for local key-value storage
@@ -37,7 +38,9 @@ class StorageService {
       // Persist the updated data to storage
       await _storage.write(key, currentData);
     } catch (e) {
-      print('Error saving entity ($key, $id): $e');
+      if (kDebugMode) {
+        print('Error saving entity ($key, $id): $e');
+      }
     }
   }
 
@@ -62,7 +65,9 @@ class StorageService {
       // Return null if no data is found
       return null;
     } catch (e) {
-      print('Error fetching entity ($key, $id): $e');
+      if (kDebugMode) {
+        print('Error fetching entity ($key, $id): $e');
+      }
       return null;
     }
   }
@@ -88,7 +93,9 @@ class StorageService {
       // Return empty map if no data is found
       return {};
     } catch (e) {
-      print('Error fetching all entities ($key): $e');
+      if (kDebugMode) {
+        print('Error fetching all entities ($key): $e');
+      }
       return {};
     }
   }
@@ -115,7 +122,9 @@ class StorageService {
         return true;
       }
     } catch (e) {
-      print('Error deleting entity ($key, $id): $e');
+      if (kDebugMode) {
+        print('Error deleting entity ($key, $id): $e');
+      }
       return false;
     }
   }
@@ -129,7 +138,9 @@ class StorageService {
       await _storage.remove(key);
       return true;
     } catch (e) {
-      print('Error clearing entities ($key): $e');
+      if (kDebugMode) {
+        print('Error clearing entities ($key): $e');
+      }
       return false;
     }
   }
@@ -142,7 +153,9 @@ class StorageService {
       await _storage.erase();
       return true;
     } catch (e) {
-      print('Error clearing all storage: $e');
+      if (kDebugMode) {
+        print('Error clearing all storage: $e');
+      }
       return false;
     }
   }
