@@ -22,7 +22,7 @@ class ReportRepository {
     "HQ Assignment",
     "Central Nursery Assignment",
     "Acting Capacity Role",
-    "Other assignment",
+    "Other activities",
   ];
 
   /// Submits a daily report to Airtable, saving locally if submission fails.
