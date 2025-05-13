@@ -26,11 +26,26 @@ class UserController extends GetxController {
   final Rx<User?> currentUser = Rx<User?>(null);
   var unsyncedReports = 0.obs;
   var userAvatar = ''.obs;
+  final String _domain = '@kijaniforestry.com';
 
   @override
   void onInit() {
     super.onInit();
+    // Add listener for email autocompletion
+    emailController.addListener(_onEmailTextChanged);
     checkIfUserIsLoggedIn();
+  }
+
+  void _onEmailTextChanged() {
+    String text = emailController.text;
+    if (text.endsWith('@') && !text.contains(_domain)) {
+      // Remove the '@' and append the full domain
+      String newText = text.substring(0, text.length - 1) + _domain;
+      emailController.value = TextEditingValue(
+        text: newText,
+        selection: TextSelection.collapsed(offset: newText.length),
+      );
+    }
   }
 
   // Method to check if a user is logged in
@@ -129,9 +144,9 @@ class UserController extends GetxController {
     );
   }
 
-  //dispose controllers
   @override
   void onClose() {
+    emailController.removeListener(_onEmailTextChanged);
     emailController.dispose();
     codeController.dispose();
     super.onClose();
