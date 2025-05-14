@@ -13,13 +13,15 @@ import 'package:kijani_pgc_app/routes/app_pages.dart';
 import 'package:kijani_pgc_app/utilities/constants.dart';
 import 'package:kijani_pgc_app/utilities/greetings.dart';
 
+import '../../controllers/parish_controller.dart';
+
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final UserController userController = Get.find<UserController>();
-
+    final ParishController parishController = Get.put(ParishController());
     final Greetings greetings = Greetings();
 
     return Obx(() {
@@ -33,7 +35,7 @@ class HomeScreen extends StatelessWidget {
           leading: Builder(
             builder: (context) => GestureDetector(
               onTap: () => Scaffold.of(context).openDrawer(),
-              child: HugeIcon(
+              child: const HugeIcon(
                 icon: HugeIcons.strokeRoundedMenu02,
                 color: Colors.black,
               ),
@@ -98,11 +100,12 @@ class HomeScreen extends StatelessWidget {
           items: parishes,
           itemBuilder: (context, parish, index) => CustomListItem(
             title: "${parish.name} Parish",
-            subtitle: "${parish.groupIDs.length} Groups",
+            subtitle: "{parish.groupIDs.length} Groups",
             trailing: const Icon(HugeIcons.strokeRoundedArrowRight01,
                 color: Colors.black),
             onTap: () {
-              // Your logic
+              parishController.activeParish.value = parish.id;
+              Get.toNamed('/parish');
             },
           ),
         ),
