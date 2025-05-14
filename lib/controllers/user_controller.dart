@@ -91,7 +91,9 @@ class UserController extends GetxController {
 
       //fetch parishes
       Data<List<Parish>> parishes =
-          await _parishRepo.fetchParishes(user.parishes.split(','));
+          await _parishRepo.setParishes(user.parishes.split(','));
+      // Data<List<Parish>> parishes =
+      //     await _parishRepo.fetchParishes(user.parishes.split(','));
 
       if (parishes.status) {
         //assign parishes to the observable list

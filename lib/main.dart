@@ -47,7 +47,7 @@ class _MyAppState extends State<MyApp> {
         }
 
         final userData = userController.branchData;
-        return userData.isEmpty ? LoginScreen() : HomeScreen();
+        return userData.isEmpty ? LoginScreen() : const HomeScreen();
       }),
     );
   }

@@ -58,7 +58,7 @@ class DailyReportScreen extends StatelessWidget {
               const SizedBox(height: 16),
               Obx(() {
                 if (controller.selectedActivities.any(
-                  (activity) => activity == "Other assignment",
+                  (activity) => activity == "Other activities",
                 )) {
                   return TextAreaWidget(
                     label: "Other Activity(ies)",

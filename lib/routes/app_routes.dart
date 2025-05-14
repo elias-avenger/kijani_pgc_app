@@ -6,4 +6,5 @@ abstract class Routes {
   static const HOME = '/home';
   static const String DAILYREPORT = '/dailyReport';
   static const String UNSYCEDDATA = '/unsynceddata';
+  static const PARISH = '/parish';
 }

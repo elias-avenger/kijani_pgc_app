@@ -1,13 +1,13 @@
-// models/unsynced_data.dart
+// models/unSynced_data.dart
 import 'package:flutter/material.dart';
 
-class UnsyncedData {
+class UnSyncedData {
   final String title;
   final String lastRecorded;
   final int count;
   final IconData icon;
 
-  UnsyncedData({
+  UnSyncedData({
     required this.title,
     required this.lastRecorded,
     required this.count,
