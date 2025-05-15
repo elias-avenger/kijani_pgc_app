@@ -8,8 +8,7 @@ class EmptyDataScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      // Light peach background
+      backgroundColor: Colors.white, // Light background
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -39,21 +38,70 @@ class EmptyDataScreen extends StatelessWidget {
             ),
             SizedBox(height: Get.height * 0.1),
 
-            // Button
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.black87,
-                foregroundColor: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 35, vertical: 14),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
+            // Buttons
+            Column(
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 28, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  onPressed: () {
+                    // TODO: add manual update, to update all the parish data including the groups
+                  },
+                  child: const Text('Update Manually'),
                 ),
-              ),
-              onPressed: () {
-                Get.back();
-              },
-              child: const Text('GoBack'),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: Get.width * 0.2,
+                      child: const Divider(
+                        color: Colors.grey,
+                        thickness: 1,
+                        endIndent: 10,
+                      ),
+                    ),
+                    const Text(
+                      'OR',
+                      style: TextStyle(
+                        color: Colors.black54,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    SizedBox(
+                      width: Get.width * 0.2,
+                      child: const Divider(
+                        color: Colors.grey,
+                        thickness: 1,
+                        endIndent: 10,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black87,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 35, vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  onPressed: () {
+                    Get.back();
+                  },
+                  child: const Text('GoBack'),
+                ),
+              ],
             ),
           ],
         ),
