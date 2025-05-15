@@ -115,9 +115,17 @@ class UserController extends GetxController {
     }
   }
 
-  Future<bool> logout() async {
+  Future<void> logout() async {
     await DefaultCacheManager().emptyCache();
-    return _storageService.clearAll();
+    if (await _storageService.clearAll()) {
+      Get.offAllNamed('/login');
+    } else {
+      _showSnackbar(
+        "Logout failure",
+        "Could not clear data!",
+        isError: true,
+      );
+    }
   }
 
   void _showSnackbar(String title, String message, {bool isError = false}) {
