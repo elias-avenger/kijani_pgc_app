@@ -104,8 +104,7 @@ class HomeScreen extends StatelessWidget {
             trailing: const Icon(HugeIcons.strokeRoundedArrowRight01,
                 color: Colors.black),
             onTap: () {
-              parishController.activeParish.value = parish.id;
-              Get.toNamed('/parish');
+              parishController.updateParishGroups(parishId: parish.id);
             },
           ),
         ),

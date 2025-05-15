@@ -22,7 +22,9 @@ class GroupRepository {
 
       List<AirtableRecord> data = await uGGardensBase
           .fetchRecordsWithFilter("Groups", filter, fields: fields);
-
+      if (kDebugMode) {
+        print(filter);
+      }
       if (data.isEmpty) {
         if (kDebugMode) {
           print('No records found for the provided parish');
@@ -152,15 +154,15 @@ class GroupRepository {
   // Function to fetch groups data locally
   Future<Data<List<Group>>> fetchLocalGroups({required String parish}) async {
     try {
-      final Map<String, dynamic> storedData = storage.fetchEntityUnits(
+      final List<Group> storedGroups = storage.fetchEntityUnits(
         kGroupDataKey,
         parish,
       );
       if (kDebugMode) {
-        print('Raw stored data: $storedData');
+        print('Raw stored data: $storedGroups');
       }
 
-      if (storedData.isEmpty) {
+      if (storedGroups.isEmpty) {
         if (kDebugMode) {
           print('No local groups found');
         }
@@ -168,11 +170,11 @@ class GroupRepository {
       }
 
       // Convert Map values to List
-      final List<Group> groups = storedData.values.toList().cast<Group>();
+      // final List<Group> groups = storedGroups.values.toList().cast<Group>();
       if (kDebugMode) {
-        print('Fetched ${groups.length} local groups');
+        print('Fetched ${storedGroups.length} local groups');
       }
-      return Data<List<Group>>.success(groups);
+      return Data<List<Group>>.success(storedGroups);
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching local groups: $e');
