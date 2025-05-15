@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:kijani_pgc_app/controllers/parish_controller.dart';
 import 'package:kijani_pgc_app/controllers/syncing_controller.dart';
 import 'package:kijani_pgc_app/controllers/user_controller.dart';
 
@@ -13,5 +14,12 @@ class DataBinding extends Bindings {
   @override
   void dependencies() {
     Get.put(SyncingController());
+  }
+}
+
+class ParishBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.put(ParishController());
   }
 }
