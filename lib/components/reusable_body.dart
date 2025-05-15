@@ -146,40 +146,6 @@ class ReusableScreenBodySkeleton<T> extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 🛑 Unsynced message placeholder (optional)
-          Container(
-            padding: const EdgeInsets.all(10),
-            height: Get.height * 0.08,
-            width: Get.width,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.red[100],
-            ),
-            child: Row(
-              children: [
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Container(
-                    height: 18,
-                    width: 150,
-                    color: Colors.red[300],
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Container(
-                  height: 36,
-                  width: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.red[300],
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          SizedBox(height: Get.height * 0.05),
-
           // 🔲 Grid skeleton
           GridView.count(
             shrinkWrap: true,
