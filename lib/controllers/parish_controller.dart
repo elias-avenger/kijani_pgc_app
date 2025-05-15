@@ -10,7 +10,6 @@ import 'package:kijani_pgc_app/repositories/report_repository.dart';
 import 'package:kijani_pgc_app/services/getx_storage.dart';
 import 'package:kijani_pgc_app/utilities/toast_utils.dart';
 
-import '../routes/app_pages.dart';
 import '../services/internet_check.dart';
 
 class ParishController extends GetxController {
