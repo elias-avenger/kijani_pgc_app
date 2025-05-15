@@ -33,6 +33,7 @@ class AppPages {
     GetPage(
       name: Routes.PARISH,
       page: () => const ParishScreen(),
+      binding: ParishBinding(),
     ),
   ];
 }
