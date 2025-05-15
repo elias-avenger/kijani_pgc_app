@@ -13,15 +13,12 @@ import 'package:kijani_pgc_app/routes/app_pages.dart';
 import 'package:kijani_pgc_app/utilities/constants.dart';
 import 'package:kijani_pgc_app/utilities/greetings.dart';
 
-import '../../controllers/parish_controller.dart';
-
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final UserController userController = Get.find<UserController>();
-    final ParishController parishController = Get.put(ParishController());
     final Greetings greetings = Greetings();
 
     return Obx(() {
@@ -104,7 +101,9 @@ class HomeScreen extends StatelessWidget {
             trailing: const Icon(HugeIcons.strokeRoundedArrowRight01,
                 color: Colors.black),
             onTap: () {
-              parishController.updateParishGroups(parishId: parish.id);
+              //parishController.updateParishGroups(parishId: parish.id);
+              Get.toNamed(Routes.PARISH, arguments: {'parish': parish.id});
+              print("Parish To Open: ${parish.name}");
             },
           ),
         ),
