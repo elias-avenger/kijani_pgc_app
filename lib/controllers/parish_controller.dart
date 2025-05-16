@@ -7,14 +7,12 @@ import 'package:kijani_pgc_app/models/return_data.dart';
 import 'package:kijani_pgc_app/models/user_model.dart';
 import 'package:kijani_pgc_app/repositories/group_repository.dart';
 import 'package:kijani_pgc_app/repositories/report_repository.dart';
-import 'package:kijani_pgc_app/services/getx_storage.dart';
 import 'package:kijani_pgc_app/utilities/toast_utils.dart';
 
 import '../services/internet_check.dart';
 
 class ParishController extends GetxController {
   final GroupRepository _groupRepo = GroupRepository();
-  final StorageService _storageService = StorageService();
   final InternetCheck _internetCheck = InternetCheck();
 
   final ReportRepository _reportRepo = ReportRepository();
