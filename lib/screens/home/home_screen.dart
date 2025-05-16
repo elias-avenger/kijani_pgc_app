@@ -12,8 +12,7 @@ import 'package:kijani_pgc_app/models/user_model.dart';
 import 'package:kijani_pgc_app/routes/app_pages.dart';
 import 'package:kijani_pgc_app/utilities/constants.dart';
 import 'package:kijani_pgc_app/utilities/greetings.dart';
-
-import '../../controllers/parish_controller.dart';
+import 'package:kijani_pgc_app/utilities/toast_utils.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -21,7 +20,6 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final UserController userController = Get.find<UserController>();
-    final ParishController parishController = Get.put(ParishController());
     final Greetings greetings = Greetings();
 
     return Obx(() {
@@ -84,28 +82,43 @@ class HomeScreen extends StatelessWidget {
           backgroundColor: Colors.white,
         ),
         drawer: CustomDrawer(),
-        body: ReusableScreenBody(
-          listTitle: "Assigned Parishes",
-          gridItems: [
-            GridItem(
-              title: "Parishes",
-              value: parishes.length,
-              icon: HugeIcons.strokeRoundedLocation03,
-              color: kijaniBlue,
+
+        /// ✅ Pull-to-Refresh Wrapper
+        body: RefreshIndicator(
+          color: Colors.green,
+          onRefresh: () async {
+            // TODO: Fetch Data Here
+            //simulate
+            await Future.delayed(const Duration(seconds: 2));
+            showToastGlobal(
+              "Parish List is Updated",
+              backgroundColor: Colors.green,
+            );
+          },
+          child: ReusableScreenBody(
+            listTitle: "Assigned Parishes",
+            gridItems: [
+              GridItem(
+                title: "Parishes",
+                value: parishes.length,
+                icon: HugeIcons.strokeRoundedLocation03,
+                color: kijaniBlue,
+              ),
+              GridItem(title: "", value: 0, icon: null, color: kijaniBrown),
+              GridItem(title: "", value: 0, icon: null, color: Colors.black),
+              GridItem(title: "", value: 0, icon: null, color: kijaniGreen),
+            ],
+            items: parishes,
+            itemBuilder: (context, parish, index) => CustomListItem(
+              title: "${parish.name} Parish",
+              subtitle: "{parish.groupIDs.length} Groups",
+              trailing: const Icon(HugeIcons.strokeRoundedArrowRight01,
+                  color: Colors.black),
+              onTap: () {
+                Get.toNamed(Routes.PARISH, arguments: {'parish': parish.id});
+                print("Parish To Open: ${parish.name}");
+              },
             ),
-            GridItem(title: "", value: 0, icon: null, color: kijaniBrown),
-            GridItem(title: "", value: 0, icon: null, color: Colors.black),
-            GridItem(title: "", value: 0, icon: null, color: kijaniGreen),
-          ],
-          items: parishes,
-          itemBuilder: (context, parish, index) => CustomListItem(
-            title: "${parish.name} Parish",
-            subtitle: "{parish.groupIDs.length} Groups",
-            trailing: const Icon(HugeIcons.strokeRoundedArrowRight01,
-                color: Colors.black),
-            onTap: () {
-              parishController.updateParishGroups(parishId: parish.id);
-            },
           ),
         ),
       );

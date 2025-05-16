@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kijani_pgc_app/components/widgets/grid_card.dart';
+import 'package:kijani_pgc_app/components/widgets/list_tile.dart';
 import 'package:kijani_pgc_app/controllers/syncing_controller.dart';
 import 'package:kijani_pgc_app/models/grid_item.dart';
 import 'package:kijani_pgc_app/routes/app_pages.dart';
@@ -118,6 +119,72 @@ class ReusableScreenBody<T> extends StatelessWidget {
                   itemBuilder(context, items[index], index),
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+class ReusableScreenBodySkeleton<T> extends StatelessWidget {
+  final String? listTitle;
+  final int gridItemCount;
+  final int listItemCount;
+  final int crossAxisCount;
+
+  const ReusableScreenBodySkeleton({
+    super.key,
+    this.listTitle,
+    this.gridItemCount = 4,
+    this.listItemCount = 6,
+    this.crossAxisCount = 2,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 🔲 Grid skeleton
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 1.5,
+            children: List.generate(
+              gridItemCount,
+              (_) => gridCardSkeleton(),
+            ),
+          ),
+
+          SizedBox(height: Get.height * 0.05),
+
+          // 📄 List title skeleton
+          if (listTitle != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Container(
+                height: 20,
+                width: 100,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              ),
+            ),
+
+          // 📋 List items skeleton
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: listItemCount,
+            itemBuilder: (context, index) {
+              return const CustomListItemSkeleton();
+            },
+          ),
         ],
       ),
     );

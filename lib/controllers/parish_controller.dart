@@ -8,8 +8,8 @@ import 'package:kijani_pgc_app/models/user_model.dart';
 import 'package:kijani_pgc_app/repositories/group_repository.dart';
 import 'package:kijani_pgc_app/repositories/report_repository.dart';
 import 'package:kijani_pgc_app/services/getx_storage.dart';
+import 'package:kijani_pgc_app/utilities/toast_utils.dart';
 
-import '../routes/app_pages.dart';
 import '../services/internet_check.dart';
 
 class ParishController extends GetxController {
@@ -26,10 +26,26 @@ class ParishController extends GetxController {
   var userAvatar = ''.obs;
   var activeParish = ''.obs;
 
+  var isGroupsLoading = false.obs;
+
   @override
   void onInit() {
     super.onInit();
-    getParishData();
+
+    final args = Get.arguments;
+
+    if (args != null && args.containsKey('parish')) {
+      if (kDebugMode) {
+        print("Parish: ${args['parish']}");
+      }
+
+      isGroupsLoading.value = true;
+      updateParishGroups(parishId: args['parish']).then((_) {
+        isGroupsLoading.value = false;
+      });
+    } else {
+      getParishData();
+    }
   }
 
   // Method to check if a user is logged in
@@ -62,15 +78,24 @@ class ParishController extends GetxController {
       var groups = await _groupRepo.fetchGroups(parishId);
       if (groups.status) {
         await _groupRepo.saveGroups(groups.data ?? [], parishId);
-        _showSnackBar(
-          'Parish groups updated',
-          'Parish groups updated successfully',
+        // _showSnackBar(
+        //   'Parish groups updated',
+        //   'Parish groups updated successfully',
+        // );
+
+        showToastGlobal(
+          "Parish group List updated",
+          backgroundColor: Colors.green,
         );
       } else {
-        _showSnackBar(
-          'Update failed',
-          groups.message ?? "Just could not",
-          isError: true,
+        // _showSnackBar(
+        //   'Update failed',
+        //   groups.message ?? "Just could not",
+        //   isError: true,
+        // );
+        showToastGlobal(
+          "An error occurred",
+          backgroundColor: Colors.red,
         );
       }
     }
@@ -81,7 +106,9 @@ class ParishController extends GetxController {
       if (groups.isNotEmpty) {
         activeParish.value = parishId;
         getParishData();
-        Get.toNamed(Routes.PARISH);
+        // if (Get.currentRoute != Routes.PARISH) {
+        //   Get.toNamed(Routes.PARISH);
+        // }
       } else {
         _showSnackBar(
           "No data",
@@ -90,10 +117,14 @@ class ParishController extends GetxController {
         );
       }
     } else {
-      _showSnackBar(
-        "No data",
-        "No parish data. Get internet and tap again to get data!",
-        isError: true,
+      // _showSnackBar(
+      //   "No data",
+      //   "No parish data. Get internet and tap again to get data!",
+      //   isError: true,
+      // );
+      showToastGlobal(
+        "Parish Data is up to date",
+        backgroundColor: Colors.green,
       );
     }
   }
