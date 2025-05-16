@@ -91,7 +91,7 @@ class GroupRepository {
         if (kDebugMode) {
           print('No local groups found');
         }
-        return Data<List<Group>>.failure("No Local Parishes found");
+        return Data<List<Group>>.failure("No Local Groups found");
       }
 
       if (kDebugMode) {
