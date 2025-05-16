@@ -4,6 +4,7 @@ import 'package:get_storage/get_storage.dart';
 const String kUserDataKey = 'user_data';
 const String kParishDataKey = 'parish_data';
 const String kGroupDataKey = 'group_data';
+const String kFarmerDataKey = 'farmer_data';
 const String kUnSyncedReportsKey = 'unSynced_reports';
 
 class StorageService {
