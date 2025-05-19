@@ -54,84 +54,9 @@ class GroupRepository {
     }
   }
 
-  // Future<Data<List<Group>>> fetchGroups(List<String> groupIDs) async {
-  //   if (kDebugMode) {
-  //     print('Fetching groups with IDs: ${groupIDs.length}');
-  //   }
-  //   List<String> repeatedIDs = <String>[];
-  //   //find repeated ids
-  //   for (String id in groupIDs) {
-  //     if (groupIDs.where((element) => element == id).length > 1) {
-  //       repeatedIDs.add(id);
-  //     }
-  //   }
-  //
-  //   if (kDebugMode) {
-  //     print(repeatedIDs);
-  //   }
-  //   try {
-  //     if (groupIDs.isEmpty) {
-  //       if (kDebugMode) {
-  //         print('No group IDs provided, returning empty list');
-  //       }
-  //       return Data<List<Group>>.failure("No group IDs provided");
-  //     }
-  //     String filter =
-  //         'OR(${groupIDs.map<String>((code) => '{ParishID} = "${code.trim()}"').join(', ')})';
-  //
-  //     List<String> fields = <String>[
-  //       'ID',
-  //       'Group Name',
-  //       'Group Gardens',
-  //       'Season',
-  //     ];
-  //
-  //     List<AirtableRecord> data = await uGGardensBase
-  //         .fetchRecordsWithFilter("Groups", filter, fields: fields);
-  //
-  //     if (data.isEmpty) {
-  //       if (kDebugMode) {
-  //         print('No records found for the provided groups');
-  //       }
-  //       return Data<List<Group>>.failure(
-  //           "No records found for the provided groups");
-  //     }
-  //
-  //     if (kDebugMode) {
-  //       print('Fetched ${data.length} records from Airtable');
-  //     }
-  //
-  //     List<Group> groups =
-  //         data.map((record) => Group.fromAirtable(record)).toList();
-  //     return Data<List<Group>>.success(groups);
-  //   } on AirtableException catch (e) {
-  //     if (kDebugMode) {
-  //       print("Airtable Exception: ${e.message}");
-  //     }
-  //     return Data<List<Group>>.failure("Airtable Error: ${e.message}");
-  //   } catch (e) {
-  //     if (kDebugMode) {
-  //       print("Exception: $e");
-  //     }
-  //     return Data<List<Group>>.failure(
-  //         "An error occurred while fetching parishes");
-  //   }
-  // }
-
   // Function to save groups data locally
   Future<Data> saveGroups(List<Group> groups, String parishId) async {
     try {
-      // for (var group in groups) {
-      //   if (kDebugMode) {
-      //     print('Saving Group: ${group.name}, ID: ${group.id}');
-      //   }
-      //   await storage.saveEntity(
-      //       kGroupDataKey,
-      //       group.id, // Unique ID for the group
-      //       group, // The entity object (not used directly, but for clarity)
-      //       group.toJson // The JSON conversion function
-      //       );
-      // }
       await storage.saveEntityUnits(
         kGroupDataKey,
         parishId, // Unique ID for the group
@@ -166,11 +91,9 @@ class GroupRepository {
         if (kDebugMode) {
           print('No local groups found');
         }
-        return Data<List<Group>>.failure("No Local Parishes found");
+        return Data<List<Group>>.failure("No Local Groups found");
       }
 
-      // Convert Map values to List
-      // final List<Group> groups = storedGroups.values.toList().cast<Group>();
       if (kDebugMode) {
         print('Fetched ${storedGroups.length} local groups');
       }
