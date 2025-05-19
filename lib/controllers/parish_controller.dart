@@ -23,6 +23,7 @@ class ParishController extends GetxController {
   var unSyncedReports = 0.obs;
   var userAvatar = ''.obs;
   var activeParish = ''.obs;
+  var activeParishName = ''.obs;
 
   var isGroupsLoading = false.obs;
 
@@ -38,6 +39,7 @@ class ParishController extends GetxController {
       }
 
       isGroupsLoading.value = true;
+      activeParishName.value = args['name'];
       updateParishGroups(parishId: args['parish']).then((_) {
         isGroupsLoading.value = false;
       });

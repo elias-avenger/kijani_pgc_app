@@ -18,10 +18,11 @@ class ParishScreen extends StatelessWidget {
 
     return Obx(() {
       final groups = parishController.groups;
+      final parish = parishController.activeParishName.value;
       var isLoading = parishController.isGroupsLoading.value;
 
       return Scaffold(
-        appBar: const MyAppBar(title: "Aywee Parish"),
+        appBar: MyAppBar(title: "$parish Parish"),
         backgroundColor: const Color(0xFFF5F5F5),
         body: isLoading
             ? const ReusableScreenBodySkeleton()
@@ -53,7 +54,10 @@ class ParishScreen extends StatelessWidget {
                       },
                     ),
                   )
-                : const EmptyDataScreen(
+                : EmptyDataScreen(
+                    onUpdate: () {
+                      print("Updating data");
+                    },
                     title: "No parish groups found",
                   ),
       );
