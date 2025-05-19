@@ -2,8 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class EmptyDataScreen extends StatelessWidget {
-  const EmptyDataScreen({super.key, required this.title});
+  const EmptyDataScreen({
+    super.key,
+    required this.title,
+    required this.onUpdate,
+  });
+
   final String title;
+  final VoidCallback onUpdate;
+
+  @override
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
   Widget build(BuildContext context) {
@@ -51,9 +60,7 @@ class EmptyDataScreen extends StatelessWidget {
                       borderRadius: BorderRadius.circular(30),
                     ),
                   ),
-                  onPressed: () {
-                    // TODO: add manual update, to update all the parish data including the groups
-                  },
+                  onPressed: onUpdate,
                   child: const Text('Update Manually'),
                 ),
                 const SizedBox(height: 10),
@@ -99,7 +106,7 @@ class EmptyDataScreen extends StatelessWidget {
                   onPressed: () {
                     Get.back();
                   },
-                  child: const Text('GoBack'),
+                  child: const Text('Go Back'),
                 ),
               ],
             ),
