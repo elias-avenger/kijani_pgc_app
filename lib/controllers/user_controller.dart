@@ -11,12 +11,14 @@ import 'package:kijani_pgc_app/repositories/report_repository.dart';
 import 'package:kijani_pgc_app/repositories/user_repository.dart';
 import 'package:kijani_pgc_app/routes/app_pages.dart';
 import 'package:kijani_pgc_app/services/getx_storage.dart';
+import 'package:kijani_pgc_app/services/internet_check.dart';
 
 class UserController extends GetxController {
   final UserRepository _userRepo = UserRepository();
   final StorageService _storageService = StorageService();
   final ParishRepository _parishRepo = ParishRepository();
   final ReportRepository _reportRepo = ReportRepository();
+  final InternetCheck _internetCheck = InternetCheck();
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController codeController = TextEditingController();
@@ -28,10 +30,11 @@ class UserController extends GetxController {
   var userAvatar = ''.obs;
   final String _domain = '@kijaniforestry.com';
 
+  var isHomeScreenLoading = true.obs;
+
   @override
   void onInit() {
     super.onInit();
-    // Add listener for email autocompletion
     emailController.addListener(_onEmailTextChanged);
     checkIfUserIsLoggedIn();
   }
@@ -39,7 +42,6 @@ class UserController extends GetxController {
   void _onEmailTextChanged() {
     String text = emailController.text;
     if (text.endsWith('@') && !text.contains(_domain)) {
-      // Remove the '@' and append the full domain
       String newText = text.substring(0, text.length - 1) + _domain;
       emailController.value = TextEditingValue(
         text: newText,
@@ -48,31 +50,49 @@ class UserController extends GetxController {
     }
   }
 
-  // Method to check if a user is logged in
   Future<void> checkIfUserIsLoggedIn() async {
     Data<User> response = await _userRepo.fetchLocalUser();
     User? localUser = response.data;
-    if (localUser != null) {
-      branchData.value = localUser.toJson();
-      //fetch parishes
-      Data<List<Parish>> localParishes = await _parishRepo.fetchLocalParishes();
-      if (localParishes.status) {
-        parishes.assignAll(localParishes.data as Iterable<Parish>);
-      }
-      //fetch user photo
 
-      //fetch unsynced reports
+    if (localUser != null) {
+      // Check if user credentials are still valid
+      if (await _internetCheck.isAirtableConnected()) {
+        print("EMAIL: ${localUser.email} CODE: ${localUser.code}");
+        Data<User> isValidUser =
+            await _userRepo.isUserValid(localUser.email, localUser.code);
+
+        if (!isValidUser.status || isValidUser.data == null) {
+          // Invalid user, logout
+          await logout(); // Calls your logout method that clears storage & redirects
+          return;
+        }
+
+        // Valid user: Update parishes
+        await _parishRepo.setParishes(
+          isValidUser.data!.parishes.split(','),
+        );
+      }
+
+      branchData.value = localUser.toJson();
+
+      // Fetch local parishes
+      Data<List<Parish>> localParishes = await _parishRepo.fetchLocalParishes();
+      if (localParishes.status && localParishes.data != null) {
+        parishes.assignAll(localParishes.data!);
+      }
+
+      // Fetch unsynced reports
       Data<List<DailyReport>> unsyncedData =
           await _reportRepo.fetchLocalReports();
-      if (unsyncedData.status) {
-        unsyncedReports.value = unsyncedData.data!.length;
-      } else {
-        unsyncedReports.value = 0;
-      }
+      unsyncedReports.value = unsyncedData.status && unsyncedData.data != null
+          ? unsyncedData.data!.length
+          : 0;
+
       Get.offAllNamed(Routes.HOME);
     } else {
       Get.offAllNamed(Routes.LOGIN);
     }
+    isHomeScreenLoading.value = false;
   }
 
   Future<void> login() async {
@@ -81,33 +101,28 @@ class UserController extends GetxController {
         email: emailController.text.trim(),
         code: codeController.text.trim(),
       );
-      if (!response.status) {
+
+      if (!response.status || response.data == null) {
         _showSnackbar("Wrong Credentials", "Check Email or Code",
             isError: true);
         return;
       }
 
-      User? user = response.data as User;
+      User user = response.data!;
 
-      //fetch parishes
-      Data<List<Parish>> parishes =
+      Data<List<Parish>> parishesResult =
           await _parishRepo.setParishes(user.parishes.split(','));
-      // Data<List<Parish>> parishes =
-      //     await _parishRepo.fetchParishes(user.parishes.split(','));
 
-      if (parishes.status) {
-        //assign parishes to the observable list
-        this.parishes.assignAll(parishes.data as Iterable<Parish>);
-        //store parishes locally
-        Data stored = await _parishRepo.saveParishes(parishes.data!);
+      if (parishesResult.status && parishesResult.data != null) {
+        parishes.assignAll(parishesResult.data!);
+
+        Data stored = await _parishRepo.saveParishes(parishesResult.data!);
         if (!stored.status) {
           _showSnackbar("Storage Error", "Failed to store parishes data",
               isError: true);
           return;
         }
       }
-
-      //save parishes locally
 
       branchData.assignAll(user.toJson());
       Data saveResponse = await _userRepo.saveUser(user);
@@ -120,7 +135,7 @@ class UserController extends GetxController {
       _showSnackbar("Welcome", "Welcome ${user.name}");
       emailController.clear();
       codeController.clear();
-      Get.offAllNamed('/home');
+      Get.offAllNamed(Routes.HOME);
     } catch (e) {
       _showSnackbar("Error", "Something went wrong. Please try again.",
           isError: true);
@@ -132,14 +147,13 @@ class UserController extends GetxController {
 
   Future<void> logout() async {
     await DefaultCacheManager().emptyCache();
+    emailController.clear();
+    codeController.clear();
+
     if (await _storageService.clearAll()) {
-      Get.offAllNamed('/login');
+      Get.offAllNamed(Routes.LOGIN);
     } else {
-      _showSnackbar(
-        "Logout failure",
-        "Could not clear data!",
-        isError: true,
-      );
+      _showSnackbar("Logout failure", "Could not clear data!", isError: true);
     }
   }
 
