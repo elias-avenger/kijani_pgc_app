@@ -75,4 +75,15 @@ class UserRepository {
       return Data<User>.failure("Failed to fetch user data locally");
     }
   }
+
+  //method to check if user credentials are valid
+  Future<Data<User>> isUserValid(String email, String code) async {
+    Data<User> userIsValid = await checkUser(email: email, code: code);
+
+    if (userIsValid.status && userIsValid.data != null) {
+      return Data.success(userIsValid.data!);
+    }
+
+    return Data.failure('User not valid');
+  }
 }
