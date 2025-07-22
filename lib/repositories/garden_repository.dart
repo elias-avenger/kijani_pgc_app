@@ -6,11 +6,11 @@ import '../models/return_data.dart';
 import '../services/airtable_services.dart';
 import '../services/getx_storage.dart';
 
-class GroupRepository {
+class GardenRepository {
   final StorageService storage = StorageService();
 
   // Function to fetch groups from Airtable
-  Future<Data<List<Garden>>> fetchGroups(String farmerId) async {
+  Future<Data<List<Garden>>> fetchGardens(String farmerId) async {
     try {
       String filter = '{F_ID} = "${farmerId.trim()}"';
 
@@ -57,7 +57,7 @@ class GroupRepository {
   }
 
   // Function to save groups data locally
-  Future<Data> saveGroups(List<Garden> gardens, String farmerId) async {
+  Future<Data> saveGardens(List<Garden> gardens, String farmerId) async {
     try {
       await storage.saveEntityUnits(
         kGardenDataKey,

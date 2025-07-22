@@ -6,7 +6,7 @@ import '../models/return_data.dart';
 import '../services/airtable_services.dart';
 import '../services/getx_storage.dart';
 
-class GroupRepository {
+class FarmerRepository {
   final StorageService storage = StorageService();
 
   // Function to fetch farmers from Airtable
