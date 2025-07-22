@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:kijani_pmc_app/models/photo.dart';
-import 'package:kijani_pmc_app/models/return_data.dart';
-import 'package:kijani_pmc_app/services/internet_check.dart';
+import 'package:kijani_pgc_app/models/photo.dart';
+import 'package:kijani_pgc_app/models/return_data.dart';
+import 'package:kijani_pgc_app/services/internet_check.dart';
 import 'package:s3_storage/io.dart';
 import 'package:s3_storage/s3_storage.dart';
 

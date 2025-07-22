@@ -1,107 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hugeicons/hugeicons.dart';
+import 'package:kijani_pgc_app/components/app_bar.dart';
+import 'package:kijani_pgc_app/components/empty_widget.dart';
+import 'package:kijani_pgc_app/components/reusable_body.dart';
+import 'package:kijani_pgc_app/components/widgets/list_tile.dart';
+import 'package:kijani_pgc_app/controllers/parish_controller.dart';
+import 'package:kijani_pgc_app/models/grid_item.dart';
+import 'package:kijani_pgc_app/utilities/constants.dart';
 
-import '../../controllers/user_controller.dart';
+class ParishScreen extends StatelessWidget {
+  const ParishScreen({super.key});
 
-class ParishScreen extends StatefulWidget {
-  const ParishScreen({super.key, required this.parish});
-  final String parish;
-  @override
-  State<ParishScreen> createState() => _ParishScreenState();
-}
-
-class _ParishScreenState extends State<ParishScreen> {
-  final UserController pmcCtrl = Get.find();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Image.asset(
-            'images/kijani_logo.png',
-            color: Colors.white,
-          ),
-        ),
-        backgroundColor: const Color(0xff23566d),
-        title: Text(
-          widget.parish.split(" | ").last,
-          style: const TextStyle(color: Colors.white),
-        ),
-      ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                const SizedBox(height: 20),
-                for (int i = 0; i < 5; i++)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor:
-                              const WidgetStatePropertyAll(Color(0xff23566d)),
-                          shape: WidgetStatePropertyAll(
-                            RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                          ),
-                          minimumSize:
-                              const WidgetStatePropertyAll(Size(300, 60)),
-                          maximumSize:
-                              const WidgetStatePropertyAll(Size(300, 60)),
-                        ),
-                        onPressed: () {},
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "202$i Group",
-                              style: const TextStyle(
-                                  fontSize: 18, color: Colors.white),
-                            ),
-                          ],
-                        ),
+    final ParishController parishController = Get.put(ParishController());
+
+    return Obx(() {
+      final groups = parishController.groups;
+      final parish = parishController.activeParishName.value;
+      var isLoading = parishController.isGroupsLoading.value;
+
+      return Scaffold(
+        appBar: MyAppBar(title: "$parish Parish"),
+        backgroundColor: const Color(0xFFF5F5F5),
+        body: isLoading
+            ? const ReusableScreenBodySkeleton()
+            : groups.isNotEmpty
+                ? ReusableScreenBody(
+                    listTitle: "Parish groups",
+                    gridItems: [
+                      GridItem(
+                        title: "Groups",
+                        value: groups.length,
+                        icon: HugeIcons.strokeRoundedLocation03,
+                        color: kijaniBlue,
                       ),
-                      const SizedBox(
-                        height: 12,
-                      ),
+                      GridItem(
+                          title: "", value: 0, icon: null, color: kijaniBrown),
+                      GridItem(
+                          title: "", value: 0, icon: null, color: Colors.black),
+                      GridItem(
+                          title: "", value: 0, icon: null, color: kijaniGreen),
                     ],
-                  ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    shape: WidgetStatePropertyAll(
-                      RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
+                    items: groups,
+                    itemBuilder: (context, group, index) => CustomListItem(
+                      title: group.name,
+                      subtitle: "${group.gardenIDs.length}",
+                      trailing: const Icon(HugeIcons.strokeRoundedArrowRight01,
+                          color: Colors.black),
+                      onTap: () {
+                        // Your logic
+                      },
                     ),
-                    backgroundColor: WidgetStatePropertyAll(Colors.grey[400]),
-                    minimumSize: const WidgetStatePropertyAll(Size(200, 50)),
-                    maximumSize: const WidgetStatePropertyAll(Size(200, 50)),
+                  )
+                : EmptyDataScreen(
+                    onUpdate: () {
+                      print("Updating data");
+                    },
+                    title: "No parish groups found",
                   ),
-                  onPressed: () {},
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.people_alt,
-                          size: 24, color: Color(0xff23566d)),
-                      //Icon(Icons.add, color: Color(0xff23566d)),
-                      Text(
-                        'Add Group',
-                        style:
-                            TextStyle(color: Color(0xff23566d), fontSize: 16),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+      );
+    });
   }
 }

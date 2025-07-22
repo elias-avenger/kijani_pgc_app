@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kijani_pmc_app/models/parish.dart';
+import 'package:kijani_pgc_app/models/parish.dart';
 
 class ParishDropdown extends StatefulWidget {
   final String label;
@@ -79,9 +79,9 @@ class _ParishDropdownState extends State<ParishDropdown> {
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             )),
-                        Text(
-                          item.pc.split(" | ")[1],
-                          style: const TextStyle(
+                        const Text(
+                          'item.pc.split(" | ")[1]',
+                          style: TextStyle(
                             fontSize: 12,
                             color: Colors.black54,
                           ),
@@ -93,9 +93,9 @@ class _ParishDropdownState extends State<ParishDropdown> {
                         : null,
                     onTap: () {
                       setState(() {
-                        _selectedValue = item.assignmentID;
+                        _selectedValue = 'item.assignmentID';
                       });
-                      widget.onChanged(item.assignmentID);
+                      widget.onChanged('item.assignmentID');
                       Get.back();
                     },
                   );

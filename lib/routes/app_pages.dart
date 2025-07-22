@@ -1,9 +1,11 @@
 import 'package:get/get.dart';
-import 'package:kijani_pmc_app/routes/app_bindings.dart';
-import 'package:kijani_pmc_app/screens/auth/login_screen.dart';
-import 'package:kijani_pmc_app/screens/syncing/unsynced_data_screen.dart';
-import 'package:kijani_pmc_app/screens/home/home_screen.dart';
-import 'package:kijani_pmc_app/screens/reports/daily_reporting.dart';
+import 'package:kijani_pgc_app/routes/app_bindings.dart';
+import 'package:kijani_pgc_app/screens/auth/login_screen.dart';
+import 'package:kijani_pgc_app/screens/home/home_screen.dart';
+import 'package:kijani_pgc_app/screens/parish/parish_screen.dart';
+import 'package:kijani_pgc_app/screens/reports/daily_reporting.dart';
+import 'package:kijani_pgc_app/screens/syncing/unsynced_data_screen.dart';
+
 part 'app_routes.dart';
 
 class AppPages {
@@ -17,7 +19,7 @@ class AppPages {
     ),
     GetPage(
       name: Routes.HOME,
-      page: () => HomeScreen(),
+      page: () => const HomeScreen(),
       binding: UserBinding(),
     ),
     GetPage(
@@ -27,6 +29,11 @@ class AppPages {
     GetPage(
       name: Routes.UNSYCEDDATA,
       page: () => const UnsyncedDataScreen(),
+    ),
+    GetPage(
+      name: Routes.PARISH,
+      page: () => const ParishScreen(),
+      binding: ParishBinding(),
     ),
   ];
 }

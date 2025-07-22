@@ -1,8 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:get_storage/get_storage.dart';
 
 const String kUserDataKey = 'user_data';
 const String kParishDataKey = 'parish_data';
-const String kUnsyncedReportsKey = 'unsynced_reports';
+const String kGroupDataKey = 'group_data';
+const String kFarmerDataKey = 'farmer_data';
+const String kGardenDataKey = 'garden_data';
+const String kUnSyncedReportsKey = 'unSynced_reports';
 
 class StorageService {
   // Private instance of GetStorage for local key-value storage
@@ -37,7 +41,36 @@ class StorageService {
       // Persist the updated data to storage
       await _storage.write(key, currentData);
     } catch (e) {
-      print('Error saving entity ($key, $id): $e');
+      if (kDebugMode) {
+        print('Error saving entity ($key, $id): $e');
+      }
+    }
+  }
+
+  /// Saves a list of units that belong to a particular entity in local storage.
+  /// Updates the existing data if the key already exists, adding or overwriting the entity for the given ID.
+  /// - [key]: The category or type of entities (e.g., 'parishes', 'users') under which the entity is stored.
+  /// - [entityId]: The unique identifier for the entity (e.g., a parish ID or user ID).
+  /// - [unitsList]: a list of units from of a particular entity (e.g. groups of a parish).
+  /// Throws an error (caught internally) if storage fails; check logs for details.
+  Future<void> saveEntityUnits(
+    String key,
+    String entityId,
+    dynamic unitsList,
+    // Map<String, dynamic> Function() toJson,
+  ) async {
+    try {
+      // Fetch existing data under the key; default to empty map if null
+      Map<String, dynamic> currentData =
+          _storage.read(key) ?? <String, dynamic>{};
+      // Store the entity's JSON representation under its ID
+      currentData[entityId] = unitsList;
+      // Persist the updated data to storage
+      await _storage.write(key, currentData);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error saving entity ($key, $entityId): $e');
+      }
     }
   }
 
@@ -62,7 +95,36 @@ class StorageService {
       // Return null if no data is found
       return null;
     } catch (e) {
-      print('Error fetching entity ($key, $id): $e');
+      if (kDebugMode) {
+        print('Error fetching entity ($key, $id): $e');
+      }
+      return null;
+    }
+  }
+
+  /// Fetches units of single entity by its ID from local storage.
+  /// - [key]: The category or type of entities (e.g., 'parishes') where the entity is stored.
+  /// - [entityId]: The unique identifier of the entity to retrieve.
+  /// Returns the entity if found, or null if the key or ID doesn't exist or an error occurs.
+  dynamic fetchEntityUnits(
+    String key,
+    String entityId,
+    // dynamic Function(Map<String, dynamic>) fromJson,
+  ) {
+    try {
+      // Read the data stored under the key
+      Map<String, dynamic>? storedData = _storage.read(key);
+      // Check if data exists and contains the specified ID
+      if (storedData != null && storedData[entityId] != null) {
+        // Convert the stored data to the entity type and return it
+        return storedData[entityId];
+      }
+      // Return null if no data is found
+      return null;
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching entity ($key, $entityId): $e');
+      }
       return null;
     }
   }
@@ -88,7 +150,9 @@ class StorageService {
       // Return empty map if no data is found
       return {};
     } catch (e) {
-      print('Error fetching all entities ($key): $e');
+      if (kDebugMode) {
+        print('Error fetching all entities ($key): $e');
+      }
       return {};
     }
   }
@@ -115,7 +179,9 @@ class StorageService {
         return true;
       }
     } catch (e) {
-      print('Error deleting entity ($key, $id): $e');
+      if (kDebugMode) {
+        print('Error deleting entity ($key, $id): $e');
+      }
       return false;
     }
   }
@@ -129,7 +195,9 @@ class StorageService {
       await _storage.remove(key);
       return true;
     } catch (e) {
-      print('Error clearing entities ($key): $e');
+      if (kDebugMode) {
+        print('Error clearing entities ($key): $e');
+      }
       return false;
     }
   }
@@ -142,7 +210,9 @@ class StorageService {
       await _storage.erase();
       return true;
     } catch (e) {
-      print('Error clearing all storage: $e');
+      if (kDebugMode) {
+        print('Error clearing all storage: $e');
+      }
       return false;
     }
   }

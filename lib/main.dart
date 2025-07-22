@@ -1,13 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:get/get.dart';
 import 'package:in_app_update/in_app_update.dart';
-import 'package:kijani_pmc_app/controllers/user_controller.dart';
-import 'package:kijani_pmc_app/routes/app_bindings.dart';
-import 'package:kijani_pmc_app/routes/app_pages.dart';
-import 'package:kijani_pmc_app/screens/auth/login_screen.dart';
-import 'package:kijani_pmc_app/screens/home/home_screen.dart';
-import 'package:kijani_pmc_app/services/getx_storage.dart';
+import 'package:kijani_pgc_app/controllers/user_controller.dart';
+import 'package:kijani_pgc_app/routes/app_bindings.dart';
+import 'package:kijani_pgc_app/routes/app_pages.dart';
+import 'package:kijani_pgc_app/screens/auth/login_screen.dart';
+import 'package:kijani_pgc_app/screens/home/home_screen.dart';
+import 'package:kijani_pgc_app/services/getx_storage.dart';
 
 void main() async {
   StorageService storageService = StorageService();
@@ -34,21 +35,24 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      initialBinding: UserBinding(),
-      initialRoute: AppPages.INITIAL,
-      getPages: AppPages.pages,
-      home: Obx(() {
-        if (isLoading.value) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        }
+    return StyledToast(
+      locale: const Locale('en', 'US'),
+      child: GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        initialBinding: UserBinding(),
+        initialRoute: AppPages.INITIAL,
+        getPages: AppPages.pages,
+        home: Obx(() {
+          if (isLoading.value) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
 
-        final userData = userController.branchData;
-        return userData.isEmpty ? LoginScreen() : HomeScreen();
-      }),
+          final userData = userController.branchData;
+          return userData.isEmpty ? LoginScreen() : const HomeScreen();
+        }),
+      ),
     );
   }
 

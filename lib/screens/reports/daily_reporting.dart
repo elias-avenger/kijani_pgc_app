@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
-import 'package:kijani_pmc_app/controllers/report_controller.dart';
-import 'package:kijani_pmc_app/components/widgets/buttons/primary_button.dart';
-import 'package:kijani_pmc_app/components/dropdown_field.dart';
-import 'package:kijani_pmc_app/components/widgets/file_upload_field.dart';
-import 'package:kijani_pmc_app/components/widgets/multi_select_field.dart';
-import 'package:kijani_pmc_app/components/widgets/text_area_field.dart';
-import 'package:kijani_pmc_app/controllers/user_controller.dart';
+import 'package:kijani_pgc_app/components/dropdown_field.dart';
+import 'package:kijani_pgc_app/components/widgets/buttons/primary_button.dart';
+import 'package:kijani_pgc_app/components/widgets/file_upload_field.dart';
+import 'package:kijani_pgc_app/components/widgets/multi_select_field.dart';
+import 'package:kijani_pgc_app/components/widgets/text_area_field.dart';
+import 'package:kijani_pgc_app/controllers/report_controller.dart';
+import 'package:kijani_pgc_app/controllers/user_controller.dart';
 
 class DailyReportScreen extends StatelessWidget {
   const DailyReportScreen({super.key});
@@ -22,7 +22,7 @@ class DailyReportScreen extends StatelessWidget {
         title: const Text("Daily Activity Report"),
         leading: GestureDetector(
           onTap: () => Get.back(),
-          child: HugeIcon(
+          child: const HugeIcon(
             icon: HugeIcons.strokeRoundedCircleArrowLeft01,
             color: Colors.black,
             size: 30,
@@ -56,6 +56,21 @@ class DailyReportScreen extends StatelessWidget {
                 selectedOptions: controller.selectedActivities,
               ),
               const SizedBox(height: 16),
+              Obx(() {
+                if (controller.selectedActivities.any(
+                  (activity) => activity == "Other activities",
+                )) {
+                  return TextAreaWidget(
+                    label: "Other Activity(ies)",
+                    controller: controller.otherActivitiesController,
+                    onChanged: (value) {
+                      controller.otherActivities.value = value;
+                    },
+                  );
+                }
+                return const SizedBox.shrink();
+              }),
+              const SizedBox(height: 16),
               TextAreaWidget(
                 label:
                     "Provide more details about the activity and any general feedback",
@@ -85,6 +100,21 @@ class DailyReportScreen extends StatelessWidget {
                 options: controller.activityOptions,
                 selectedOptions: controller.nextActivities,
               ),
+              const SizedBox(height: 16),
+              Obx(() {
+                if (controller.nextActivities.any(
+                  (activity) => activity == "Other assignment",
+                )) {
+                  return TextAreaWidget(
+                    label: "Other Next Activity(ies)",
+                    controller: controller.otherNextActivitiesController,
+                    onChanged: (value) {
+                      controller.otherNextActivities.value = value;
+                    },
+                  );
+                }
+                return const SizedBox.shrink();
+              }),
               const SizedBox(height: 24),
               PrimaryButton(
                 text: "Submit",

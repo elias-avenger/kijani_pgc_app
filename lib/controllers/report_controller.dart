@@ -2,11 +2,11 @@ import 'package:airtable_crud/airtable_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:kijani_pmc_app/controllers/user_controller.dart';
-import 'package:kijani_pmc_app/models/report.dart';
-import 'package:kijani_pmc_app/models/return_data.dart';
-import 'package:kijani_pmc_app/repositories/report_repository.dart';
-import 'package:kijani_pmc_app/routes/app_pages.dart';
+import 'package:kijani_pgc_app/controllers/user_controller.dart';
+import 'package:kijani_pgc_app/models/report.dart';
+import 'package:kijani_pgc_app/models/return_data.dart';
+import 'package:kijani_pgc_app/repositories/report_repository.dart';
+import 'package:kijani_pgc_app/routes/app_pages.dart';
 
 class ReportController extends GetxController {
   ReportRepository reportRepo = ReportRepository();
@@ -14,14 +14,20 @@ class ReportController extends GetxController {
 
   var selectedParish = ''.obs;
   var selectedActivities = <String>[].obs;
+  var otherActivities = "".obs;
   var details = ''.obs;
   var nextActivities = <String>[].obs;
+  var otherNextActivities = "".obs;
   RxList<String> attachments = <String>[].obs;
 
   List<String> get activityOptions => ReportRepository.activities;
 
   final TextEditingController detailsController = TextEditingController();
   final TextEditingController nextDaysActivitiesController =
+      TextEditingController();
+  final TextEditingController otherNextActivitiesController =
+      TextEditingController();
+  final TextEditingController otherActivitiesController =
       TextEditingController();
 
   void pickFiles() async {
@@ -36,13 +42,15 @@ class ReportController extends GetxController {
 
   Future<void> submitForm() async {
     DailyReport data = DailyReport.fromJson({
-      'userID': userController.branchData['ID'],
-      'parish': selectedParish.value,
-      'activities': selectedActivities,
-      'details': details.value,
-      'nextActivities': nextActivities,
-      'images': attachments, // Pass List<String>
-      'date': DateTime.now().toIso8601String(),
+      'PGC': userController.branchData['ID'].trim(),
+      'Parish': selectedParish.value.trim(),
+      'Activities': selectedActivities,
+      'Other activities': otherActivities.value,
+      'Activity details': details.value,
+      'Next activities': nextActivities.join(", "),
+      'Other next activities': otherNextActivities.value,
+      'Photo Urls': attachments, // Pass List<String>
+      'Date': DateTime.now().toIso8601String(),
     });
 
     Data<AirtableRecord> isSubmitted = await reportRepo.submitDailyReport(data);
