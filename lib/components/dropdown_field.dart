@@ -79,23 +79,23 @@ class _ParishDropdownState extends State<ParishDropdown> {
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             )),
-                        const Text(
-                          'item.pc.split(" | ")[1]',
-                          style: TextStyle(
+                        Text(
+                          "[${item.id}]",
+                          style: const TextStyle(
                             fontSize: 12,
                             color: Colors.black54,
                           ),
                         ),
                       ],
                     ),
-                    trailing: _selectedValue == item
+                    trailing: _selectedValue == item.id
                         ? const Icon(Icons.check_circle, color: Colors.green)
                         : null,
                     onTap: () {
                       setState(() {
-                        _selectedValue = 'item.assignmentID';
+                        _selectedValue = item.id;
                       });
-                      widget.onChanged('item.assignmentID');
+                      widget.onChanged(item.id);
                       Get.back();
                     },
                   );
