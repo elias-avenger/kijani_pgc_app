@@ -67,7 +67,7 @@ class HomeScreen extends StatelessWidget {
                   items: parishes,
                   itemBuilder: (context, parish, index) => CustomListItem(
                     title: "${parish.name} Parish",
-                    subtitle: "{parish.groupIDs.length} Groups",
+                    subtitle: "${parish.numGroups} Groups",
                     trailing: const Icon(HugeIcons.strokeRoundedArrowRight01,
                         color: Colors.black),
                     onTap: () {
