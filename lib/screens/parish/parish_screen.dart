@@ -46,7 +46,7 @@ class ParishScreen extends StatelessWidget {
                     items: groups,
                     itemBuilder: (context, group, index) => CustomListItem(
                       title: group.name,
-                      subtitle: "${group.gardenIDs.length}",
+                      subtitle: "${group.farmerIDs.length} farmers",
                       trailing: const Icon(HugeIcons.strokeRoundedArrowRight01,
                           color: Colors.black),
                       onTap: () {
