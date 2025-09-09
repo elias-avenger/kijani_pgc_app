@@ -8,6 +8,7 @@ class Group {
   final String name;
   final String season;
   final List<String> gardenIDs;
+  final List farmerIDs;
 
   Group({
     required this.recordID,
@@ -15,6 +16,7 @@ class Group {
     required this.season,
     required this.name,
     required this.gardenIDs,
+    required this.farmerIDs,
   });
 
   factory Group.fromAirtable(AirtableRecord record) {
@@ -25,6 +27,7 @@ class Group {
       name: data['Group Name'] as String? ?? '',
       season: data['Season'] as String? ?? '',
       gardenIDs: (data['Group Gardens'] as String?)?.split(',') ?? [],
+      farmerIDs: data['Farmers'] as List? ?? [],
     );
   }
 
@@ -37,6 +40,9 @@ class Group {
       gardenIDs: data['Group Gardens'] != null
           ? List<String>.from(data['Group Gardens'] as List<dynamic>)
           : [],
+      farmerIDs: data['Farmers'] != null
+          ? List<String>.from(data['Farmers'] as List<dynamic>)
+          : [],
     );
   }
 
@@ -47,6 +53,7 @@ class Group {
       'Group Name': name,
       'Season': season,
       'Group Gardens': gardenIDs,
+      'Farmers': farmerIDs,
     };
   }
 
