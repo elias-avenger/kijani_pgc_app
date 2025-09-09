@@ -1,19 +1,23 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kijani_pgc_app/controllers/user_controller.dart';
 import 'package:kijani_pgc_app/models/group.dart';
 import 'package:kijani_pgc_app/models/report.dart';
 import 'package:kijani_pgc_app/models/return_data.dart';
 import 'package:kijani_pgc_app/models/user_model.dart';
 import 'package:kijani_pgc_app/repositories/group_repository.dart';
+import 'package:kijani_pgc_app/repositories/parish_repository.dart';
 import 'package:kijani_pgc_app/repositories/report_repository.dart';
 import 'package:kijani_pgc_app/utilities/toast_utils.dart';
 
 import '../services/internet_check.dart';
 
 class ParishController extends GetxController {
+  final ParishRepository _parishRepo = ParishRepository();
   final GroupRepository _groupRepo = GroupRepository();
   final InternetCheck _internetCheck = InternetCheck();
+  final UserController _userController = Get.find<UserController>();
 
   final ReportRepository _reportRepo = ReportRepository();
 
@@ -78,21 +82,14 @@ class ParishController extends GetxController {
       var groups = await _groupRepo.fetchGroups(parishId);
       if (groups.status) {
         await _groupRepo.saveGroups(groups.data ?? [], parishId);
-        // _showSnackBar(
-        //   'Parish groups updated',
-        //   'Parish groups updated successfully',
-        // );
-
         showToastGlobal(
           "Parish group List updated",
           backgroundColor: Colors.green,
         );
+        int numGroups = groups.data!.length;
+        _parishRepo.updateParishGroups(parishId, numGroups);
+        await _userController.updateParishesList();
       } else {
-        // _showSnackBar(
-        //   'Update failed',
-        //   groups.message ?? "Just could not",
-        //   isError: true,
-        // );
         showToastGlobal(
           "An error occurred",
           backgroundColor: Colors.red,
