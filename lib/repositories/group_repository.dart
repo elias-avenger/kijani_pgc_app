@@ -18,6 +18,7 @@ class GroupRepository {
         'Group Name',
         'Group Gardens',
         'Season',
+        'Farmers'
       ];
 
       List<AirtableRecord> data = await uGGardensBase
@@ -96,6 +97,7 @@ class GroupRepository {
 
       if (kDebugMode) {
         print('Fetched ${storedGroups.length} local groups');
+        print('First Group: ${storedGroups[0].name}');
       }
       return Data<List<Group>>.success(storedGroups);
     } catch (e) {
