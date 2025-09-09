@@ -28,7 +28,10 @@ class HomeScreen extends StatelessWidget {
       final user = User.fromJson(userController.branchData);
       final parishes = userController.parishes;
       var isLoading = userController.isHomeScreenLoading.value;
-
+      var numGroups = 0;
+      for (var parish in parishes) {
+        numGroups += parish.numGroups;
+      }
       return Scaffold(
         backgroundColor: const Color(0xFFF5F5F5),
         appBar: isLoading
@@ -58,7 +61,11 @@ class HomeScreen extends StatelessWidget {
                       color: kijaniBlue,
                     ),
                     GridItem(
-                        title: "", value: 0, icon: null, color: kijaniBrown),
+                      title: "Groups",
+                      value: numGroups,
+                      icon: HugeIcons.strokeRoundedGroup01,
+                      color: kijaniBrown,
+                    ),
                     GridItem(
                         title: "", value: 0, icon: null, color: Colors.black),
                     GridItem(
