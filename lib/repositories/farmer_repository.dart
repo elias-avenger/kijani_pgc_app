@@ -21,6 +21,7 @@ class FarmerRepository {
 
       List<AirtableRecord> data = await uGGardensBase
           .fetchRecordsWithFilter("Gardens", filter, fields: fields);
+
       if (kDebugMode) {
         print(filter);
       }
@@ -38,8 +39,9 @@ class FarmerRepository {
       Map<String, dynamic> farmerRecords = {};
       for (var record in data) {
         if (kDebugMode) {
-          print("Farmer: ${record.fields['FarmerID']}");
+          print("Farmer: ${record.fields['FarmerID']} - ${record.fields['Farmer Phone Number']}");
         }
+        record.fields['Farmer Phone Number'] = record.fields['Farmer Phone Number'][0];
         farmerRecords[record.fields['FarmerID']] = record;
       }
 
@@ -71,7 +73,7 @@ class FarmerRepository {
   Future<Data> saveFarmers(List<Farmer> farmers, String groupId) async {
     try {
       await storage.saveEntityUnits(
-        kGroupDataKey,
+        kFarmerDataKey,
         groupId, // Unique ID for the group
         farmers, // The entity object (not used directly, but for clarity)
       );

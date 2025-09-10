@@ -82,7 +82,9 @@ class HomeScreen extends StatelessWidget {
                         'parish': parish.id,
                         'name': parish.name
                       });
-                      print("Parish To Open: ${parish.name}");
+                      if (kDebugMode) {
+                        print("Parish To Open: ${parish.name}");
+                      }
                     },
                   ),
                 ),
