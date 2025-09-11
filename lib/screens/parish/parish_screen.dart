@@ -24,6 +24,11 @@ class ParishScreen extends StatelessWidget {
       final parish = parishController.activeParishName.value;
       var isLoading = parishController.isGroupsLoading.value;
 
+      var numFarmers = 0;
+      for (var group in groups) {
+        numFarmers += group.farmerIDs.length;
+      }
+
       return Scaffold(
         appBar: MyAppBar(title: "$parish Parish"),
         backgroundColor: const Color(0xFFF5F5F5),
@@ -36,11 +41,15 @@ class ParishScreen extends StatelessWidget {
                       GridItem(
                         title: "Groups",
                         value: groups.length,
-                        icon: HugeIcons.strokeRoundedLocation03,
+                        icon: HugeIcons.strokeRoundedUserGroup,
                         color: kijaniBlue,
                       ),
                       GridItem(
-                          title: "", value: 0, icon: null, color: kijaniBrown),
+                        title: "Farmers",
+                        value: numFarmers,
+                        icon: HugeIcons.strokeRoundedUser,
+                        color: kijaniBrown,
+                      ),
                       GridItem(
                           title: "", value: 0, icon: null, color: Colors.black),
                       GridItem(
