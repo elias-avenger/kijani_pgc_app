@@ -6,6 +6,8 @@ import 'package:kijani_pgc_app/screens/parish/parish_screen.dart';
 import 'package:kijani_pgc_app/screens/reports/daily_reporting.dart';
 import 'package:kijani_pgc_app/screens/syncing/unsynced_data_screen.dart';
 
+import '../screens/group/group_screen.dart';
+
 part 'app_routes.dart';
 
 class AppPages {
@@ -34,6 +36,11 @@ class AppPages {
       name: Routes.PARISH,
       page: () => const ParishScreen(),
       binding: ParishBinding(),
+    ),
+    GetPage(
+      name: Routes.GROUP,
+      page: () => const GroupScreen(),
+      binding: GroupBinding(),
     ),
   ];
 }

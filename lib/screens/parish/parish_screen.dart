@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
@@ -8,6 +9,8 @@ import 'package:kijani_pgc_app/components/widgets/list_tile.dart';
 import 'package:kijani_pgc_app/controllers/parish_controller.dart';
 import 'package:kijani_pgc_app/models/grid_item.dart';
 import 'package:kijani_pgc_app/utilities/constants.dart';
+
+import '../../routes/app_pages.dart';
 
 class ParishScreen extends StatelessWidget {
   const ParishScreen({super.key});
@@ -21,6 +24,11 @@ class ParishScreen extends StatelessWidget {
       final parish = parishController.activeParishName.value;
       var isLoading = parishController.isGroupsLoading.value;
 
+      var numFarmers = 0;
+      for (var group in groups) {
+        numFarmers += group.farmerIDs.length;
+      }
+
       return Scaffold(
         appBar: MyAppBar(title: "$parish Parish"),
         backgroundColor: const Color(0xFFF5F5F5),
@@ -33,11 +41,15 @@ class ParishScreen extends StatelessWidget {
                       GridItem(
                         title: "Groups",
                         value: groups.length,
-                        icon: HugeIcons.strokeRoundedLocation03,
+                        icon: HugeIcons.strokeRoundedUserGroup,
                         color: kijaniBlue,
                       ),
                       GridItem(
-                          title: "", value: 0, icon: null, color: kijaniBrown),
+                        title: "Farmers",
+                        value: numFarmers,
+                        icon: HugeIcons.strokeRoundedUser,
+                        color: kijaniBrown,
+                      ),
                       GridItem(
                           title: "", value: 0, icon: null, color: Colors.black),
                       GridItem(
@@ -46,17 +58,25 @@ class ParishScreen extends StatelessWidget {
                     items: groups,
                     itemBuilder: (context, group, index) => CustomListItem(
                       title: group.name,
-                      subtitle: "${group.gardenIDs.length}",
+                      subtitle: "${group.farmerIDs.length} farmers",
                       trailing: const Icon(HugeIcons.strokeRoundedArrowRight01,
                           color: Colors.black),
                       onTap: () {
-                        // Your logic
+                        Get.toNamed(Routes.GROUP, arguments: {
+                          'group': group.id,
+                          'name': group.name
+                        });
+                        if (kDebugMode) {
+                          print("Group To Open: ${group.name}");
+                        }
                       },
                     ),
                   )
                 : EmptyDataScreen(
                     onUpdate: () {
-                      print("Updating data");
+                      if (kDebugMode) {
+                        print("Updating data");
+                      }
                     },
                     title: "No parish groups found",
                   ),
