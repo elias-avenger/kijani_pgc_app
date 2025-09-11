@@ -19,10 +19,10 @@ class Group {
     required this.farmerIDs,
   });
 
-  factory Group.fromAirtable(AirtableRecord record) {
-    final data = record.fields;
+  factory Group.fromAirtable(Map<String, dynamic> record) {
+    final data = record;
     return Group(
-      recordID: record.id, // Add null safety
+      recordID: data['recordID'] as String? ?? '', // Add null safety
       id: data['ID'] as String? ?? '', // Add null coalescing
       name: data['Group Name'] as String? ?? '',
       season: data['Season'] as String? ?? '',
