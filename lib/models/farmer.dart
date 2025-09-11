@@ -13,8 +13,8 @@ class Farmer {
     required this.phone,
   });
 
-  factory Farmer.fromAirtable(AirtableRecord record) {
-    final data = record.fields;
+  factory Farmer.fromAirtable(Map<String, dynamic> data) {
+    //final data = record;
     return Farmer(
       id: data['FarmerID'].split("-")[0] as String? ??
           '', // Add null coalescing

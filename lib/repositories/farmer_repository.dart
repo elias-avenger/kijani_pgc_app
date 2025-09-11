@@ -12,7 +12,7 @@ class FarmerRepository {
   // Function to fetch farmers from Airtable
   Future<Data<List<Farmer>>> fetchFarmers(String groupId) async {
     try {
-      String filter = '{GroupID} = "${groupId.trim()}"';
+      String filter = 'AND(Farmer, GroupID = "${groupId.trim()}")';
 
       List<String> fields = <String>[
         'FarmerID',
@@ -34,21 +34,36 @@ class FarmerRepository {
       }
 
       if (kDebugMode) {
-        print('Fetched ${data.length} records from Airtable');
+        print('Fetched: ${data.length}');
       }
       Map<String, dynamic> farmerRecords = {};
       for (var record in data) {
-        if (kDebugMode) {
-          print("Farmer: ${record.fields['FarmerID']} - ${record.fields['Farmer Phone Number']}");
+        if(record.fields['FarmerID'] != null){
+          String id = record.fields['FarmerID'];
+          String phone = record.fields['Farmer Phone Number'][0] ?? "";
+          Map<String, dynamic> farmerRecord = {"FarmerID": id, "Farmer Phone Number": phone};
+          if(!farmerRecords.containsKey(id)){
+            farmerRecords.addAll({id: farmerRecord});
+            if (kDebugMode) {
+              print('Farmer Record: $farmerRecord');
+            }
+          }
         }
-        record.fields['Farmer Phone Number'] = record.fields['Farmer Phone Number'][0];
-        farmerRecords[record.fields['FarmerID']] = record;
       }
 
-      List<AirtableRecord> farmerData = [];
+      if (kDebugMode) {
+        print("Records: $farmerRecords");
+      }
+
+      List<Map<String, dynamic>> farmerData = [];
       if (farmerRecords.isNotEmpty) {
         for (var id in farmerRecords.keys) {
-          farmerData.add(farmerRecords[id]);
+          if(!farmerData.contains(farmerRecords[id])) {
+            farmerData.add(farmerRecords[id]);
+          }
+        }
+        if (kDebugMode) {
+          print('Group farmers: $farmerData');
         }
       }
 
