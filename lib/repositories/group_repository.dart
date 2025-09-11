@@ -38,8 +38,31 @@ class GroupRepository {
         print('Fetched ${data.length} records from Airtable');
       }
 
+      List<Map<String, dynamic>> groupRecords = [];
+      for (var record in data) {
+        if(record.fields['ID'] != null){
+          String id = record.fields['ID'];
+          String name = record.fields['Group Name'];
+          String gardens = record.fields['Group Gardens'] ?? "";
+          String season = record.fields['Season'];
+          List farmers = record.fields['Farmers'] ?? [];
+          farmers.remove(null);
+          Map<String, dynamic> groupRecord = {
+            "recordID": record.id,
+            "ID": id,
+            "Group Name": name,
+            "Group Gardens": gardens,
+            "Season": season,
+            "Farmers": farmers.toSet().toList(),
+          };
+          if(!groupRecords.contains(groupRecord)){
+            groupRecords.add(groupRecord);
+          }
+        }
+      }
+
       List<Group> groups =
-          data.map((record) => Group.fromAirtable(record)).toList();
+          groupRecords.map((record) => Group.fromAirtable(record)).toSet().toList();
       return Data<List<Group>>.success(groups);
     } on AirtableException catch (e) {
       if (kDebugMode) {
