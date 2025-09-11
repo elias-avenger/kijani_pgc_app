@@ -1,8 +1,6 @@
-import 'package:badges/badges.dart' as badges;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:kijani_pgc_app/components/app_drawer.dart';
 import 'package:kijani_pgc_app/components/home_appbar.dart';
@@ -63,7 +61,7 @@ class HomeScreen extends StatelessWidget {
                     GridItem(
                       title: "Groups",
                       value: numGroups,
-                      icon: HugeIcons.strokeRoundedGroup01,
+                      icon: HugeIcons.strokeRoundedUserGroup,
                       color: kijaniBrown,
                     ),
                     GridItem(
