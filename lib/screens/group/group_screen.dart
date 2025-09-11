@@ -35,7 +35,7 @@ class GroupScreen extends StatelessWidget {
             GridItem(
               title: "Farmers",
               value: farmers.length,
-              icon: HugeIcons.strokeRoundedLocation03,
+              icon: HugeIcons.strokeRoundedUser,
               color: kijaniBlue,
             ),
             GridItem(
@@ -47,7 +47,7 @@ class GroupScreen extends StatelessWidget {
           ],
           items: farmers,
           itemBuilder: (context, farmer, index) => CustomListItem(
-            title: farmer.name,
+            title: "${farmer.name} [${farmer.phone}]",
             subtitle: "{farmer.gardens.length}",
             trailing: const Icon(HugeIcons.strokeRoundedArrowRight01,
                 color: Colors.black),
