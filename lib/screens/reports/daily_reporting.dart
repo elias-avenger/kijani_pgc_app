@@ -18,6 +18,7 @@ class DailyReportScreen extends StatelessWidget {
     final UserController userdata = Get.put(UserController());
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("Daily Activity Report"),
         leading: GestureDetector(
