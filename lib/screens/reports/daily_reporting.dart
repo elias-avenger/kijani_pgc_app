@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:kijani_pgc_app/components/app_bar.dart';
 import 'package:kijani_pgc_app/components/dropdown_field.dart';
 import 'package:kijani_pgc_app/components/widgets/buttons/primary_button.dart';
 import 'package:kijani_pgc_app/components/widgets/file_upload_field.dart';
@@ -19,16 +20,11 @@ class DailyReportScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("Daily Activity Report"),
-        leading: GestureDetector(
-          onTap: () => Get.back(),
-          child: const HugeIcon(
-            icon: HugeIcons.strokeRoundedCircleArrowLeft01,
-            color: Colors.black,
-            size: 30,
-          ),
-        ),
+      appBar: MyAppBar(
+        title: "Daily activity report",
+        onBack: () {
+          Get.back();
+        },
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -81,13 +77,6 @@ class DailyReportScreen extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 16),
-              const Text(
-                "Upload any images taken during the visit",
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
               ImagePickerWidget(
                 onImagesSelected: (values) => {
                   if (values.isNotEmpty)
