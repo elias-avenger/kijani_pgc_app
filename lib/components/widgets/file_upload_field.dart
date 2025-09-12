@@ -7,7 +7,9 @@ import 'package:kijani_pgc_app/utilities/image_picker.dart';
 
 class ImagePickerWidget extends StatefulWidget {
   final ValueChanged<List<String>> onImagesSelected;
-  final String label;
+  final String label; // Title above the card
+  final String hintText; // Dynamic hint inside the card
+  final int maxImages; // Configurable max photos
   final double? latitude;
   final double? longitude;
 
@@ -15,6 +17,8 @@ class ImagePickerWidget extends StatefulWidget {
     super.key,
     required this.onImagesSelected,
     required this.label,
+    this.hintText = 'Upload the attendance list photo',
+    this.maxImages = 4,
     this.latitude,
     this.longitude,
   });
@@ -26,10 +30,9 @@ class ImagePickerWidget extends StatefulWidget {
 class _ImagePickerWidgetState extends State<ImagePickerWidget> {
   final ImagePickerBrain _imagePickerBrain = ImagePickerBrain();
   List<File> _selectedImages = [];
-  static const int maxImages = 4;
 
   void _showImagePickerMenu() {
-    if (_selectedImages.length >= maxImages) {
+    if (_selectedImages.length >= widget.maxImages) {
       _showLimitMessage();
       return;
     }
@@ -50,7 +53,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
                 title: const Text("Take a Picture"),
                 onTap: () async {
                   Navigator.pop(context);
-                  if (_selectedImages.length >= maxImages) {
+                  if (_selectedImages.length >= widget.maxImages) {
                     _showLimitMessage();
                     return;
                   }
@@ -72,7 +75,8 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
                   Navigator.pop(context);
                   final images = await _imagePickerBrain.pickMultipleImages();
                   if (images.isNotEmpty) {
-                    final availableSlots = maxImages - _selectedImages.length;
+                    final availableSlots =
+                        widget.maxImages - _selectedImages.length;
                     final imagesToAdd =
                         images.take(availableSlots).map((e) => File(e.path));
                     setState(() {
@@ -97,7 +101,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
 
   void _showLimitMessage() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Maximum of 4 photos allowed.")),
+      SnackBar(content: Text("Maximum of ${widget.maxImages} photos allowed.")),
     );
   }
 
@@ -111,7 +115,7 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final green = const Color(0xFF2F6E4E); // Kijani-ish accent
+    const green = Color(0xFF2F6E4E); // Kijani-ish accent
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,9 +125,6 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
           padding: const EdgeInsets.only(bottom: 8),
           child: Text(
             widget.label,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
           ),
         ),
 
@@ -145,13 +146,12 @@ class _ImagePickerWidgetState extends State<ImagePickerWidget> {
                 switchInCurve: Curves.easeOut,
                 switchOutCurve: Curves.easeIn,
                 child: _selectedImages.isEmpty
-                    ? _EmptyState(
-                        green: green, hint: "Upload the attendance list photo")
+                    ? _EmptyState(green: green, hint: widget.hintText)
                     : _GridPreview(
                         files: _selectedImages,
                         onRemove: _removeImage,
                         onAddMore: _showImagePickerMenu,
-                        canAddMore: _selectedImages.length < maxImages,
+                        canAddMore: _selectedImages.length < widget.maxImages,
                       ),
               ),
             ),
