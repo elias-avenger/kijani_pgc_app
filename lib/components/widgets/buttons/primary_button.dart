@@ -1,74 +1,140 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 
 class PrimaryButton extends StatefulWidget {
-  final String text;
-  final Future<void> Function() onPressed;
-  final Color? backgroundColor;
-
   const PrimaryButton({
     super.key,
     required this.text,
     required this.onPressed,
     this.backgroundColor,
+    this.isLoading, // external loading (optional)
+    this.enabled = true, // external enable/disable
+    this.width, // null => expand to max width
+    this.height = 50,
+    this.borderRadius = const BorderRadius.all(Radius.circular(10)),
+    this.padding = const EdgeInsets.symmetric(horizontal: 16),
+    this.textStyle = const TextStyle(color: Colors.white),
+    this.leading, // optional left icon/widget
+    this.trailing, // optional right icon/widget
+    this.onLongPress,
+    this.onError, // error hook
+    this.debounce = const Duration(milliseconds: 500),
+    this.semanticsLabel,
   });
+
+  final String text;
+  final FutureOr<void> Function() onPressed;
+  final Color? backgroundColor;
+
+  // Reusability extras
+  final bool? isLoading; // if null, button manages its own loading
+  final bool enabled;
+  final double? width;
+  final double height;
+  final BorderRadius borderRadius;
+  final EdgeInsetsGeometry padding;
+  final TextStyle textStyle;
+  final Widget? leading;
+  final Widget? trailing;
+  final VoidCallback? onLongPress;
+  final void Function(Object error, StackTrace stack)? onError;
+  final Duration debounce;
+  final String? semanticsLabel;
 
   @override
   State<PrimaryButton> createState() => _PrimaryButtonState();
 }
 
 class _PrimaryButtonState extends State<PrimaryButton> {
-  bool _isLoading = false;
+  bool _internalLoading = false;
+  DateTime? _lastPressedAt;
+
+  bool get _isLoading => widget.isLoading ?? _internalLoading;
 
   Future<void> _handlePress() async {
-    if (_isLoading) return;
+    if (!widget.enabled || _isLoading) return;
 
-    setState(() => _isLoading = true);
+    // Debounce
+    final now = DateTime.now();
+    if (_lastPressedAt != null &&
+        now.difference(_lastPressedAt!) < widget.debounce) {
+      return;
+    }
+    _lastPressedAt = now;
+
+    // If parent isn't controlling loading, manage it internally
+    if (widget.isLoading == null) setState(() => _internalLoading = true);
 
     try {
-      await widget.onPressed();
-    } catch (e) {
-      // Optionally log or handle the error
-      print(e);
+      await Future.sync(widget.onPressed);
+    } catch (e, st) {
+      widget.onError?.call(e, st);
+      // Optional: rethrow if you want upstream error handling
+      // rethrow;
     } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
+      if (mounted && widget.isLoading == null) {
+        setState(() => _internalLoading = false);
       }
     }
-    return;
   }
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = widget.backgroundColor ?? const Color(0xFF2F613F);
+    final bgColor =
+        widget.backgroundColor ?? const Color(0xFF2F613F); // unchanged
+    final disabledBg = bgColor.withOpacity(0.7);
 
-    return SizedBox(
-      width: double.infinity,
-      height: 50,
-      child: ElevatedButton(
-        onPressed: _isLoading ? null : _handlePress,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: bgColor,
-          disabledBackgroundColor: bgColor.withOpacity(0.7),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
-        ),
-        child: _isLoading
-            ? const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2.5,
-                  ),
+    final buttonChild = _isLoading
+        ? const SizedBox(
+            width: 24,
+            height: 24,
+            child: CircularProgressIndicator(
+              color: Colors.white,
+              strokeWidth: 2.5,
+            ),
+          )
+        : Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (widget.leading != null) ...[
+                widget.leading!,
+                const SizedBox(width: 8),
+              ],
+              Flexible(
+                child: Text(
+                  widget.text,
+                  overflow: TextOverflow.ellipsis,
+                  style: widget.textStyle, // keep white by default
                 ),
-              )
-            : Text(
-                widget.text,
-                style: const TextStyle(color: Colors.white),
               ),
+              if (widget.trailing != null) ...[
+                const SizedBox(width: 8),
+                widget.trailing!,
+              ],
+            ],
+          );
+
+    return Semantics(
+      button: true,
+      label: widget.semanticsLabel ?? widget.text,
+      enabled: widget.enabled && !_isLoading,
+      child: SizedBox(
+        width: widget.width ?? double.infinity,
+        height: widget.height,
+        child: ElevatedButton(
+          onPressed: (widget.enabled && !_isLoading) ? _handlePress : null,
+          onLongPress:
+              (widget.enabled && !_isLoading) ? widget.onLongPress : null,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: bgColor,
+            disabledBackgroundColor: disabledBg,
+            shape: RoundedRectangleBorder(borderRadius: widget.borderRadius),
+            padding: widget.padding,
+            elevation: 0,
+          ),
+          child: buttonChild,
+        ),
       ),
     );
   }
