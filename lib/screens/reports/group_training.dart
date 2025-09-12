@@ -1,9 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:kijani_pgc_app/components/app_bar.dart';
 import 'package:kijani_pgc_app/components/widgets/buttons/primary_button.dart';
 import 'package:kijani_pgc_app/components/widgets/file_upload_field.dart';
 import 'package:kijani_pgc_app/components/widgets/multi_select.dart';
 import 'package:kijani_pgc_app/components/widgets/text_area_field.dart';
+import 'package:kijani_pgc_app/models/farmer.dart';
 
 class GroupTrainingReport extends StatefulWidget {
   const GroupTrainingReport({super.key});
@@ -15,34 +18,24 @@ class GroupTrainingReport extends StatefulWidget {
 class _GroupTrainingReportState extends State<GroupTrainingReport> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController detailsController = TextEditingController();
-
-  final users = const [
-    {"id": 1, "name": "Alice Johnson", "role": "Trainer"},
-    {"id": 2, "name": "Bob Smith", "role": "Coordinator"},
-    {"id": 3, "name": "Charlie Brown", "role": "Farmer"},
-    {"id": 4, "name": "Diana Prince", "role": "Trainer"},
-    {"id": 5, "name": "Ethan Hunt", "role": "Coordinator"},
-    {"id": 6, "name": "Fiona Gallagher", "role": "Farmer"},
-    {"id": 7, "name": "George Miller", "role": "Trainer"},
-    {"id": 8, "name": "Hannah Davis", "role": "Coordinator"},
-    {"id": 9, "name": "Isaac Newton", "role": "Farmer"},
-    {"id": 10, "name": "Jane Foster", "role": "Trainer"},
-    {"id": 11, "name": "Kevin Lee", "role": "Coordinator"},
-    {"id": 12, "name": "Laura Kim", "role": "Farmer"},
-    {"id": 13, "name": "Michael Jordan", "role": "Trainer"},
-    {"id": 14, "name": "Nina Williams", "role": "Coordinator"},
-    {"id": 15, "name": "Oscar Wilde", "role": "Farmer"},
-    {"id": 16, "name": "Paula Abdul", "role": "Trainer"},
-    {"id": 17, "name": "Quentin Blake", "role": "Coordinator"},
-    {"id": 18, "name": "Rachel Green", "role": "Farmer"},
-    {"id": 19, "name": "Samuel Adams", "role": "Trainer"},
-    {"id": 20, "name": "Tina Turner", "role": "Coordinator"},
-  ];
+  late final List<Farmer> farmers;
 
   // Current values (kept to preserve your existing behavior)
-  List<Map<String, dynamic>> picked = const [];
+  List<Farmer> picked = const [];
   List<String> _attendanceImages = [];
   List<String> _trainingImages = [];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    if (kDebugMode) {
+      print("########################################################");
+      print("Arguments: ${Get.arguments}");
+      print("########################################################");
+    }
+    farmers = Get.arguments['farmers'] ?? [];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +69,7 @@ class _GroupTrainingReportState extends State<GroupTrainingReport> {
                 const Text("Select Farmers present at the training session"),
 
                 // --- Users Multi-select (refactored with _ValidatedField) ---
-                _ValidatedField<List<Map<String, dynamic>>>(
+                _ValidatedField<List<Farmer>>(
                   initialValue: picked,
                   validator: (value) => (value == null || value.isEmpty)
                       ? 'Please select at least one user.'
@@ -89,17 +82,16 @@ class _GroupTrainingReportState extends State<GroupTrainingReport> {
                           border: Border.all(color: Colors.grey.shade300),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: MultiSelectDropdown<Map<String, dynamic>>(
-                          items: users,
-                          labelFor: (u) => u["name"],
-                          subtitleFor: (u) => "Role: ${u["role"]}",
+                        child: MultiSelectDropdown<Farmer>(
+                          items: farmers,
+                          labelFor: (u) => u.name,
+                          subtitleFor: (u) => "Phone Number: ${u.phone}",
                           placeholder: "Select users",
                           accentColor: const Color(0xFF265E3C),
                           onChanged: (values) {
                             setState(() => picked = values);
                             field.didChange(values);
-                            debugPrint(
-                                "Picked: ${values.map((u) => u["id"]).toList()}");
+                            debugPrint("Picked: ${values.map((u) => u.id)}");
                           },
                         ),
                       ),
@@ -196,8 +188,15 @@ class _GroupTrainingReportState extends State<GroupTrainingReport> {
                   text: "Submit",
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      // Process data.
-                      debugPrint("Form valid. Ready to submit.");
+                      // Pint the data to be submitted
+                      if (kDebugMode) {
+                        print({
+                          "farmers": picked,
+                          "attendance image": _attendanceImages,
+                          "Training Images": _trainingImages,
+                          "comment": detailsController.text
+                        });
+                      }
                     } else {
                       debugPrint("Form not valid");
                     }
