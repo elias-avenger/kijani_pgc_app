@@ -36,7 +36,13 @@ class GroupScreen extends StatelessWidget {
                 if (kDebugMode) {
                   print("Opening training report screen);");
                 }
-                Get.toNamed(Routes.GROUPTRAINING);
+                Get.toNamed(
+                  Routes.GROUPTRAINING,
+                  arguments: {
+                    'group': group,
+                    'farmers': farmers,
+                  },
+                );
               },
             ),
             AppMenuAction(
