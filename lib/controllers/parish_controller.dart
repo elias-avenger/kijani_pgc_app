@@ -41,45 +41,18 @@ class ParishController extends GetxController {
       if (kDebugMode) {
         print("Parish: ${args['parish']}");
       }
-
       isGroupsLoading.value = true;
       activeParishName.value = args['name'];
-      updateParishGroups(parishId: args['parish']).then((_) {
+      updateParishData(parishId: args['parish']).then((_) {
         isGroupsLoading.value = false;
       });
-    } else {
-      getParishData();
     }
   }
 
-  // Method to check if a user is logged in
-  Future<void> getParishData() async {
-    if (kDebugMode) {
-      print("....Getting parish data....");
-    }
-    Data<List<Group>> localGroups =
-        await _groupRepo.fetchLocalGroups(parish: activeParish.value);
-    if (localGroups.status) {
-      if (kDebugMode) {
-        print("Local Parish Groups: ${localGroups.data}");
-      }
-      groups.assignAll(localGroups.data as Iterable<Group>);
-    }
-
-    //fetch unSynced reports
-    Data<List<DailyReport>> unSyncedData =
-        await _reportRepo.fetchLocalReports();
-    if (unSyncedData.status) {
-      unSyncedReports.value = unSyncedData.data!.length;
-    } else {
-      unSyncedReports.value = 0;
-    }
-  }
-
-  Future<void> updateParishGroups({required String parishId}) async {
+  Future<void> updateParishData({required String parishId}) async {
     bool airtableConn = await _internetCheck.isAirtableConnected();
     if (airtableConn) {
-      var groups = await _groupRepo.fetchGroups(parishId);
+      Data<List> groups = await _groupRepo.fetchGroups(parishId);
       if (groups.status) {
         await _groupRepo.saveGroups(groups.data ?? [], parishId);
         showToastGlobal(
@@ -99,13 +72,11 @@ class ParishController extends GetxController {
     Data<List<Group>> localGroups =
         await _groupRepo.fetchLocalGroups(parish: parishId);
     if (localGroups.status) {
-      List<Group> groups = localGroups.data ?? [];
-      if (groups.isNotEmpty) {
+      List<Group> parishGroups = localGroups.data ?? [];
+      if (parishGroups.isNotEmpty) {
         activeParish.value = parishId;
-        getParishData();
-        // if (Get.currentRoute != Routes.PARISH) {
-        //   Get.toNamed(Routes.PARISH);
-        // }
+        groups.assignAll(localGroups.data as Iterable<Group>);
+        getParishUnsyncedData();
       } else {
         _showSnackBar(
           "No data",
@@ -120,9 +91,23 @@ class ParishController extends GetxController {
       //   isError: true,
       // );
       showToastGlobal(
-        "Parish Data is up to date",
-        backgroundColor: Colors.green,
+        "No Groups data. Get internet and tap again to get data!",
+        backgroundColor: Colors.red,
       );
+    }
+  }
+
+  Future<void> getParishUnsyncedData() async {
+    if (kDebugMode) {
+      print("....Getting parish data....");
+    }
+    //fetch unSynced reports
+    Data<List<DailyReport>> unSyncedData =
+        await _reportRepo.fetchLocalReports();
+    if (unSyncedData.status) {
+      unSyncedReports.value = unSyncedData.data!.length;
+    } else {
+      unSyncedReports.value = 0;
     }
   }
 

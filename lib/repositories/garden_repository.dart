@@ -85,6 +85,7 @@ class GardenRepository {
       final List<Garden> storedGardens = storage.fetchEntityUnits(
         kGardenDataKey,
         farmer,
+        // (data) => Garden.fromJson(data),
       );
       if (kDebugMode) {
         print('Raw stored data: $storedGardens');
