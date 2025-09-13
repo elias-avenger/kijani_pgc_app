@@ -7,7 +7,8 @@ import 'group_repository.dart';
 
 class ParishRepository {
   final StorageService storage = StorageService();
-  final GroupRepository _groupRepository = GroupRepository(); // Instantiate GroupRepository
+  final GroupRepository _groupRepository =
+      GroupRepository(); // Instantiate GroupRepository
 
   Future<Data<List<Parish>>> setParishes(List<String> parishIds) async {
     if (parishIds.isNotEmpty) {
@@ -87,8 +88,11 @@ class ParishRepository {
       return Data.failure('Error fetching local parishes: $e');
     }
   }
+
   void updateParishGroups(String parishId, int numGroups) {
-    print("Parish ID: $parishId, Num Groups: $numGroups");
+    if (kDebugMode) {
+      print("Parish ID: $parishId, Num Groups: $numGroups");
+    }
     Parish parish = storage.fetchEntity(
       kParishDataKey,
       parishId,
