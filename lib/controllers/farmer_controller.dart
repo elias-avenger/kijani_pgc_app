@@ -3,16 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kijani_pgc_app/models/garden.dart';
 
+import '../models/farmer.dart';
 import '../models/report.dart';
 import '../models/return_data.dart';
 import '../models/user_model.dart';
+import '../repositories/farmer_repository.dart';
 import '../repositories/garden_repository.dart';
 import '../repositories/report_repository.dart';
 import '../services/internet_check.dart';
 import '../utilities/toast_utils.dart';
+import 'group_controller.dart';
 
 class FarmerController extends GetxController {
   final GardenRepository _gardenRepo = GardenRepository();
+  final GroupController _groupController = Get.find<GroupController>();
+  final FarmerRepository _farmerRepo = FarmerRepository();
   final InternetCheck _internetCheck = InternetCheck();
 
   final ReportRepository _reportRepo = ReportRepository();
@@ -24,6 +29,8 @@ class FarmerController extends GetxController {
   var userAvatar = ''.obs;
   var activeFarmer = ''.obs;
   var activeFarmerName = ''.obs;
+  Farmer farmer = Farmer(id: '', name: '', phone: '', numGardens: 0);
+  var groupId = '';
 
   var isGardensLoading = false.obs;
 
@@ -37,38 +44,13 @@ class FarmerController extends GetxController {
       if (kDebugMode) {
         print("Farmer: ${args['farmer']}");
       }
-
+      farmer = args['farmerData'];
+      groupId = args['groupId'];
       isGardensLoading.value = true;
-      activeFarmerName.value = args['name'];
+      activeFarmerName.value = farmer.name;
       updateFarmerGardens(farmerId: args['farmer']).then((_) {
         isGardensLoading.value = false;
       });
-    } else {
-      getFarmerData();
-    }
-  }
-
-  // Method to check if a user is logged in
-  Future<void> getFarmerData() async {
-    if (kDebugMode) {
-      print("....Getting farmer data....");
-    }
-    Data<List<Garden>> localGardens =
-        await _gardenRepo.fetchLocalGardens(farmer: activeFarmer.value);
-    if (localGardens.status) {
-      if (kDebugMode) {
-        print("Local Farmer Gardens: ${localGardens.data}");
-      }
-      gardens.assignAll(localGardens.data as Iterable<Garden>);
-    }
-
-    //fetch unSynced reports
-    Data<List<DailyReport>> unSyncedData =
-        await _reportRepo.fetchLocalReports();
-    if (unSyncedData.status) {
-      unSyncedReports.value = unSyncedData.data!.length;
-    } else {
-      unSyncedReports.value = 0;
     }
   }
 
@@ -82,6 +64,9 @@ class FarmerController extends GetxController {
           "Farmer garden List updated",
           backgroundColor: Colors.green,
         );
+        farmer.numGardens = gardens.data!.length;
+        _farmerRepo.updateFarmerData(farmer, groupId);
+        await _groupController.updateFarmersList();
       } else {
         showToastGlobal(
           "An error occurred",
@@ -92,10 +77,11 @@ class FarmerController extends GetxController {
     Data<List<Garden>> localGardens =
         await _gardenRepo.fetchLocalGardens(farmer: farmerId);
     if (localGardens.status) {
-      List<Garden> gardens = localGardens.data ?? [];
-      if (gardens.isNotEmpty) {
+      List<Garden> farmerGardens = localGardens.data ?? [];
+      if (farmerGardens.isNotEmpty) {
         activeFarmer.value = farmerId;
-        getFarmerData();
+        gardens.assignAll(localGardens.data as Iterable<Garden>);
+        getFarmerUnSyncedData();
       } else {
         _showSnackBar(
           "No data",
@@ -105,9 +91,24 @@ class FarmerController extends GetxController {
       }
     } else {
       showToastGlobal(
-        "Farmer Data is up to date",
-        backgroundColor: Colors.green,
+        "No Gardens data. Get internet and tap again to get data!",
+        backgroundColor: Colors.red,
       );
+    }
+  }
+
+  // Method to check if a user is logged in
+  Future<void> getFarmerUnSyncedData() async {
+    if (kDebugMode) {
+      print("....Getting farmer data....");
+    }
+    //fetch unSynced reports
+    Data<List<DailyReport>> unSyncedData =
+        await _reportRepo.fetchLocalReports();
+    if (unSyncedData.status) {
+      unSyncedReports.value = unSyncedData.data!.length;
+    } else {
+      unSyncedReports.value = 0;
     }
   }
 

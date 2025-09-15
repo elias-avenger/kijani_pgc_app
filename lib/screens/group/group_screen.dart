@@ -24,6 +24,11 @@ class GroupScreen extends StatelessWidget {
       final group = groupController.activeGroupName.value;
       var isLoading = groupController.isFarmersLoading.value;
 
+      var numGardens = 0;
+      for (var farmer in farmers) {
+        numGardens += farmer.numGardens;
+      }
+
       return Scaffold(
         appBar: MyAppBar(
           title: group,
@@ -71,7 +76,11 @@ class GroupScreen extends StatelessWidget {
                         color: kijaniBlue,
                       ),
                       GridItem(
-                          title: "", value: 0, icon: null, color: kijaniBrown),
+                        title: "Gardens",
+                        value: numGardens,
+                        icon: HugeIcons.strokeRoundedPlant03,
+                        color: kijaniBrown,
+                      ),
                       GridItem(
                           title: "", value: 0, icon: null, color: Colors.black),
                       GridItem(
@@ -79,12 +88,20 @@ class GroupScreen extends StatelessWidget {
                     ],
                     items: farmers,
                     itemBuilder: (context, farmer, index) => CustomListItem(
-                      title: "${farmer.name} [${farmer.phone}]",
-                      subtitle: "{farmer.gardens.length}",
+                      title: farmer.name,
+                      subtitle:
+                          "[${farmer.phone}] - ${farmer.numGardens} gardens",
                       trailing: const Icon(HugeIcons.strokeRoundedArrowRight01,
                           color: Colors.black),
                       onTap: () {
-                        // Your logic
+                        Get.toNamed(Routes.FARMER, arguments: {
+                          'farmer': farmer.id,
+                          'groupId': groupController.activeGroup.value,
+                          'farmerData': farmer,
+                        });
+                        if (kDebugMode) {
+                          print("Farmer To Open: ${farmer.name}");
+                        }
                       },
                     ),
                   )

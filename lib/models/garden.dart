@@ -24,8 +24,8 @@ class Garden {
     return Garden(
       recordID: record.id, // Add null safety
       id: data['ID'] as String? ?? '', // Add null coalescing
-      centerPoint: data['Center Point'] as String? ?? '',
-      polygon: data['Polygon GeoJSON'] as String? ?? '',
+      centerPoint: data['Center Point'].toString() as String? ?? '',
+      polygon: data['Polygon GeoJSON'].toString() as String? ?? '',
       treesPlanted: data['Total Trees Planted'] as int,
       treesSurviving: data['Total Trees Surviving'] as int,
     );
