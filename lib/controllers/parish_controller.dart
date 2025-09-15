@@ -76,7 +76,7 @@ class ParishController extends GetxController {
       if (parishGroups.isNotEmpty) {
         activeParish.value = parishId;
         groups.assignAll(localGroups.data as Iterable<Group>);
-        getParishUnsyncedData();
+        getParishUnSyncedData();
       } else {
         _showSnackBar(
           "No data",
@@ -85,11 +85,6 @@ class ParishController extends GetxController {
         );
       }
     } else {
-      // _showSnackBar(
-      //   "No data",
-      //   "No parish data. Get internet and tap again to get data!",
-      //   isError: true,
-      // );
       showToastGlobal(
         "No Groups data. Get internet and tap again to get data!",
         backgroundColor: Colors.red,
@@ -97,7 +92,7 @@ class ParishController extends GetxController {
     }
   }
 
-  Future<void> getParishUnsyncedData() async {
+  Future<void> getParishUnSyncedData() async {
     if (kDebugMode) {
       print("....Getting parish data....");
     }
