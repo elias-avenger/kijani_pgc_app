@@ -52,7 +52,7 @@ class ParishController extends GetxController {
   Future<void> updateParishData({required String parishId}) async {
     bool airtableConn = await _internetCheck.isAirtableConnected();
     if (airtableConn) {
-      Data<List> groups = await _groupRepo.fetchGroups(parishId);
+      Data<List<Group>> groups = await _groupRepo.fetchGroups(parishId);
       if (groups.status) {
         await _groupRepo.saveGroups(groups.data ?? [], parishId);
         showToastGlobal(
