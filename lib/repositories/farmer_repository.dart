@@ -110,6 +110,35 @@ class FarmerRepository {
     }
   }
 
+  // Function to save farmers data locally
+  Future<Data> updateFarmerData(Farmer farmer, String groupId) async {
+    try {
+      List<Farmer> farmers = await storage.fetchEntityUnits(
+        kFarmerDataKey,
+        groupId, // Unique ID for the group
+      );
+      for (Farmer farmerData in farmers) {
+        if (farmerData.id == farmer.id) {
+          farmers[farmers.indexOf(farmerData)] = farmer;
+          break;
+        }
+      }
+      await storage.saveEntityUnits(kFarmerDataKey, groupId, farmers);
+      // Verify storage
+      Data<List<Farmer>> storedFarmers =
+          await fetchLocalFarmers(group: groupId);
+      if (kDebugMode) {
+        print('Stored ${storedFarmers.data?.length ?? 0} farmers');
+      }
+      return Data.success(storedFarmers);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error saving farmers: $e');
+      }
+      return Data.failure("Failed to save farmers locally");
+    }
+  }
+
   // Function to fetch groups data locally
   Future<Data<List<Farmer>>> fetchLocalFarmers({required String group}) async {
     try {
@@ -139,5 +168,16 @@ class FarmerRepository {
       }
       return Data.failure('Error fetching local farmers: $e');
     }
+  }
+
+  Future<int> getNumFarmerGardens(String farmerId) async {
+    if (kDebugMode) {
+      print("Farmer ID: $farmerId, Num Gardens: ?");
+    }
+    var farmerGardens = storage.fetchEntityUnits(
+      kGardenDataKey,
+      farmerId,
+    );
+    return farmerGardens == null ? 0 : farmerGardens.length;
   }
 }
