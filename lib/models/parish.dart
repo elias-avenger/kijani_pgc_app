@@ -5,10 +5,12 @@ import 'package:airtable_crud/airtable_plugin.dart';
 class Parish {
   final String id;
   final String name;
+  int numGroups = 0;
 
   Parish({
     required this.id,
     required this.name,
+    required this.numGroups,
   });
 
   factory Parish.fromAirtable(AirtableRecord record) {
@@ -16,6 +18,7 @@ class Parish {
     return Parish(
       id: data['Parish'] as String? ?? '', // Add null coalescing
       name: data['Parish Name'] as String? ?? '',
+      numGroups: data['Number of Groups'] as int? ?? 0,
     );
   }
 
@@ -23,6 +26,7 @@ class Parish {
     return Parish(
       id: data['id'] as String? ?? '',
       name: data['name'] as String? ?? '',
+      numGroups: data['numGroups'] as int? ?? 0,
     );
   }
 
@@ -30,6 +34,7 @@ class Parish {
     return {
       'id': id,
       'name': name,
+      'numGroups': numGroups,
     };
   }
 

@@ -95,6 +95,14 @@ class UserController extends GetxController {
     isHomeScreenLoading.value = false;
   }
 
+  Future<void> updateParishesList() async{
+    // Fetch local parishes
+    Data<List<Parish>> localParishes = await _parishRepo.fetchLocalParishes();
+    if (localParishes.status && localParishes.data != null) {
+      parishes.assignAll(localParishes.data!);
+    }
+  }
+
   Future<void> login() async {
     try {
       Data<User> response = await _userRepo.checkUser(

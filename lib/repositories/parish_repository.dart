@@ -3,8 +3,12 @@ import 'package:kijani_pgc_app/models/parish.dart';
 import 'package:kijani_pgc_app/models/return_data.dart';
 import 'package:kijani_pgc_app/services/getx_storage.dart';
 
+import 'group_repository.dart';
+
 class ParishRepository {
   final StorageService storage = StorageService();
+  final GroupRepository _groupRepository =
+      GroupRepository(); // Instantiate GroupRepository
 
   Future<Data<List<Parish>>> setParishes(List<String> parishIds) async {
     if (parishIds.isNotEmpty) {
@@ -14,6 +18,7 @@ class ParishRepository {
           Parish(
             id: parishId.split(' | ')[0],
             name: parishId.split(' | ')[1],
+            numGroups: 0,
           ),
         );
       }
@@ -82,5 +87,23 @@ class ParishRepository {
       }
       return Data.failure('Error fetching local parishes: $e');
     }
+  }
+
+  void updateParishGroups(String parishId, int numGroups) {
+    if (kDebugMode) {
+      print("Parish ID: $parishId, Num Groups: $numGroups");
+    }
+    Parish parish = storage.fetchEntity(
+      kParishDataKey,
+      parishId,
+      Parish.fromJson,
+    );
+    parish.numGroups = numGroups;
+    storage.saveEntity(
+      kParishDataKey,
+      parish.id,
+      parish,
+      parish.toJson,
+    );
   }
 }
