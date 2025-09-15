@@ -38,11 +38,14 @@ class FarmerRepository {
       }
       Map<String, dynamic> farmerRecords = {};
       for (var record in data) {
-        if(record.fields['FarmerID'] != null){
+        if (record.fields['FarmerID'] != null) {
           String id = record.fields['FarmerID'];
           String phone = record.fields['Farmer Phone Number'][0] ?? "";
-          Map<String, dynamic> farmerRecord = {"FarmerID": id, "Farmer Phone Number": phone};
-          if(!farmerRecords.containsKey(id)){
+          Map<String, dynamic> farmerRecord = {
+            "FarmerID": id,
+            "Farmer Phone Number": phone
+          };
+          if (!farmerRecords.containsKey(id)) {
             farmerRecords.addAll({id: farmerRecord});
             if (kDebugMode) {
               print('Farmer Record: $farmerRecord');
@@ -58,7 +61,7 @@ class FarmerRepository {
       List<Map<String, dynamic>> farmerData = [];
       if (farmerRecords.isNotEmpty) {
         for (var id in farmerRecords.keys) {
-          if(!farmerData.contains(farmerRecords[id])) {
+          if (!farmerData.contains(farmerRecords[id])) {
             farmerData.add(farmerRecords[id]);
           }
         }
@@ -113,6 +116,7 @@ class FarmerRepository {
       final List<Farmer> storedFarmers = storage.fetchEntityUnits(
         kFarmerDataKey,
         group,
+        // (data) => Farmer.fromJson(data),
       );
       if (kDebugMode) {
         print('Raw stored data: $storedFarmers');
