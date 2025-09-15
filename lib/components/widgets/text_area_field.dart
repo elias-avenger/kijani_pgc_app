@@ -17,14 +17,18 @@ class TextAreaWidget extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black),
+        border: Border.all(color: const Color(0XFF808080)),
         borderRadius: BorderRadius.circular(12),
       ),
       child: TextField(
         controller: controller,
-        maxLines: 4,
+        maxLines: 6,
         decoration: InputDecoration(
           hintText: label,
+          hintStyle: const TextStyle(
+            fontSize: 14,
+            color: Color(0XFF808080),
+          ),
           border: InputBorder.none,
         ),
         onChanged: onChanged,
