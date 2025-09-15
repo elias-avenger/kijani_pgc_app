@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:kijani_pgc_app/routes/app_bindings.dart';
 import 'package:kijani_pgc_app/screens/auth/login_screen.dart';
+import 'package:kijani_pgc_app/screens/farmer/farmer_screen.dart';
 import 'package:kijani_pgc_app/screens/home/home_screen.dart';
 import 'package:kijani_pgc_app/screens/parish/parish_screen.dart';
 import 'package:kijani_pgc_app/screens/reports/daily_reporting.dart';
@@ -46,6 +47,11 @@ class AppPages {
     GetPage(
       name: Routes.GROUPTRAINING,
       page: () => const GroupTrainingReport(),
+    ),
+    GetPage(
+      name: Routes.FARMER,
+      page: () => const FarmerScreen(),
+      binding: FarmerBinding(),
     ),
   ];
 }
