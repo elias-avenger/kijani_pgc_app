@@ -9,6 +9,7 @@ import 'package:kijani_pgc_app/screens/reports/garden_compliance.dart';
 import 'package:kijani_pgc_app/screens/reports/group_training.dart';
 import 'package:kijani_pgc_app/screens/syncing/unsynced_data_screen.dart';
 
+import '../screens/garden/garden_screen.dart';
 import '../screens/group/group_screen.dart';
 
 part 'app_routes.dart';
@@ -55,6 +56,11 @@ class AppPages {
       binding: FarmerBinding(),
     ),
     GetPage(
+
+      name: Routes.GARDEN,
+      page: () => const GardenScreen(),
+      binding: GardenBinding(),
+
       name: Routes.GARDENCOMPLIANCEREPORT,
       page: () => const GardenComplianceForm(),
     ),

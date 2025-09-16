@@ -10,5 +10,6 @@ abstract class Routes {
   static const GROUP = '/group';
   static const GROUPTRAINING = '/groupTraining';
   static const FARMER = '/farmer';
+  static const GARDEN = '/garden';
   static const GARDENCOMPLIANCEREPORT = '/gardenCompliance';
 }

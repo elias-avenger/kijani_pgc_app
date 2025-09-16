@@ -4,6 +4,7 @@ import 'package:kijani_pgc_app/controllers/syncing_controller.dart';
 import 'package:kijani_pgc_app/controllers/user_controller.dart';
 
 import '../controllers/farmer_controller.dart';
+import '../controllers/garden_controller.dart';
 import '../controllers/group_controller.dart';
 
 class UserBinding extends Bindings {
@@ -38,5 +39,12 @@ class FarmerBinding extends Bindings {
   @override
   void dependencies() {
     Get.put(FarmerController());
+  }
+}
+
+class GardenBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.put(GardenController());
   }
 }
