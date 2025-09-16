@@ -10,6 +10,7 @@ import 'package:kijani_pgc_app/models/grid_item.dart';
 import 'package:kijani_pgc_app/utilities/constants.dart';
 
 import '../../controllers/farmer_controller.dart';
+import '../../routes/app_pages.dart';
 
 class FarmerScreen extends StatelessWidget {
   const FarmerScreen({super.key});
@@ -61,9 +62,9 @@ class FarmerScreen extends StatelessWidget {
                       trailing: const Icon(HugeIcons.strokeRoundedArrowRight01,
                           color: Colors.black),
                       onTap: () {
-                        // Get.toNamed(Routes.GARDEN, arguments: {
-                        //   'garden': garden.id,
-                        // });
+                        Get.toNamed(Routes.GARDEN, arguments: {
+                          'garden': garden,
+                        });
                         if (kDebugMode) {
                           print("Garden To Open: ${garden.id}");
                         }
