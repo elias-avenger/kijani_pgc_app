@@ -8,7 +8,9 @@ import 'package:kijani_pgc_app/components/reusable_body.dart';
 import 'package:kijani_pgc_app/components/widgets/list_tile.dart';
 import 'package:kijani_pgc_app/models/grid_item.dart';
 import 'package:kijani_pgc_app/routes/app_pages.dart';
+import 'package:kijani_pgc_app/screens/map/map_screen.dart';
 import 'package:kijani_pgc_app/utilities/constants.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../controllers/group_controller.dart';
 
@@ -53,6 +55,17 @@ class GroupScreen extends StatelessWidget {
                 if (kDebugMode) {
                   print("Refreshing data");
                 }
+                Get.to(
+                  () => const ReusableRouteGardensMap(),
+                  arguments: {
+                    'gardens': [], //TODO: add all gardens here
+                    'polygonOf': (garden) => garden.polygon,
+                    'centerOf': (garden) =>
+                        LatLng(garden.latitude ?? 0.0, garden.longitude ?? 0.0),
+                    'nameOf': (garden) => garden.name ?? 'Unnamed Garden',
+                    'title': 'Group Gardens & Routes',
+                  },
+                );
               },
             ),
           ],
