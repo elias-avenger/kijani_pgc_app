@@ -1,16 +1,16 @@
 import 'dart:convert'; // Needed for JSON conversion
 
-import 'package:airtable_crud/airtable_plugin.dart';
-
 class Farmer {
   final String id;
   final String name;
   final String phone;
+  int numGardens = 0;
 
   Farmer({
     required this.id,
     required this.name,
     required this.phone,
+    required this.numGardens,
   });
 
   factory Farmer.fromAirtable(Map<String, dynamic> data) {
@@ -20,6 +20,7 @@ class Farmer {
           '', // Add null coalescing
       name: data['FarmerID'].split("-")[1] as String? ?? '',
       phone: data['Farmer Phone Number'] as String? ?? '',
+      numGardens: 0,
     );
   }
 
@@ -28,6 +29,7 @@ class Farmer {
       id: data['id'] as String? ?? '',
       name: data['name'] as String? ?? '',
       phone: data['phone'] as String? ?? '',
+      numGardens: data['numGardens'] as int? ?? 0,
     );
   }
 
@@ -36,6 +38,7 @@ class Farmer {
       'id': id,
       'name': name,
       'phone': phone,
+      'numGardens': numGardens,
     };
   }
 

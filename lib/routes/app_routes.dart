@@ -9,4 +9,5 @@ abstract class Routes {
   static const PARISH = '/parish';
   static const GROUP = '/group';
   static const GROUPTRAINING = '/groupTraining';
+  static const FARMER = '/farmer';
 }

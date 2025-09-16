@@ -40,7 +40,7 @@ class GroupRepository {
 
       List<Map<String, dynamic>> groupRecords = [];
       for (var record in data) {
-        if(record.fields['ID'] != null){
+        if (record.fields['ID'] != null) {
           String id = record.fields['ID'];
           String name = record.fields['Group Name'];
           String gardens = record.fields['Group Gardens'] ?? "";
@@ -55,14 +55,16 @@ class GroupRepository {
             "Season": season,
             "Farmers": farmers.toSet().toList(),
           };
-          if(!groupRecords.contains(groupRecord)){
+          if (!groupRecords.contains(groupRecord)) {
             groupRecords.add(groupRecord);
           }
         }
       }
 
-      List<Group> groups =
-          groupRecords.map((record) => Group.fromAirtable(record)).toSet().toList();
+      List<Group> groups = groupRecords
+          .map((record) => Group.fromAirtable(record))
+          .toSet()
+          .toList();
       return Data<List<Group>>.success(groups);
     } on AirtableException catch (e) {
       if (kDebugMode) {
@@ -103,7 +105,7 @@ class GroupRepository {
   // Function to fetch groups data locally
   Future<Data<List<Group>>> fetchLocalGroups({required String parish}) async {
     try {
-      final List<Group> storedGroups = storage.fetchEntityUnits(
+      var storedGroups = await storage.fetchEntityUnits(
         kGroupDataKey,
         parish,
       );
@@ -117,12 +119,19 @@ class GroupRepository {
         }
         return Data<List<Group>>.failure("No Local Groups found");
       }
+      List<Group> groups = [];
+      if (groups.runtimeType == storedGroups.runtimeType) {
+        groups = storedGroups;
+      } else {
+        List groupsData = storedGroups;
+        groups = groupsData.map((group) => Group.fromJson(group)).toList();
+      }
 
       if (kDebugMode) {
-        print('Fetched ${storedGroups.length} local groups');
-        print('First Group: ${storedGroups[0].name}');
+        print('Fetched ${groups.length} local groups');
+        //print('First Group: ${storedGroups[0].name}');
       }
-      return Data<List<Group>>.success(storedGroups);
+      return Data<List<Group>>.success(groups);
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching local groups: $e');

@@ -76,6 +76,10 @@ class GroupController extends GetxController {
     bool airtableConn = await _internetCheck.isAirtableConnected();
     if (airtableConn) {
       var farmers = await _farmerRepo.fetchFarmers(groupId);
+      for (Farmer farmer in farmers.data ?? []) {
+        farmer.numGardens = await _farmerRepo.getNumFarmerGardens(farmer.id);
+        // farmer.numGardens = numGardens;
+      }
       if (farmers.status) {
         await _farmerRepo.saveFarmers(farmers.data ?? [], groupId);
         showToastGlobal(
@@ -108,6 +112,15 @@ class GroupController extends GetxController {
         "Group Data is up to date",
         backgroundColor: Colors.green,
       );
+    }
+  }
+
+  Future<void> updateFarmersList() async {
+    // Fetch local farmers
+    Data<List<Farmer>> localFarmers =
+        await _farmerRepo.fetchLocalFarmers(group: activeGroup.value);
+    if (localFarmers.status && localFarmers.data != null) {
+      farmers.assignAll(localFarmers.data!);
     }
   }
 
