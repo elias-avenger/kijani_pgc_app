@@ -12,7 +12,7 @@ class GardenRepository {
   // Function to fetch groups from Airtable
   Future<Data<List<Garden>>> fetchGardens(String farmerId) async {
     try {
-      String filter = '{F_ID} = "${farmerId.trim()}"';
+      String filter = 'AND(Farmer, F_ID = "${farmerId.trim()}")';
 
       List<String> fields = <String>[
         'ID',
@@ -20,6 +20,10 @@ class GardenRepository {
         'Polygon GeoJSON',
         'Total Trees Planted',
         'Total Trees Surviving',
+        'Garden Photos',
+        'Species',
+        'Planted by species',
+        'Surviving by species',
       ];
 
       List<AirtableRecord> data = await uGGardensBase
@@ -44,7 +48,7 @@ class GardenRepository {
       return Data<List<Garden>>.success(gardens);
     } on AirtableException catch (e) {
       if (kDebugMode) {
-        print("Airtable Exception: ${e.message}");
+        print("Airtable Exception: ${e.message} || ${e.details}");
       }
       return Data<List<Garden>>.failure("Airtable Error: ${e.message}");
     } catch (e) {
@@ -54,6 +58,10 @@ class GardenRepository {
       return Data<List<Garden>>.failure(
           "An error occurred while fetching gardens");
     }
+  }
+
+  Future<Data<List<Garden>>> fetchGardenData(String gardenId) async {
+    return Data<List<Garden>>.success([]);
   }
 
   // Function to save groups data locally
@@ -79,13 +87,16 @@ class GardenRepository {
     }
   }
 
+  Future<Data> saveGardenData(List<Garden> gardens, String gardenId) async {
+    return Data.success([]);
+  }
+
   // Function to fetch groups data locally
   Future<Data<List<Garden>>> fetchLocalGardens({required String farmer}) async {
     try {
-      final List<Garden> storedGardens = storage.fetchEntityUnits(
+      var storedGardens = await storage.fetchEntityUnits(
         kGardenDataKey,
         farmer,
-        // (data) => Garden.fromJson(data),
       );
       if (kDebugMode) {
         print('Raw stored data: $storedGardens');
@@ -98,15 +109,28 @@ class GardenRepository {
         return Data<List<Garden>>.failure("No Local Gardens found");
       }
 
-      if (kDebugMode) {
-        print('Fetched ${storedGardens.length} local gardens');
+      List<Garden> gardens = [];
+      if (gardens.runtimeType == storedGardens.runtimeType) {
+        gardens = storedGardens;
+      } else {
+        List gardensData = storedGardens;
+        gardens = gardensData.map((garden) => Garden.fromJson(garden)).toList();
       }
-      return Data<List<Garden>>.success(storedGardens);
+
+      if (kDebugMode) {
+        print('Fetched ${gardens.length} local gardens');
+      }
+      return Data<List<Garden>>.success(gardens);
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching local gardens: $e');
       }
       return Data.failure('Error fetching local gardens: $e');
     }
+  }
+
+  Future<Data<List<Garden>>> fetchLocalGardenData(
+      {required String garden}) async {
+    return Data<List<Garden>>.success([]);
   }
 }
