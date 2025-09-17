@@ -56,11 +56,11 @@ class AppPages {
       binding: FarmerBinding(),
     ),
     GetPage(
-
       name: Routes.GARDEN,
       page: () => const GardenScreen(),
       binding: GardenBinding(),
-
+    ),
+    GetPage(
       name: Routes.GARDENCOMPLIANCEREPORT,
       page: () => const GardenComplianceForm(),
     ),

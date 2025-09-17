@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hugeicons/hugeicons.dart';
 import 'package:kijani_pgc_app/components/app_bar.dart';
 import 'package:kijani_pgc_app/components/dropdown_field.dart';
 import 'package:kijani_pgc_app/components/widgets/buttons/primary_button.dart';
