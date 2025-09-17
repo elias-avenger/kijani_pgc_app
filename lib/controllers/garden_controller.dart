@@ -77,26 +77,26 @@ class GardenController extends GetxController {
         );
       }
     }
-    Data<List<Garden>> localGardenData =
-        await _gardenRepo.fetchLocalGardenData(garden: gardenId);
-    if (localGardenData.status) {
-      List<Garden> gardenData = localGardenData.data ?? [];
-      if (gardenData.isNotEmpty) {
-        activeGarden.value = gardenId;
-        getGardenUnSyncedData();
-      } else {
-        _showSnackBar(
-          "No data",
-          "Failed to retrieve local garden data!",
-          isError: true,
-        );
-      }
-    } else {
-      showToastGlobal(
-        "No Internet. Get internet and tap again to get data!",
-        backgroundColor: Colors.red,
-      );
-    }
+    // Data<List<Garden>> localGardenData =
+    //     await _gardenRepo.fetchLocalGardenData(garden: gardenId);
+    // if (localGardenData.status) {
+    //   List<Garden> gardenData = localGardenData.data ?? [];
+    //   if (gardenData.isNotEmpty) {
+    //     activeGarden.value = gardenId;
+    //     getGardenUnSyncedData();
+    //   } else {
+    //     _showSnackBar(
+    //       "No data",
+    //       "Failed to retrieve local garden data!",
+    //       isError: true,
+    //     );
+    //   }
+    // } else {
+    //   showToastGlobal(
+    //     "No Internet. Get internet and tap again to get data!",
+    //     backgroundColor: Colors.red,
+    //   );
+    // }
   }
 
   // Method to check if a user is logged in
@@ -114,14 +114,14 @@ class GardenController extends GetxController {
     }
   }
 
-  void _showSnackBar(String title, String message, {bool isError = false}) {
-    Get.snackbar(
-      title,
-      message,
-      duration: const Duration(seconds: 2),
-      snackPosition: SnackPosition.TOP,
-      backgroundColor: isError ? Colors.red : Colors.green,
-      colorText: Colors.white,
-    );
-  }
+  // void _showSnackBar(String title, String message, {bool isError = false}) {
+  //   Get.snackbar(
+  //     title,
+  //     message,
+  //     duration: const Duration(seconds: 2),
+  //     snackPosition: SnackPosition.TOP,
+  //     backgroundColor: isError ? Colors.red : Colors.green,
+  //     colorText: Colors.white,
+  //   );
+  // }
 }
