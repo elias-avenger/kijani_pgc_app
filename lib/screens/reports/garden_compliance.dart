@@ -18,6 +18,8 @@ class _GardenComplianceFormState extends State<GardenComplianceForm> {
   final _pageController = PageController();
   int _currentStep = 0;
 
+  var gardenName = Get.arguments ?? 'Garden';
+
   late final GardenComplianceController c;
 
   @override
@@ -74,20 +76,17 @@ class _GardenComplianceFormState extends State<GardenComplianceForm> {
   void _submit() {
     final payload = c.toJson();
     debugPrint('Form submitted: $payload');
-
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('Form Submitted'),
-        content: SingleChildScrollView(child: Text('Payload:\n$payload')),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          )
-        ],
-      ),
+    //TODO: call the function to submit the report from the controller
+    //NOTE: the function to be callled, should have the garden ID as a parameter
+    //Example: c.submitReport(gardenId);
+    Get.snackbar(
+      'Success',
+      'Garden compliance report for "$gardenName" submitted successfully!',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
     );
+    Get.back(); // Go back to previous screen
   }
 
   @override
@@ -106,8 +105,7 @@ class _GardenComplianceFormState extends State<GardenComplianceForm> {
       ),
       body: Column(
         children: [
-          // Optional: show linear progress
-          // LinearProgressIndicator(value: (_currentStep + 1) / 3),
+          const SizedBox(height: 8),
           Expanded(
             child: PageView(
               controller: _pageController,
