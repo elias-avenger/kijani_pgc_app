@@ -9,7 +9,7 @@ class Garden {
   final String polygon;
   final int treesPlanted;
   final int treesSurviving;
-  final List<String> gardenPhotos;
+  final List gardenPhotos;
   final List speciesData;
 
   Garden({
@@ -30,15 +30,15 @@ class Garden {
     List<String> gPhotos = photos.split(',');
 
     // Getting and converting species data
-    String species = data['Species'] as String ?? '';
+    String species = data['Species'] as String;
     List<String> speciesList = species.split(', ');
 
     // Getting and converting planted and surviving data
-    String planted = data['Planted by species'] as String ?? '';
+    String planted = data['Planted by species'] as String;
     List<int> plantedBySpecies = planted.split(', ').map(int.parse).toList();
 
     // Getting and converting planted and surviving data
-    String surviving = data['Surviving by species'] as String ?? '';
+    String surviving = data['Surviving by species'] as String;
     List<int> survivingBySpecies =
         surviving.split(', ').map(int.parse).toList();
 
@@ -60,7 +60,7 @@ class Garden {
       polygon: data['Polygon GeoJSON'].toString() as String? ?? '',
       treesPlanted: data['Total Trees Planted'] as int,
       treesSurviving: data['Total Trees Surviving'] as int,
-      gardenPhotos: gPhotos as List<String>? ?? [],
+      gardenPhotos: gPhotos as List? ?? [],
       speciesData: updatesData as List? ?? [],
     );
   }
@@ -73,7 +73,7 @@ class Garden {
       polygon: data['Polygon GeoJSON'] as String? ?? '',
       treesPlanted: data['Total Trees Planted'] as int,
       treesSurviving: data['Total Trees Surviving'] as int,
-      gardenPhotos: data['Garden Photos'] as List<String>? ?? [],
+      gardenPhotos: data['Garden Photos'] as List,
       speciesData: data['Species Data'] as List? ?? [],
     );
   }

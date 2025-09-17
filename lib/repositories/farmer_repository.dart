@@ -142,10 +142,9 @@ class FarmerRepository {
   // Function to fetch groups data locally
   Future<Data<List<Farmer>>> fetchLocalFarmers({required String group}) async {
     try {
-      final List<Farmer> storedFarmers = storage.fetchEntityUnits(
+      var storedFarmers = await storage.fetchEntityUnits(
         kFarmerDataKey,
         group,
-        // (data) => Farmer.fromJson(data),
       );
       if (kDebugMode) {
         print('Raw stored data: $storedFarmers');
@@ -157,11 +156,18 @@ class FarmerRepository {
         }
         return Data<List<Farmer>>.failure("No Local farmers found");
       }
+      List<Farmer> farmers = [];
+      if (farmers.runtimeType == storedFarmers.runtimeType) {
+        farmers = storedFarmers;
+      } else {
+        List farmersData = storedFarmers;
+        farmers = farmersData.map((farmer) => Farmer.fromJson(farmer)).toList();
+      }
 
       if (kDebugMode) {
-        print('Fetched ${storedFarmers.length} local farmers');
+        print('Fetched ${farmers.length} local farmers');
       }
-      return Data<List<Farmer>>.success(storedFarmers);
+      return Data<List<Farmer>>.success(farmers);
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching local farmers: $e');
