@@ -4,8 +4,8 @@ import 'package:kijani_pgc_app/components/app_bar.dart';
 import 'package:kijani_pgc_app/components/widgets/buttons/primary_button.dart';
 import 'package:kijani_pgc_app/controllers/garden_compliance_report.dart';
 import 'package:kijani_pgc_app/screens/reports/compliancesections/section_one.dart';
-import 'package:kijani_pgc_app/screens/reports/compliancesections/section_two.dart';
 import 'package:kijani_pgc_app/screens/reports/compliancesections/section_three.dart';
+import 'package:kijani_pgc_app/screens/reports/compliancesections/section_two.dart';
 
 class GardenComplianceForm extends StatefulWidget {
   const GardenComplianceForm({super.key});
@@ -18,7 +18,7 @@ class _GardenComplianceFormState extends State<GardenComplianceForm> {
   final _pageController = PageController();
   int _currentStep = 0;
 
-  var gardenName = Get.arguments ?? 'Garden';
+  var gardenId = Get.arguments ?? 'Garden';
 
   late final GardenComplianceController c;
 
@@ -74,19 +74,17 @@ class _GardenComplianceFormState extends State<GardenComplianceForm> {
   }
 
   void _submit() {
-    final payload = c.toJson();
-    debugPrint('Form submitted: $payload');
     //TODO: call the function to submit the report from the controller
     //NOTE: the function to be callled, should have the garden ID as a parameter
-    //Example: c.submitReport(gardenId);
-    Get.snackbar(
-      'Success',
-      'Garden compliance report for "$gardenName" submitted successfully!',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-    );
-    Get.back(); // Go back to previous screen
+    c.submitReport(gardenId);
+    // Get.snackbar(
+    //   'Success',
+    //   'Garden compliance report for "$gardenId" submitted successfully!',
+    //   snackPosition: SnackPosition.BOTTOM,
+    //   backgroundColor: Colors.green,
+    //   colorText: Colors.white,
+    // );
+    // Get.back(); // Go back to previous screen
   }
 
   @override
