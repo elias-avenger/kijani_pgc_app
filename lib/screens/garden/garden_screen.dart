@@ -6,6 +6,7 @@ import 'package:kijani_pgc_app/components/app_bar.dart';
 import 'package:kijani_pgc_app/components/reusable_body.dart';
 import 'package:kijani_pgc_app/components/widgets/list_tile.dart';
 import 'package:kijani_pgc_app/models/grid_item.dart';
+import 'package:kijani_pgc_app/routes/app_pages.dart';
 import 'package:kijani_pgc_app/utilities/constants.dart';
 
 import '../../controllers/garden_controller.dart';
@@ -37,12 +38,7 @@ class GardenScreen extends StatelessWidget {
                 if (kDebugMode) {
                   print("Opening compliance report screen);");
                 }
-                // Get.toNamed(
-                //   Routes.GARDENCOMPLIANCE,
-                //   arguments: {
-                //     'garden': garden,
-                //   },
-                // );
+                Get.toNamed(Routes.GARDENCOMPLIANCEREPORT, arguments: garden);
               },
             ),
             AppMenuAction(
