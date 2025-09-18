@@ -61,7 +61,7 @@ class MyDateInput extends StatelessWidget {
                   errorText: field.errorText,
                 ),
                 child: Text(
-                  (value == null || value!.isEmpty) ? placeholder : value!,
+                  (value == null || value!.isEmpty) ? '' : value!,
                   style: TextStyle(
                     color: (value == null || value!.isEmpty)
                         ? Colors.grey.shade600
