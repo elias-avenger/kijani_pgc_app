@@ -74,8 +74,6 @@ class _GardenComplianceFormState extends State<GardenComplianceForm> {
   }
 
   void _submit() {
-    //TODO: call the function to submit the report from the controller
-    //NOTE: the function to be callled, should have the garden ID as a parameter
     c.submitReport(gardenId);
     // Get.snackbar(
     //   'Success',

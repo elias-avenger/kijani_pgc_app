@@ -19,8 +19,6 @@ class GardenComplianceController extends GetxController {
   final firelines = false.obs;
 
   final RxList<String> gardenPhotos = <String>[].obs;
-  final treesByFarmer = "".obs;
-  final treesByPGC = "".obs;
 
   final weedingCompliance = "".obs;
   final plantingCompliance = "".obs;
@@ -51,7 +49,6 @@ class GardenComplianceController extends GetxController {
       'Garden': gardenId,
       'Compliance Status': getGardenCompliance(),
       'Garden Photo': gardenPhoto,
-      'Number of trees planted - farmer': treesByFarmer.value,
       'Weeding Compliance': weedingCompliance.value,
       'Planting Compliance': plantingCompliance.value,
       'Gap-filling Compliance': gapFillingCompliance.value,
@@ -67,9 +64,6 @@ class GardenComplianceController extends GetxController {
       'Visit Date': DateTime.now().toIso8601String(),
       'Visited by': userController.branchData['ID'].trim(),
     };
-    // if (kDebugMode) {
-    //   print("Data to submit: $data");
-    // }
     Data<AirtableRecord> isSubmitted = await reportRepo.submitReport(
       data: data,
       reportKey: 'GardenCompliance',
@@ -86,8 +80,8 @@ class GardenComplianceController extends GetxController {
           colorText: Colors.white,
         );
         userController.unsyncedReports.value += 1;
-        // _clearForm();
-        // Get.offAllNamed(Routes.HOME);
+        _clearForm();
+        Get.back();
         return;
       } else if (isSubmitted.message ==
           "Photo upload failed, report saved locally") {
@@ -97,8 +91,8 @@ class GardenComplianceController extends GetxController {
           backgroundColor: Colors.blue,
           colorText: Colors.white,
         );
-        // _clearForm();
-        // Get.offAllNamed(Routes.HOME);
+        _clearForm();
+        Get.back();
         return;
       } else if (isSubmitted.message ==
           "No internet and failed to save locally") {
@@ -108,8 +102,8 @@ class GardenComplianceController extends GetxController {
           backgroundColor: Colors.blue,
           colorText: Colors.white,
         );
-        // _clearForm();
-        // Get.offAllNamed(Routes.HOME);
+        _clearForm();
+        Get.back();
         return;
       }
       Get.snackbar(
@@ -126,9 +120,9 @@ class GardenComplianceController extends GetxController {
       backgroundColor: Colors.green,
       colorText: Colors.white,
     );
-    // _clearForm();
-    // // Navigate to home screen
-    // Get.offAllNamed(Routes.HOME);
+    _clearForm();
+    // Navigate to previous screen
+    Get.back();
   }
 
   List getGardenCompliance() {
@@ -158,19 +152,24 @@ class GardenComplianceController extends GetxController {
   }
 
   void _clearForm() {
-    // selectedParish.value = '';
-    // selectedActivities.clear();
-    // details.value = '';
-    // nextActivities.clear();
-    // attachments.clear();
-    // detailsController.clear();
-    // nextDaysActivitiesController.clear();
-  }
-
-  @override
-  void onClose() {
-    // detailsController.dispose();
-    // nextDaysActivitiesController.dispose();
-    super.onClose();
+    weeded.value = false;
+    gapfilling.value = false;
+    singling.value = false;
+    debudding.value = false;
+    pruned.value = false;
+    firelines.value = false;
+    gardenPhotos.value = [];
+    weedingCompliance.value = "";
+    plantingCompliance.value = "";
+    gapFillingCompliance.value = "";
+    singlingCompliance.value = "";
+    firelinesCompliance.value = "";
+    pruningCompliance.value = "";
+    debuddingCompliance.value = "";
+    charcoalSpeciesSpacing.value = "";
+    timberSpeciesSpacing.value = "";
+    polypotsCompliance.value = "";
+    nextFollowUpDate.value = "";
+    comments.value = "";
   }
 }
