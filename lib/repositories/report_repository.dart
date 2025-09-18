@@ -170,21 +170,28 @@ class ReportRepository {
   Future<Data<String>> saveReport(
       Map<String, dynamic> report, String key) async {
     try {
-      // Generate a unique key using timestamp to avoid collisions
-      final String uniqueKey = key;
       if (kDebugMode) {
-        print('Saving report locally with key: $uniqueKey');
+        print('Saving report locally with key: $key');
       }
+      // Fetching available reports
+      final storedReports = await fetchLocalReports(reportKey: key);
+      if (!storedReports.status) {
+        return Data<String>.failure(storedReports.toString());
+      }
+      List<Map<String, dynamic>> storedReportsList = storedReports.data ?? [];
+      // Add a new report to the available ones
+      storedReportsList.add(report);
+      // Save the updated list
       await myPrefs.saveEntityUnits(
         kUnSyncedReportsKey,
-        uniqueKey,
-        report,
+        key,
+        storedReportsList,
       );
 
       if (kDebugMode) {
         print('Report saved locally: $report');
       }
-      return Data<String>.success(uniqueKey);
+      return Data<String>.success(key);
     } catch (e) {
       if (kDebugMode) {
         print('Error saving report locally: $e');
@@ -295,7 +302,35 @@ class ReportRepository {
   }
 
   //function to fetch locally saved reports
-  Future<Data<List<DailyReport>>> fetchLocalReports() async {
+  Future<Data<List<Map<String, dynamic>>>> fetchLocalReports(
+      {required String reportKey}) async {
+    try {
+      final storedData =
+          myPrefs.fetchEntityUnits(kUnSyncedReportsKey, reportKey);
+
+      if (storedData.isEmpty) {
+        if (kDebugMode) {
+          print('No local reports found');
+        }
+        return Data<List<Map<String, dynamic>>>.success(
+            []); // Return empty list instead of failure
+      }
+
+      if (kDebugMode) {
+        print('Fetched ${storedData.length} local reports');
+      }
+      return Data<List<Map<String, dynamic>>>.success(storedData);
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error fetching local reports: $e');
+      }
+      return Data<List<Map<String, dynamic>>>.failure(
+          "Failed to fetch local reports: $e");
+    }
+  }
+
+  //function to fetch locally saved reports
+  Future<Data<List<DailyReport>>> fetchLocalDailyReports() async {
     try {
       final storedData = myPrefs.fetchAllEntities(
         kUnSyncedReportsKey,
