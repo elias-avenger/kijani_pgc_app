@@ -12,3 +12,27 @@ Color kijaniBlue = const Color(0xff23566d);
 Color kijaniGreen = const Color(0xff265e3c);
 Color kijaniBrown = const Color(0xff7c3d1c);
 Color kGreyText = const Color(0XFFBFBFBF);
+
+//date picker style
+DatePickerThemeData kPickerStyle = DatePickerThemeData(
+  backgroundColor: Colors.white, // Background of the date picker
+  headerBackgroundColor: Colors.black, // Header background
+  headerForegroundColor: Colors.white, // Header text/icon color
+  dayBackgroundColor: WidgetStateProperty.resolveWith((states) {
+    if (states.contains(WidgetState.selected)) {
+      return Colors.blue; // Highlight for selected date
+    }
+    return Colors.grey[200]; // Default day background
+  }),
+  dayForegroundColor: WidgetStateProperty.resolveWith((states) {
+    if (states.contains(WidgetState.selected)) {
+      return Colors.white; // Text color for selected date
+    }
+    return Colors.black; // Default day text color
+  }),
+  todayBackgroundColor:
+      WidgetStateProperty.all(Colors.black26), // Today's date background
+  todayForegroundColor:
+      WidgetStateProperty.all(Colors.black), // Today's date text color
+  rangeSelectionBackgroundColor: Colors.black.withOpacity(0.2),
+);
