@@ -42,7 +42,7 @@ class SyncingController extends GetxController {
   //get unsynced reports data
   Future<void> getUnsyncedReports() async {
     final Data<List<DailyReport>> response =
-        await reportRepo.fetchLocalReports();
+        await reportRepo.fetchLocalDailyReports();
     if (response.status) {
       unsyncedDataList.assignAll(response.data ?? []);
     } else {

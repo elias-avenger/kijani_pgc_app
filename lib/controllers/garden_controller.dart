@@ -106,7 +106,7 @@ class GardenController extends GetxController {
     }
     //fetch unSynced reports
     Data<List<DailyReport>> unSyncedData =
-        await _reportRepo.fetchLocalReports();
+        await _reportRepo.fetchLocalDailyReports();
     if (unSyncedData.status) {
       unSyncedReports.value = unSyncedData.data!.length;
     } else {

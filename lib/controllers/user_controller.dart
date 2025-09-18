@@ -83,7 +83,7 @@ class UserController extends GetxController {
 
       // Fetch unsynced reports
       Data<List<DailyReport>> unsyncedData =
-          await _reportRepo.fetchLocalReports();
+          await _reportRepo.fetchLocalDailyReports();
       unsyncedReports.value = unsyncedData.status && unsyncedData.data != null
           ? unsyncedData.data!.length
           : 0;
@@ -95,7 +95,7 @@ class UserController extends GetxController {
     isHomeScreenLoading.value = false;
   }
 
-  Future<void> updateParishesList() async{
+  Future<void> updateParishesList() async {
     // Fetch local parishes
     Data<List<Parish>> localParishes = await _parishRepo.fetchLocalParishes();
     if (localParishes.status && localParishes.data != null) {
