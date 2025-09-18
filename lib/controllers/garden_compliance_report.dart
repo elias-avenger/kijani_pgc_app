@@ -14,13 +14,22 @@ class GardenComplianceController extends GetxController {
   final weeded = false.obs;
   final gapfilling = false.obs;
   final singling = false.obs;
+  final debudding = false.obs;
+  final pruned = false.obs;
+  final firelines = false.obs;
 
   final RxList<String> gardenPhotos = <String>[].obs;
   final treesByFarmer = "".obs;
   final treesByPGC = "".obs;
 
-  final weedCompliance = "".obs;
+  final weedingCompliance = "".obs;
   final plantingCompliance = "".obs;
+  final gapFillingCompliance = "".obs;
+  final singlingCompliance = "".obs;
+  final firelinesCompliance = "".obs;
+  final pruningCompliance = "".obs;
+  final debuddingCompliance = "".obs;
+
   final charcoalSpeciesSpacing = "".obs;
   final timberSpeciesSpacing = "".obs;
   final polypotsCompliance = "".obs;
@@ -43,8 +52,13 @@ class GardenComplianceController extends GetxController {
       'Compliance Status': getGardenCompliance(),
       'Garden Photo': gardenPhoto,
       'Number of trees planted - farmer': treesByFarmer.value,
-      'Weeding Compliance': weedCompliance.value,
+      'Weeding Compliance': weedingCompliance.value,
       'Planting Compliance': plantingCompliance.value,
+      'Gap-filling Compliance': gapFillingCompliance.value,
+      'Singling Compliance': singlingCompliance.value,
+      'Fire-lines Compliance': firelinesCompliance.value,
+      'Pruning Compliance': pruningCompliance.value,
+      'Debudding Compliance': debuddingCompliance.value,
       'Charcoal species spacing': charcoalSpeciesSpacing.value,
       'Timber species spacing': timberSpeciesSpacing.value,
       'Polypots in garden': polypotsCompliance.value,
@@ -118,11 +132,21 @@ class GardenComplianceController extends GetxController {
   }
 
   List getGardenCompliance() {
-    List complianceInputs = [weeded.value, gapfilling.value, singling.value];
+    List complianceInputs = [
+      weeded.value,
+      gapfilling.value,
+      singling.value,
+      debudding.value,
+      pruned.value,
+      firelines.value,
+    ];
     List complianceOptions = [
       "Weeded",
       "Gap Filling done (As needed)",
       "Singling done (As needed)",
+      "Debudding (As needed)",
+      "Pruned (As needed)",
+      "Firelines",
     ];
     List complianceValues = [];
     for (int i = 0; i < complianceInputs.length; i++) {

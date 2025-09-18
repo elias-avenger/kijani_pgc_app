@@ -34,18 +34,18 @@ class GardenComplianceSectionTwo extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          // Weed Compliance
+          // Weeding Compliance
           Obx(() => MyDropdown<String>(
                 label: 'Weed Compliance',
-                value: c.weedCompliance.value.isEmpty
+                value: c.weedingCompliance.value.isEmpty
                     ? null
-                    : c.weedCompliance.value,
+                    : c.weedingCompliance.value,
                 items: levels
                     .map((s) => DropdownMenuItem(value: s, child: Text(s)))
                     .toList(),
-                onChanged: (v) => c.weedCompliance.value = v ?? '',
+                onChanged: (v) => c.weedingCompliance.value = v ?? '',
                 validator: (v) => (v == null || v.isEmpty)
-                    ? 'Please select weed compliance'
+                    ? 'Please select weeding compliance'
                     : null,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 placeholder: 'Please select the level',
@@ -64,6 +64,96 @@ class GardenComplianceSectionTwo extends StatelessWidget {
                 onChanged: (v) => c.plantingCompliance.value = v ?? '',
                 validator: (v) => (v == null || v.isEmpty)
                     ? 'Please select planting compliance'
+                    : null,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                placeholder: 'Please select the level',
+              )),
+          const SizedBox(height: 16),
+
+          // Gap-filling Compliance
+          Obx(() => MyDropdown<String>(
+                label: 'Gap-filling Compliance',
+                value: c.gapFillingCompliance.value.isEmpty
+                    ? null
+                    : c.gapFillingCompliance.value,
+                items: levels
+                    .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                    .toList(),
+                onChanged: (v) => c.gapFillingCompliance.value = v ?? '',
+                validator: (v) => (v == null || v.isEmpty)
+                    ? 'Please select gap-filling compliance'
+                    : null,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                placeholder: 'Please select the level',
+              )),
+          const SizedBox(height: 16),
+
+          // Singling Compliance
+          Obx(() => MyDropdown<String>(
+                label: 'Singling Compliance',
+                value: c.singlingCompliance.value.isEmpty
+                    ? null
+                    : c.singlingCompliance.value,
+                items: levels
+                    .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                    .toList(),
+                onChanged: (v) => c.singlingCompliance.value = v ?? '',
+                validator: (v) => (v == null || v.isEmpty)
+                    ? 'Please select singling compliance'
+                    : null,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                placeholder: 'Please select the level',
+              )),
+          const SizedBox(height: 16),
+
+          // Fire-lines Compliance
+          Obx(() => MyDropdown<String>(
+                label: 'Fire-lines Compliance',
+                value: c.firelinesCompliance.value.isEmpty
+                    ? null
+                    : c.firelinesCompliance.value,
+                items: levels
+                    .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                    .toList(),
+                onChanged: (v) => c.firelinesCompliance.value = v ?? '',
+                validator: (v) => (v == null || v.isEmpty)
+                    ? 'Please select firelines compliance'
+                    : null,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                placeholder: 'Please select the level',
+              )),
+          const SizedBox(height: 16),
+
+          // Pruning Compliance
+          Obx(() => MyDropdown<String>(
+                label: 'Pruning Compliance',
+                value: c.pruningCompliance.value.isEmpty
+                    ? null
+                    : c.pruningCompliance.value,
+                items: levels
+                    .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                    .toList(),
+                onChanged: (v) => c.pruningCompliance.value = v ?? '',
+                validator: (v) => (v == null || v.isEmpty)
+                    ? 'Please select pruning compliance'
+                    : null,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                placeholder: 'Please select the level',
+              )),
+          const SizedBox(height: 16),
+
+          // Debudding Compliance
+          Obx(() => MyDropdown<String>(
+                label: 'Debudding Compliance',
+                value: c.debuddingCompliance.value.isEmpty
+                    ? null
+                    : c.debuddingCompliance.value,
+                items: levels
+                    .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                    .toList(),
+                onChanged: (v) => c.debuddingCompliance.value = v ?? '',
+                validator: (v) => (v == null || v.isEmpty)
+                    ? 'Please select debudding compliance'
                     : null,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 placeholder: 'Please select the level',

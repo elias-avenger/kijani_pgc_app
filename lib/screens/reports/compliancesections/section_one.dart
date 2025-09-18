@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kijani_pgc_app/components/widgets/checkbox.dart';
 import 'package:kijani_pgc_app/components/widgets/file_upload_field.dart';
-import 'package:kijani_pgc_app/components/widgets/my_text_input.dart';
 import 'package:kijani_pgc_app/controllers/garden_compliance_report.dart';
 
 class GardenComplianceSectionOne extends StatelessWidget {
@@ -51,8 +50,29 @@ class GardenComplianceSectionOne extends StatelessWidget {
                 checked: c.singling.value,
                 onTap: () => c.singling.value = !c.singling.value,
               )),
+          const SizedBox(height: 12),
 
-          const SizedBox(height: 24),
+          Obx(() => MyCheckbox(
+                label: 'Debudding (As needed)',
+                checked: c.debudding.value,
+                onTap: () => c.debudding.value = !c.debudding.value,
+              )),
+          const SizedBox(height: 12),
+
+          Obx(() => MyCheckbox(
+                label: 'Pruned (As needed)',
+                checked: c.pruned.value,
+                onTap: () => c.pruned.value = !c.pruned.value,
+              )),
+          const SizedBox(height: 12),
+
+          Obx(() => MyCheckbox(
+                label: 'Firelines',
+                checked: c.firelines.value,
+                onTap: () => c.firelines.value = !c.firelines.value,
+              )),
+
+          const SizedBox(height: 40),
 
           // Photo is required -> validate with a FormField wrapper
           FormField<List<String>>(
@@ -83,30 +103,6 @@ class GardenComplianceSectionOne extends StatelessWidget {
                   ),
               ],
             ),
-          ),
-
-          const SizedBox(height: 24),
-          const Text("Tree Planting status",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 16),
-
-          // Trees by farmer
-          MyTextInput(
-            label: "Number of trees planted as reported by the farmer",
-            keyboardType: TextInputType.number,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            validator: (v) => _requiredNumber(v, allowZero: true),
-            onChanged: (v) => c.treesByFarmer.value = v,
-          ),
-          const SizedBox(height: 12),
-
-          // Trees by PGC
-          MyTextInput(
-            label: "Number of trees planted as counted by PGC",
-            keyboardType: TextInputType.number,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            validator: (v) => _requiredNumber(v, allowZero: true),
-            onChanged: (v) => c.treesByPGC.value = v,
           ),
         ],
       ),
