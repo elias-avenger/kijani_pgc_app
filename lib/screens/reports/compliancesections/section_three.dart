@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kijani_pgc_app/components/widgets/my_date_input.dart';
 import 'package:kijani_pgc_app/controllers/garden_compliance_report.dart';
+import 'package:kijani_pgc_app/utilities/constants.dart';
 
 class GardenComplianceSectionThree extends StatelessWidget {
   const GardenComplianceSectionThree({super.key});
@@ -24,31 +25,47 @@ class GardenComplianceSectionThree extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         children: [
           // Date of Next follow up visit
-          Obx(() => MyDateInput(
-                label: 'Date of Next follow Up Visit',
-                value: c.nextFollowUpDate.value.isEmpty
-                    ? null
-                    : c.nextFollowUpDate.value,
-                placeholder: 'Pick the date for follow up',
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (v) => (c.nextFollowUpDate.value.isEmpty)
-                    ? 'Please select a date'
-                    : null,
-                onPick: () async {
-                  final now = DateTime.now();
-                  final picked = await showDatePicker(
-                    context: context,
-                    initialDate: now,
-                    firstDate: DateTime(
-                        now.year, now.month, now.day), // today or later
-                    lastDate: DateTime(now.year + 5),
-                  );
-                  if (picked != null) {
-                    c.nextFollowUpDate.value = _formatDate(picked);
-                  }
-                  return picked;
-                },
-              )),
+          Obx(
+            () => MyDateInput(
+              label: 'Date of Next follow Up Visit',
+              value: c.nextFollowUpDate.value.isEmpty
+                  ? null
+                  : c.nextFollowUpDate.value,
+              placeholder: 'Pick the date for follow up',
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (v) => (c.nextFollowUpDate.value.isEmpty)
+                  ? 'Please select a date'
+                  : null,
+              onPick: () async {
+                final now = DateTime.now();
+                final picked = await showDatePicker(
+                  context: context,
+                  initialDate: now,
+                  firstDate:
+                      DateTime(now.year, now.month, now.day), // today or later
+                  lastDate: DateTime(now.year + 5),
+                  builder: (context, child) {
+                    return Theme(
+                      data: Theme.of(context).copyWith(
+                        datePickerTheme: kPickerStyle,
+                        textButtonTheme: TextButtonThemeData(
+                          style: TextButton.styleFrom(
+                            foregroundColor:
+                                Colors.black, // Button text color (Cancel/OK)
+                          ),
+                        ),
+                      ),
+                      child: child!,
+                    );
+                  },
+                );
+                if (picked != null) {
+                  c.nextFollowUpDate.value = _formatDate(picked);
+                }
+                return picked;
+              },
+            ),
+          ),
           const SizedBox(height: 24),
 
           // Comments (textarea)

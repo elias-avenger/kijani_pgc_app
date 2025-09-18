@@ -3,6 +3,7 @@ import 'package:airtable_crud/airtable_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kijani_pgc_app/controllers/user_controller.dart';
+import 'package:kijani_pgc_app/services/location.dart';
 
 import '../models/photo.dart';
 import '../models/return_data.dart';
@@ -11,6 +12,8 @@ import '../repositories/report_repository.dart';
 class GardenComplianceController extends GetxController {
   ReportRepository reportRepo = ReportRepository();
   UserController userController = Get.find<UserController>();
+  Locator location = Locator();
+
   final weeded = false.obs;
   final gapfilling = false.obs;
   final singling = false.obs;
@@ -41,6 +44,8 @@ class GardenComplianceController extends GetxController {
   final GlobalKey<FormState> section3FormKey = GlobalKey<FormState>();
 
   Future<void> submitReport(gardenId) async {
+    String userLocation = await location.getPointCoordinates();
+
     List<Photo> gardenPhoto = (gardenPhotos.toList() as List<dynamic>?)
             ?.map((e) => Photo.fromPath(e.toString()))
             .toList() ??
@@ -63,6 +68,7 @@ class GardenComplianceController extends GetxController {
       'Comments': comments.value, // Pass List<String>
       'Visit Date': DateTime.now().toIso8601String(),
       'Visited by': userController.branchData['ID'].trim(),
+      'User Location': userLocation,
     };
     Data<AirtableRecord> isSubmitted = await reportRepo.submitReport(
       data: data,
