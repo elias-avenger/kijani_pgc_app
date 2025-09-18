@@ -36,7 +36,7 @@ class UnsyncedDataScreen extends StatelessWidget {
         () => Column(
           children: [
             Expanded(
-              child: userController.unsyncedReports < 1
+              child: userController.unSyncedReports < 1
                   ? const _NoUnsyncedDataWidget()
                   : ListView.builder(
                       padding: const EdgeInsets.symmetric(
@@ -45,10 +45,10 @@ class UnsyncedDataScreen extends StatelessWidget {
                       itemBuilder: (context, index) {
                         final data = controller.unsyncedDataList[index];
                         return UnsyncedDataCard(
-                          title: "Daily Reports",
-                          lastRecorded:
-                              GetTimeAgo.parse(DateTime.parse(data.date)),
-                          count: data.images.length,
+                          title: "Unsynced Reports",
+                          lastRecorded: GetTimeAgo.parse(DateTime.parse(
+                              data['Date'] ?? data['Visit Date'])),
+                          count: data.length,
                           icon: HugeIcons.strokeRoundedHugeicons,
                         );
                       },

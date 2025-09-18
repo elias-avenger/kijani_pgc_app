@@ -1,6 +1,5 @@
 import 'package:airtable_crud/airtable_plugin.dart';
 import 'package:flutter/foundation.dart';
-import 'package:kijani_pgc_app/models/report.dart';
 import 'package:kijani_pgc_app/models/return_data.dart';
 import 'package:kijani_pgc_app/services/airtable_services.dart';
 import 'package:kijani_pgc_app/services/aws.dart';
@@ -96,76 +95,6 @@ class ReportRepository {
     }
   }
 
-  /// Submits a daily report to Airtable, saving locally if submission fails.
-  Future<Data<AirtableRecord>> submitDailyReport(DailyReport data) async {
-    // Check internet connection
-    bool isConnected = await internetCheck.isAirtableConnected();
-    if (kDebugMode) {
-      print('Internet connection status: $isConnected');
-    }
-
-    if (!isConnected) {
-      if (kDebugMode) {
-        print('No internet, saving report locally');
-      }
-      Data<String> saveResult = await saveDailyReport(data);
-      return saveResult.status
-          ? Data<AirtableRecord>.failure("No internet, report saved locally")
-          : Data<AirtableRecord>.failure(
-              "No internet and failed to save locally");
-    }
-
-    String photosString = "";
-    if (data.images.isNotEmpty) {
-      final uploadedPhotos = await awsService.uploadPhotos(data.images);
-      if (!uploadedPhotos.status) {
-        if (kDebugMode) {
-          print('Photo upload failed: ${uploadedPhotos.message}');
-        }
-        final Data<String> saveResult = await saveDailyReport(data);
-        return saveResult.status
-            ? Data<AirtableRecord>.failure(
-                "Photo upload failed, report saved locally")
-            : Data<AirtableRecord>.failure(
-                "Photo upload failed and failed to save locally");
-      }
-      photosString = uploadedPhotos.data!.join(',');
-    }
-
-    try {
-      // Prepare data for Airtable
-      final dataToSubmit = data.toJson();
-      dataToSubmit['Photo Urls'] = photosString;
-
-      // Submit to Airtable
-      final AirtableRecord record = await currentGardensBase.createRecord(
-        kPGCReportTable,
-        dataToSubmit,
-      );
-      return Data<AirtableRecord>.success(record);
-    } on AirtableException catch (e) {
-      if (kDebugMode) {
-        print('Airtable Exception: ${e.message}, Details: ${e.details}');
-      }
-      final Data<String> saveResult = await saveDailyReport(data);
-      return saveResult.status
-          ? Data<AirtableRecord>.failure(
-              "Airtable error, report saved locally: ${e.message}")
-          : Data<AirtableRecord>.failure(
-              "Airtable error and failed to save locally: ${e.message}");
-    } catch (e) {
-      if (kDebugMode) {
-        print('Unexpected error: $e');
-      }
-      final Data<String> saveResult = await saveDailyReport(data);
-      return saveResult.status
-          ? Data<AirtableRecord>.failure(
-              "Submission error, report saved locally: $e")
-          : Data<AirtableRecord>.failure(
-              "Submission error and failed to save locally: $e");
-    }
-  }
-
   /// Saves a report locally using StorageService.
   Future<Data<String>> saveReport(
       Map<String, dynamic> report, String key) async {
@@ -200,35 +129,6 @@ class ReportRepository {
     }
   }
 
-  /// Saves a report locally using StorageService.
-  Future<Data<String>> saveDailyReport(DailyReport report) async {
-    try {
-      // Generate a unique key using timestamp to avoid collisions
-      final String uniqueKey =
-          '${report.date}_${report.userID}_${DateTime.now().millisecondsSinceEpoch}';
-      if (kDebugMode) {
-        print('Saving report locally with key: $uniqueKey');
-      }
-
-      await myPrefs.saveEntity(
-        kUnSyncedReportsKey,
-        uniqueKey,
-        report,
-        report.toJson,
-      );
-
-      if (kDebugMode) {
-        print('Report saved locally: ${report.toJson()}');
-      }
-      return Data<String>.success(uniqueKey);
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error saving report locally: $e');
-      }
-      return Data<String>.failure('Failed to save report locally: $e');
-    }
-  }
-
   /// Syncs locally stored reports with Airtable.
   Future<Data<List<AirtableRecord>>> syncReports() async {
     try {
@@ -241,12 +141,17 @@ class ReportRepository {
         return Data<List<AirtableRecord>>.failure(
             'No internet connection for syncing reports');
       }
-
+      List<Map<String, dynamic>> storedData;
+      Data<List<Map<String, dynamic>>> localDailyReports =
+          await fetchLocalReports(reportKey: 'PGCReport');
+      localDailyReports.status
+          ? storedData = localDailyReports.data ?? []
+          : storedData = [];
       // Fetch all local reports
-      final storedData = myPrefs.fetchAllEntities(
-        kUnSyncedReportsKey,
-        (data) => DailyReport.fromJson(data),
-      );
+      // final storedData = myPrefs.fetchAllEntities(
+      //   kUnSyncedReportsKey,
+      //   (data) => DailyReport.fromJson(data),
+      // );
 
       if (storedData.isEmpty) {
         if (kDebugMode) {
@@ -255,36 +160,52 @@ class ReportRepository {
         return Data<List<AirtableRecord>>.success(<AirtableRecord>[]);
       }
 
-      final reports = storedData.values.toList().cast<DailyReport>();
+      final reports = storedData.toList();
       if (kDebugMode) {
         print('Found ${reports.length} local reports to sync');
       }
 
       final List<AirtableRecord> syncedRecords = <AirtableRecord>[];
-      final Map<String, DailyReport> failedReports = <String, DailyReport>{};
+      final List<Map<String, dynamic>> failedReports = <Map<String, dynamic>>[];
 
       // Sync each report
-      for (final entry in storedData.entries) {
-        final String key = entry.key;
-        final DailyReport report = entry.value as DailyReport;
-        final Data<AirtableRecord> result = await submitDailyReport(report);
-        if (result.status) {
-          syncedRecords.add(result.data!);
+      for (final report in reports) {
+        String reportKey = 'PGCRepots';
+        try {
+          // Submit to Airtable
+          final AirtableRecord record = await currentGardensBase.createRecord(
+            kReportTables[reportKey],
+            report,
+          );
+          syncedRecords.add(record);
           // Remove successfully synced report
-          final deleted = await myPrefs.deleteEntity(kUnSyncedReportsKey, key);
+          final deleted =
+              await myPrefs.deleteEntity(kUnSyncedReportsKey, reportKey);
           if (deleted) {
             if (kDebugMode) {
-              print('Synced and removed report: $key');
+              print('Synced and removed report: $reportKey');
             }
           } else {
             if (kDebugMode) {
-              print('Failed to delete synced report: $key');
+              print('Failed to delete synced report: $reportKey');
             }
           }
-        } else {
-          failedReports[key] = report;
+          // return Data<AirtableRecord>.success(record);
+        } on AirtableException catch (e) {
           if (kDebugMode) {
-            print('Failed to sync report ($key): ${result.message}');
+            print('Airtable Exception: ${e.message}, Details: ${e.details}');
+          }
+          failedReports.add(report);
+          if (kDebugMode) {
+            print('Failed to sync report ($reportKey): {result.message}');
+          }
+        } catch (e) {
+          if (kDebugMode) {
+            print('Unexpected error: $e');
+          }
+          failedReports.add(report);
+          if (kDebugMode) {
+            print('Failed to sync report ($reportKey): {result.message}');
           }
         }
       }
@@ -325,37 +246,6 @@ class ReportRepository {
         print('Error fetching local reports: $e');
       }
       return Data<List<Map<String, dynamic>>>.failure(
-          "Failed to fetch local reports: $e");
-    }
-  }
-
-  //function to fetch locally saved reports
-  Future<Data<List<DailyReport>>> fetchLocalDailyReports() async {
-    try {
-      final storedData = myPrefs.fetchAllEntities(
-        kUnSyncedReportsKey,
-        (data) => DailyReport.fromJson(data),
-      );
-
-      if (storedData.isEmpty) {
-        if (kDebugMode) {
-          print('No local reports found');
-        }
-        return Data<List<DailyReport>>.success(
-            <DailyReport>[]); // Return empty list instead of failure
-      }
-
-      final List<DailyReport> reports =
-          storedData.values.toList().cast<DailyReport>();
-      if (kDebugMode) {
-        print('Fetched ${reports.length} local reports');
-      }
-      return Data<List<DailyReport>>.success(reports);
-    } catch (e) {
-      if (kDebugMode) {
-        print('Error fetching local reports: $e');
-      }
-      return Data<List<DailyReport>>.failure(
           "Failed to fetch local reports: $e");
     }
   }

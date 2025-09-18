@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kijani_pgc_app/controllers/user_controller.dart';
 import 'package:kijani_pgc_app/models/group.dart';
-import 'package:kijani_pgc_app/models/report.dart';
 import 'package:kijani_pgc_app/models/return_data.dart';
 import 'package:kijani_pgc_app/models/user_model.dart';
 import 'package:kijani_pgc_app/repositories/group_repository.dart';
@@ -25,6 +24,8 @@ class ParishController extends GetxController {
   final RxList<Group> groups = <Group>[].obs;
   final Rx<User?> currentUser = Rx<User?>(null);
   var unSyncedReports = 0.obs;
+  var unSyncedDailyReports = 0.obs;
+  var unSyncedComplianceReports = 0.obs;
   var userAvatar = ''.obs;
   var activeParish = ''.obs;
   var activeParishName = ''.obs;
@@ -96,14 +97,21 @@ class ParishController extends GetxController {
     if (kDebugMode) {
       print("....Getting parish data....");
     }
-    //fetch unSynced reports
-    Data<List<DailyReport>> unSyncedData =
-        await _reportRepo.fetchLocalDailyReports();
-    if (unSyncedData.status) {
-      unSyncedReports.value = unSyncedData.data!.length;
-    } else {
-      unSyncedReports.value = 0;
-    }
+    //fetch unSynced Daily reports
+    Data<List<Map<String, dynamic>>> localDailyReports =
+        await _reportRepo.fetchLocalReports(reportKey: 'PGCReport');
+    localDailyReports.status
+        ? unSyncedDailyReports.value = localDailyReports.data!.length
+        : unSyncedDailyReports.value = 0;
+    //fetch unSynced Compliance reports
+    Data<List<Map<String, dynamic>>> localComplianceReports =
+        await _reportRepo.fetchLocalReports(reportKey: 'GardenCompliance');
+    localComplianceReports.status
+        ? unSyncedComplianceReports.value = localComplianceReports.data!.length
+        : unSyncedComplianceReports.value = 0;
+    //sum up all unsynced data
+    unSyncedReports.value =
+        unSyncedComplianceReports.value + unSyncedDailyReports.value;
   }
 
   void _showSnackBar(String title, String message, {bool isError = false}) {

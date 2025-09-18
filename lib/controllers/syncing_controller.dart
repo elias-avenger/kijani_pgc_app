@@ -1,14 +1,13 @@
 // controllers/unsynced_data_controller.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kijani_pgc_app/models/report.dart';
 import 'package:kijani_pgc_app/models/return_data.dart';
 import 'package:kijani_pgc_app/repositories/report_repository.dart';
 
 class SyncingController extends GetxController {
   ReportRepository reportRepo = ReportRepository();
   // Reactive list of unsynced data items
-  var unsyncedDataList = <DailyReport>[].obs;
+  var unsyncedDataList = <Map<String, dynamic>>[].obs;
 
   //on initialisation
   @override
@@ -41,13 +40,26 @@ class SyncingController extends GetxController {
 
   //get unsynced reports data
   Future<void> getUnsyncedReports() async {
-    final Data<List<DailyReport>> response =
-        await reportRepo.fetchLocalDailyReports();
-    if (response.status) {
-      unsyncedDataList.assignAll(response.data ?? []);
-    } else {
-      Get.snackbar(
-          "Error", response.message ?? "Failed to fetch unsynced reports.");
+    String errorMsg = '';
+    List<Map<String, dynamic>> allUnsyncedReports = [];
+    //fetch unSynced Daily reports
+    Data<List<Map<String, dynamic>>> localDailyReports =
+        await reportRepo.fetchLocalReports(reportKey: 'PGCReport');
+    localDailyReports.status
+        ? allUnsyncedReports
+            .add(localDailyReports.data! as Map<String, dynamic>)
+        : errorMsg = '${errorMsg}Unsynced Daily reports fetch failed';
+    //fetch unSynced Compliance reports
+    Data<List<Map<String, dynamic>>> localComplianceReports =
+        await reportRepo.fetchLocalReports(reportKey: 'GardenCompliance');
+    localComplianceReports.status
+        ? allUnsyncedReports
+            .add(localComplianceReports.data! as Map<String, dynamic>)
+        : errorMsg = '${errorMsg}Unsynced Compliance reports fetch failed';
+
+    unsyncedDataList.assignAll(allUnsyncedReports);
+    if (errorMsg.isNotEmpty) {
+      Get.snackbar("Error", errorMsg);
     }
   }
 
