@@ -27,7 +27,7 @@ class ReportRepository {
 
   Future<Data<AirtableRecord>> submitReport({
     required Map<String, dynamic> data,
-    required String tableName,
+    required String reportKey,
     required List<String> photoFields,
   }) async {
     // Check internet connection
@@ -40,14 +40,13 @@ class ReportRepository {
       if (kDebugMode) {
         print('No internet, saving report locally');
       }
-      Data<String> saveResult = await saveReport(data, tableName);
+      Data<String> saveResult = await saveReport(data, reportKey);
       return saveResult.status
           ? Data<AirtableRecord>.failure("No internet, report saved locally")
           : Data<AirtableRecord>.failure(
               "No internet and failed to save locally");
     }
 
-    String photosString = "";
     if (photoFields.isNotEmpty) {
       for (final photoField in photoFields) {
         final uploadedPhotos = await awsService.uploadPhotos(data[photoField]);
@@ -55,7 +54,7 @@ class ReportRepository {
           if (kDebugMode) {
             print('Photo upload failed: ${uploadedPhotos.message}');
           }
-          final Data<String> saveResult = await saveReport(data, tableName);
+          final Data<String> saveResult = await saveReport(data, reportKey);
           return saveResult.status
               ? Data<AirtableRecord>.failure(
                   "Photo upload failed, report saved locally")
@@ -70,7 +69,7 @@ class ReportRepository {
     try {
       // Submit to Airtable
       final AirtableRecord record = await currentGardensBase.createRecord(
-        tableName,
+        kReportTables[reportKey],
         data,
       );
       return Data<AirtableRecord>.success(record);
@@ -78,7 +77,7 @@ class ReportRepository {
       if (kDebugMode) {
         print('Airtable Exception: ${e.message}, Details: ${e.details}');
       }
-      final Data<String> saveResult = await saveReport(data, tableName);
+      final Data<String> saveResult = await saveReport(data, reportKey);
       return saveResult.status
           ? Data<AirtableRecord>.failure(
               "Airtable error, report saved locally: ${e.message}")
@@ -88,7 +87,7 @@ class ReportRepository {
       if (kDebugMode) {
         print('Unexpected error: $e');
       }
-      final Data<String> saveResult = await saveReport(data, tableName);
+      final Data<String> saveResult = await saveReport(data, reportKey);
       return saveResult.status
           ? Data<AirtableRecord>.failure(
               "Submission error, report saved locally: $e")

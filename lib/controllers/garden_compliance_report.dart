@@ -1,6 +1,5 @@
 // garden_compliance_report.dart
 import 'package:airtable_crud/airtable_plugin.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kijani_pgc_app/controllers/user_controller.dart';
@@ -54,12 +53,12 @@ class GardenComplianceController extends GetxController {
       'Visit Date': DateTime.now().toIso8601String(),
       'Visited by': userController.branchData['ID'].trim(),
     };
-    if (kDebugMode) {
-      print("Data to submit: $data");
-    }
+    // if (kDebugMode) {
+    //   print("Data to submit: $data");
+    // }
     Data<AirtableRecord> isSubmitted = await reportRepo.submitReport(
       data: data,
-      tableName: 'Garden Compliance Reports',
+      reportKey: 'GardenCompliance',
       photoFields: ['Garden Photo'],
     );
 
@@ -107,6 +106,15 @@ class GardenComplianceController extends GetxController {
       );
       return;
     }
+    Get.snackbar(
+      "Success",
+      "Report submitted successfully",
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+    );
+    // _clearForm();
+    // // Navigate to home screen
+    // Get.offAllNamed(Routes.HOME);
   }
 
   List getGardenCompliance() {
@@ -123,5 +131,22 @@ class GardenComplianceController extends GetxController {
       }
     }
     return complianceValues;
+  }
+
+  void _clearForm() {
+    // selectedParish.value = '';
+    // selectedActivities.clear();
+    // details.value = '';
+    // nextActivities.clear();
+    // attachments.clear();
+    // detailsController.clear();
+    // nextDaysActivitiesController.clear();
+  }
+
+  @override
+  void onClose() {
+    // detailsController.dispose();
+    // nextDaysActivitiesController.dispose();
+    super.onClose();
   }
 }

@@ -11,6 +11,11 @@ String kUGGardensBaseID = "appJBOIeM2ZA5nhnV";
 String kUGCurrentGardensBaseID = "appoW7X8Lz3bIKpEE";
 String kPGCsTable = "PGCs";
 String kPGCReportTable = "PGC Report";
+String kGardenComplianceTable = "Garden Compliance Reports";
+Map<String, dynamic> kReportTables = {
+  "PGCReport": "PGC Report",
+  "GardenCompliance": "Garden Compliance Reports",
+};
 
 AirtableCrud uGGardensBase = AirtableCrud(apiKey, kUGGardensBaseID);
 AirtableCrud currentGardensBase = AirtableCrud(apiKey, kUGCurrentGardensBaseID);
