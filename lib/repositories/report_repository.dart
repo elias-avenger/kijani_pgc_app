@@ -228,8 +228,7 @@ class ReportRepository {
     try {
       final storedData =
           myPrefs.fetchEntityUnits(kUnSyncedReportsKey, reportKey);
-
-      if (storedData.isEmpty) {
+      if (storedData == null || storedData.isEmpty) {
         if (kDebugMode) {
           print('No local reports found');
         }
