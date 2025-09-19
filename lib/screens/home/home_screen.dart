@@ -54,20 +54,20 @@ class HomeScreen extends StatelessWidget {
                   gridItems: [
                     GridItem(
                       title: "Parishes",
-                      value: parishes.length,
+                      value: "${parishes.length}",
                       icon: HugeIcons.strokeRoundedLocation03,
                       color: kijaniBlue,
                     ),
                     GridItem(
                       title: "Groups",
-                      value: numGroups,
+                      value: "$numGroups",
                       icon: HugeIcons.strokeRoundedUserGroup,
                       color: kijaniBrown,
                     ),
                     GridItem(
-                        title: "", value: 0, icon: null, color: Colors.black),
+                        title: "", value: "", icon: null, color: Colors.black),
                     GridItem(
-                        title: "", value: 0, icon: null, color: kijaniGreen),
+                        title: "", value: "", icon: null, color: kijaniGreen),
                   ],
                   items: parishes,
                   itemBuilder: (context, parish, index) => CustomListItem(

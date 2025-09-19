@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../models/farmer.dart';
-import '../models/report.dart';
 import '../models/return_data.dart';
 import '../models/user_model.dart';
 import '../repositories/farmer_repository.dart';
@@ -21,6 +20,8 @@ class GroupController extends GetxController {
   final RxList<Farmer> farmers = <Farmer>[].obs;
   final Rx<User?> currentUser = Rx<User?>(null);
   var unSyncedReports = 0.obs;
+  var unSyncedDailyReports = 0.obs;
+  var unSyncedComplianceReports = 0.obs;
   var userAvatar = ''.obs;
   var activeGroup = ''.obs;
   var activeGroupName = ''.obs;
@@ -62,14 +63,21 @@ class GroupController extends GetxController {
       farmers.assignAll(localFarmers.data as Iterable<Farmer>);
     }
 
-    //fetch unSynced reports
-    Data<List<DailyReport>> unSyncedData =
-        await _reportRepo.fetchLocalDailyReports();
-    if (unSyncedData.status) {
-      unSyncedReports.value = unSyncedData.data!.length;
-    } else {
-      unSyncedReports.value = 0;
-    }
+    //fetch unSynced Daily reports
+    Data<List<Map<String, dynamic>>> localDailyReports =
+        await _reportRepo.fetchLocalReports(reportKey: 'PGCReport');
+    localDailyReports.status
+        ? unSyncedDailyReports.value = localDailyReports.data!.length
+        : unSyncedDailyReports.value = 0;
+    //fetch unSynced Compliance reports
+    Data<List<Map<String, dynamic>>> localComplianceReports =
+        await _reportRepo.fetchLocalReports(reportKey: 'GardenCompliance');
+    localComplianceReports.status
+        ? unSyncedComplianceReports.value = localComplianceReports.data!.length
+        : unSyncedComplianceReports.value = 0;
+    //sum up all unsynced data
+    unSyncedReports.value =
+        unSyncedComplianceReports.value + unSyncedDailyReports.value;
   }
 
   Future<void> updateGroupFarmers({required String groupId}) async {

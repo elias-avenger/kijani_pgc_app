@@ -33,7 +33,7 @@ class ReusableScreenBody<T> extends StatelessWidget {
         children: [
           Obx(() {
             final unsyncedReports =
-                Get.put(SyncingController()).unsyncedDataList.length;
+                Get.put(SyncingController()).unSyncedDataList.length;
             if (unsyncedReports == 0) {
               return const SizedBox.shrink();
             }

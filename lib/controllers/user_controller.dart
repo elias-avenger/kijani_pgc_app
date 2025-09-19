@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:get/get.dart';
 import 'package:kijani_pgc_app/models/parish.dart';
-import 'package:kijani_pgc_app/models/report.dart';
 import 'package:kijani_pgc_app/models/return_data.dart';
 import 'package:kijani_pgc_app/models/user_model.dart';
 import 'package:kijani_pgc_app/repositories/parish_repository.dart';
@@ -26,7 +25,9 @@ class UserController extends GetxController {
   final branchData = <String, dynamic>{}.obs;
   final RxList<Parish> parishes = <Parish>[].obs;
   final Rx<User?> currentUser = Rx<User?>(null);
-  var unsyncedReports = 0.obs;
+  var unSyncedDailyReports = 0.obs;
+  var unSyncedComplianceReports = 0.obs;
+  var unSyncedReports = 0.obs;
   var userAvatar = ''.obs;
   final String _domain = '@kijaniforestry.com';
 
@@ -81,12 +82,22 @@ class UserController extends GetxController {
         parishes.assignAll(localParishes.data!);
       }
 
-      // Fetch unsynced reports
-      Data<List<DailyReport>> unsyncedData =
-          await _reportRepo.fetchLocalDailyReports();
-      unsyncedReports.value = unsyncedData.status && unsyncedData.data != null
-          ? unsyncedData.data!.length
-          : 0;
+      //fetch unSynced Daily reports
+      Data<List<Map<String, dynamic>>> localDailyReports =
+          await _reportRepo.fetchLocalReports(reportKey: 'PGCReport');
+      localDailyReports.status
+          ? unSyncedDailyReports.value = localDailyReports.data!.length
+          : unSyncedDailyReports.value = 0;
+      //fetch unSynced Compliance reports
+      Data<List<Map<String, dynamic>>> localComplianceReports =
+          await _reportRepo.fetchLocalReports(reportKey: 'GardenCompliance');
+      localComplianceReports.status
+          ? unSyncedComplianceReports.value =
+              localComplianceReports.data!.length
+          : unSyncedComplianceReports.value = 0;
+      //sum up all unsynced data
+      unSyncedReports.value =
+          unSyncedComplianceReports.value + unSyncedDailyReports.value;
 
       Get.offAllNamed(Routes.HOME);
     } else {

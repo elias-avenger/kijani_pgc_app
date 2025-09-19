@@ -36,25 +36,92 @@ class UnsyncedDataScreen extends StatelessWidget {
         () => Column(
           children: [
             Expanded(
-              child: userController.unsyncedReports < 1
+              child: userController.unSyncedReports < 1
                   ? const _NoUnsyncedDataWidget()
                   : ListView.builder(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 8),
-                      itemCount: controller.unsyncedDataList.length,
+                      itemCount: controller.unSyncedDataList.length,
                       itemBuilder: (context, index) {
-                        final data = controller.unsyncedDataList[index];
-                        return UnsyncedDataCard(
-                          title: "Daily Reports",
-                          lastRecorded:
-                              GetTimeAgo.parse(DateTime.parse(data.date)),
-                          count: data.images.length,
-                          icon: HugeIcons.strokeRoundedHugeicons,
+                        final data = controller.unSyncedDataList[index];
+                        return Column(
+                          children: [
+                            UnsyncedDataCard(
+                              title: "Unsynced Reports",
+                              lastRecorded: GetTimeAgo.parse(DateTime.parse(
+                                  data['Date'] ?? data['Visit Date'])),
+                              count: data.length,
+                              icon: HugeIcons.strokeRoundedHugeicons,
+                            ),
+                          ],
                         );
                       },
                     ),
             ),
-            if (controller.unsyncedDataList.isNotEmpty)
+            if (controller.unSyncedDataList.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: PrimaryButton(
+                  text: "Sync Data",
+                  onPressed: controller.syncReportsData,
+                ),
+              ),
+            Expanded(
+              child: controller.unSyncedDailyReports.isNotEmpty
+                  ? const _NoUnsyncedDataWidget()
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      itemCount: controller.unSyncedDailyReports.length,
+                      itemBuilder: (context, index) {
+                        final data = controller.unSyncedDailyReports[index];
+                        return Column(
+                          children: [
+                            UnsyncedDataCard(
+                              title: "Unsynced Daily Reports",
+                              lastRecorded: GetTimeAgo.parse(
+                                  DateTime.parse(data['Date'])),
+                              count: data.length,
+                              icon: HugeIcons.strokeRoundedHugeicons,
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+            ),
+            if (controller.unSyncedDailyReports.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: PrimaryButton(
+                  text: "Sync Data",
+                  onPressed: controller.syncReportsData,
+                ),
+              ),
+            Expanded(
+              child: controller.unSyncedComplianceReports.isNotEmpty
+                  ? const _NoUnsyncedDataWidget()
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      itemCount: controller.unSyncedComplianceReports.length,
+                      itemBuilder: (context, index) {
+                        final data =
+                            controller.unSyncedComplianceReports[index];
+                        return Column(
+                          children: [
+                            UnsyncedDataCard(
+                              title: "Unsynced Compliance Reports",
+                              lastRecorded: GetTimeAgo.parse(
+                                  DateTime.parse(data['Visit Date'])),
+                              count: data.length,
+                              icon: HugeIcons.strokeRoundedHugeicons,
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+            ),
+            if (controller.unSyncedComplianceReports.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: PrimaryButton(
