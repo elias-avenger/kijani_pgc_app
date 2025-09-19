@@ -24,6 +24,8 @@ class GardenRepository {
         'Species',
         'Planted by species',
         'Surviving by species',
+        'Season',
+        'Initial planting date',
       ];
 
       List<AirtableRecord> data = await uGGardensBase

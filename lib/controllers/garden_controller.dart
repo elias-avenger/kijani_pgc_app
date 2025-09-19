@@ -37,6 +37,8 @@ class GardenController extends GetxController {
     treesSurviving: 0,
     gardenPhotos: [],
     speciesData: [],
+    season: "",
+    plantingDate: "",
   );
 
   @override

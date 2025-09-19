@@ -61,25 +61,29 @@ class GardenScreen extends StatelessWidget {
                 gridItems: [
                   GridItem(
                     title: "Trees planted",
-                    value: gardenData.treesPlanted,
+                    value: "${gardenData.treesPlanted}",
                     icon: HugeIcons.strokeRoundedPlant02,
                     color: kijaniBlue,
                   ),
                   GridItem(
-                    title: "Trees surviving",
-                    value: gardenData.treesSurviving,
-                    icon: HugeIcons.strokeRoundedPlant03,
+                    title: "Planting season",
+                    value: gardenData.season,
+                    icon: null,
                     color: kijaniBrown,
                   ),
                   GridItem(
-                      title: "", value: 0, icon: null, color: Colors.black),
-                  GridItem(title: "", value: 0, icon: null, color: kijaniGreen),
+                    title: "Initial planting date",
+                    value: gardenData.plantingDate,
+                    icon: null,
+                    color: Colors.black,
+                  ),
+                  GridItem(
+                      title: "", value: "", icon: null, color: kijaniGreen),
                 ],
                 items: gardenData.speciesData,
                 itemBuilder: (context, data, index) => CustomListItem(
                   title: data['species'],
-                  subtitle:
-                      "${data['planted']} planted - ${data['surviving']} surviving",
+                  subtitle: "${data['planted']} trees planted",
                   trailing: const Icon(HugeIcons.strokeRoundedArrowRight01,
                       color: Colors.black),
                   onTap: () {
