@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class GridItem {
   final String title;
-  final int value;
+  final String value;
   final IconData? icon;
   final Color color;
 

@@ -40,20 +40,23 @@ class FarmerScreen extends StatelessWidget {
                     gridItems: [
                       GridItem(
                         title: "Gardens",
-                        value: gardens.length,
+                        value: "${gardens.length}",
                         icon: HugeIcons.strokeRoundedPlant03,
                         color: kijaniBlue,
                       ),
                       GridItem(
                         title: "Trees planted",
-                        value: numTreesPlanted,
+                        value: "$numTreesPlanted",
                         icon: HugeIcons.strokeRoundedPlant01,
                         color: kijaniBrown,
                       ),
                       GridItem(
-                          title: "", value: 0, icon: null, color: Colors.black),
+                          title: "",
+                          value: "",
+                          icon: null,
+                          color: Colors.black),
                       GridItem(
-                          title: "", value: 0, icon: null, color: kijaniGreen),
+                          title: "", value: "", icon: null, color: kijaniGreen),
                     ],
                     items: gardens,
                     itemBuilder: (context, garden, index) => CustomListItem(

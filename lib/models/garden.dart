@@ -11,6 +11,8 @@ class Garden {
   final int treesSurviving;
   final List gardenPhotos;
   final List speciesData;
+  final String season;
+  final String plantingDate;
 
   Garden({
     required this.recordID,
@@ -21,6 +23,8 @@ class Garden {
     required this.treesSurviving,
     required this.gardenPhotos,
     required this.speciesData,
+    required this.season,
+    required this.plantingDate,
   });
 
   factory Garden.fromAirtable(AirtableRecord record) {
@@ -62,6 +66,8 @@ class Garden {
       treesSurviving: data['Total Trees Surviving'] as int,
       gardenPhotos: gPhotos as List? ?? [],
       speciesData: updatesData as List? ?? [],
+      season: data['Season'].toString() as String? ?? '',
+      plantingDate: data['Initial planting date'] as String? ?? 'No date',
     );
   }
 
@@ -75,6 +81,8 @@ class Garden {
       treesSurviving: data['Total Trees Surviving'] as int,
       gardenPhotos: data['Garden Photos'] as List,
       speciesData: data['Species Data'] as List? ?? [],
+      season: data['Season'] as String? ?? '',
+      plantingDate: data['Planting Date'] as String? ?? '',
     );
   }
 
@@ -88,6 +96,8 @@ class Garden {
       'Total Trees Surviving': treesSurviving,
       'Garden Photos': gardenPhotos,
       'Species Data': speciesData,
+      'Season': season,
+      'Planting Date': plantingDate,
     };
   }
 

@@ -85,7 +85,7 @@ class GardenComplianceController extends GetxController {
           backgroundColor: Colors.blue,
           colorText: Colors.white,
         );
-        userController.unsyncedReports.value += 1;
+        userController.unSyncedReports.value += 1;
         _clearForm();
         Get.back();
         return;

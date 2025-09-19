@@ -1,7 +1,7 @@
+import 'package:badges/badges.dart' as badges;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:badges/badges.dart' as badges;
 import 'package:hugeicons/hugeicons.dart';
 import 'package:kijani_pgc_app/utilities/constants.dart';
 import 'package:kijani_pgc_app/utilities/greetings.dart';
@@ -52,9 +52,9 @@ class CustomHomeAppBar extends StatelessWidget implements PreferredSizeWidget {
             margin: const EdgeInsets.only(right: 18),
             child: Obx(() {
               return badges.Badge(
-                showBadge: userController.unsyncedReports > 0,
+                showBadge: userController.unSyncedReports > 0,
                 badgeContent: Text(
-                  userController.unsyncedReports.toString(),
+                  userController.unSyncedReports.toString(),
                   style: GoogleFonts.lato(color: Colors.white),
                 ),
                 child: const Icon(HugeIcons.strokeRoundedDatabaseSync01),

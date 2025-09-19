@@ -71,20 +71,23 @@ class GroupScreen extends StatelessWidget {
                     gridItems: [
                       GridItem(
                         title: "Farmers",
-                        value: farmers.length,
+                        value: "${farmers.length}",
                         icon: HugeIcons.strokeRoundedUser,
                         color: kijaniBlue,
                       ),
                       GridItem(
                         title: "Gardens",
-                        value: numGardens,
+                        value: "$numGardens",
                         icon: HugeIcons.strokeRoundedPlant03,
                         color: kijaniBrown,
                       ),
                       GridItem(
-                          title: "", value: 0, icon: null, color: Colors.black),
+                          title: "",
+                          value: "",
+                          icon: null,
+                          color: Colors.black),
                       GridItem(
-                          title: "", value: 0, icon: null, color: kijaniGreen),
+                          title: "", value: "", icon: null, color: kijaniGreen),
                     ],
                     items: farmers,
                     itemBuilder: (context, farmer, index) => CustomListItem(

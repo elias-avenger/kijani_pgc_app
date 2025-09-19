@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kijani_pgc_app/controllers/user_controller.dart';
-import 'package:kijani_pgc_app/models/report.dart';
 import 'package:kijani_pgc_app/models/return_data.dart';
 import 'package:kijani_pgc_app/repositories/report_repository.dart';
 import 'package:kijani_pgc_app/routes/app_pages.dart';
@@ -41,7 +40,7 @@ class ReportController extends GetxController {
   }
 
   Future<void> submitForm() async {
-    DailyReport data = DailyReport.fromJson({
+    Map<String, dynamic> data = {
       'PGC': userController.branchData['ID'].trim(),
       'Parish': selectedParish.value.trim(),
       'Activities': selectedActivities,
@@ -51,9 +50,13 @@ class ReportController extends GetxController {
       'Other next activities': otherNextActivities.value,
       'Photo Urls': attachments, // Pass List<String>
       'Date': DateTime.now().toIso8601String(),
-    });
+    };
 
-    Data<AirtableRecord> isSubmitted = await reportRepo.submitDailyReport(data);
+    Data<AirtableRecord> isSubmitted = await reportRepo.submitReport(
+      data: data,
+      reportKey: 'PGCReports',
+      photoFields: ['Photo Urls'],
+    );
 
     if (!isSubmitted.status) {
       //show snackBars
@@ -64,7 +67,7 @@ class ReportController extends GetxController {
           backgroundColor: Colors.blue,
           colorText: Colors.white,
         );
-        userController.unsyncedReports.value += 1;
+        userController.unSyncedReports.value += 1;
         _clearForm();
         Get.offAllNamed(Routes.HOME);
         return;

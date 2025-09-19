@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-Widget gridCard(String title, int count, IconData? icon, Color color) {
+Widget gridCard(String title, String count, IconData? icon, Color color) {
   return Container(
     decoration: BoxDecoration(
       color: color,
@@ -26,7 +26,7 @@ Widget gridCard(String title, int count, IconData? icon, Color color) {
             children: [
               if (icon != null) Icon(icon, color: Colors.white, size: 30),
               Text(
-                "$count",
+                count,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 32,

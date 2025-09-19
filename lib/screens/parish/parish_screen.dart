@@ -40,20 +40,23 @@ class ParishScreen extends StatelessWidget {
                     gridItems: [
                       GridItem(
                         title: "Groups",
-                        value: groups.length,
+                        value: "${groups.length}",
                         icon: HugeIcons.strokeRoundedUserGroup,
                         color: kijaniBlue,
                       ),
                       GridItem(
                         title: "Farmers",
-                        value: numFarmers,
+                        value: "$numFarmers",
                         icon: HugeIcons.strokeRoundedUser,
                         color: kijaniBrown,
                       ),
                       GridItem(
-                          title: "", value: 0, icon: null, color: Colors.black),
+                          title: "",
+                          value: "",
+                          icon: null,
+                          color: Colors.black),
                       GridItem(
-                          title: "", value: 0, icon: null, color: kijaniGreen),
+                          title: "", value: "", icon: null, color: kijaniGreen),
                     ],
                     items: groups,
                     itemBuilder: (context, group, index) => CustomListItem(
@@ -62,10 +65,8 @@ class ParishScreen extends StatelessWidget {
                       trailing: const Icon(HugeIcons.strokeRoundedArrowRight01,
                           color: Colors.black),
                       onTap: () {
-                        Get.toNamed(Routes.GROUP, arguments: {
-                          'group': group.id,
-                          'name': group.name
-                        });
+                        Get.toNamed(Routes.GROUP,
+                            arguments: {'group': group.id, 'name': group.name});
                         if (kDebugMode) {
                           print("Group To Open: ${group.name}");
                         }
