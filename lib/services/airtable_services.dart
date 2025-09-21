@@ -14,6 +14,7 @@ String kPGCReportTable = "PGC Report";
 Map<String, dynamic> kReportTables = {
   "PGCReport": "PGC Report",
   "GardenCompliance": "Garden Compliance Reports",
+  "FarmerTraining": "Farmer training reports"
 };
 
 AirtableCrud uGGardensBase = AirtableCrud(apiKey, kUGGardensBaseID);
