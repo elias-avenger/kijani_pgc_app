@@ -75,14 +75,14 @@ class _GardenComplianceFormState extends State<GardenComplianceForm> {
 
   void _submit() {
     c.submitReport(gardenId);
-    // Get.snackbar(
-    //   'Success',
-    //   'Garden compliance report for "$gardenId" submitted successfully!',
-    //   snackPosition: SnackPosition.BOTTOM,
-    //   backgroundColor: Colors.green,
-    //   colorText: Colors.white,
-    // );
-    // Get.back(); // Go back to previous screen
+    Get.snackbar(
+      'Success',
+      'Garden compliance report for "$gardenId" submitted successfully!',
+      snackPosition: SnackPosition.BOTTOM,
+      backgroundColor: Colors.green,
+      colorText: Colors.white,
+    );
+    Get.back(); // Go back to previous screen
   }
 
   @override
