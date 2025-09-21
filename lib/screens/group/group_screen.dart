@@ -45,6 +45,7 @@ class GroupScreen extends StatelessWidget {
                   Routes.GROUPTRAINING,
                   arguments: {
                     'group': group,
+                    'groupId': groupController.activeGroup.value,
                     'farmers': farmers,
                   },
                 );
