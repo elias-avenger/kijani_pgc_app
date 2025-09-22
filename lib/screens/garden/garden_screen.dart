@@ -12,6 +12,7 @@ import 'package:kijani_pgc_app/routes/app_pages.dart';
 import 'package:kijani_pgc_app/utilities/constants.dart';
 
 import '../../controllers/garden_controller.dart';
+import '../../controllers/surviving_trees.dart';
 import '../../models/garden.dart';
 
 class GardenScreen extends StatelessWidget {
@@ -20,6 +21,7 @@ class GardenScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final GardenController gardenController = Get.put(GardenController());
+    final SurvivingTreesController sc = Get.put(SurvivingTreesController());
 
     return Obx(() {
       // final farmers = groupController.farmers;
@@ -116,10 +118,12 @@ class GardenScreen extends StatelessWidget {
                     if (updated != null) {
                       // Update your data source and UI here
                       data['survival'] = updated;
-                      // If using a controller/obs list, trigger refresh appropriately.
-                      // Example:
-                      // controller.updateSurvival(index, updated);
-                      // or setState(() {});
+                      debugPrint("Updated survival count: $updated");
+                      sc.survivingTrees.value = updated;
+                      sc.garden.value = garden;
+                      sc.species.value = speciesName;
+                      sc.season.value = gardenData.season;
+                      await sc.submitReport();
                     }
                   },
                 ),
@@ -280,34 +284,7 @@ Future<int?> showUpdateSurvivalDialog({
                 ),
                 onSubmitted: (_) => validateAndSave(setState),
               ),
-
               const SizedBox(height: 8),
-
-              // Quick +/- controls (optional nicety)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton.outlined(
-                    tooltip: 'Decrement',
-                    onPressed: () {
-                      final v = int.tryParse(controller.text) ?? 0;
-                      if (v > 0) controller.text = '${v - 1}';
-                      setState(() => errorText = null);
-                    },
-                    icon: const Icon(Icons.remove),
-                  ),
-                  const SizedBox(width: 6),
-                  IconButton.filledTonal(
-                    tooltip: 'Increment',
-                    onPressed: () {
-                      final v = int.tryParse(controller.text) ?? 0;
-                      if (v < planted) controller.text = '${v + 1}';
-                      setState(() => errorText = null);
-                    },
-                    icon: const Icon(Icons.add),
-                  ),
-                ],
-              ),
             ],
           ),
           actions: [
