@@ -66,8 +66,9 @@ class ReportRepository {
     }
 
     try {
+      String baseKey = getBaseKey(reportKey, data);
       // Submit to Airtable
-      final AirtableRecord record = await currentGardensBase.createRecord(
+      final AirtableRecord record = await kUpdatesBases[baseKey].createRecord(
         kReportTables[reportKey],
         data,
       );
@@ -93,6 +94,10 @@ class ReportRepository {
           : Data<AirtableRecord>.failure(
               "Submission error and failed to save locally: $e");
     }
+  }
+
+  String getBaseKey(String reportKey, Map<String, dynamic> data) {
+    return reportKey == 'SurvivingTrees' ? data['season'] : 'current';
   }
 
   /// Saves a report locally using StorageService.
