@@ -67,6 +67,9 @@ class ReportRepository {
 
     try {
       String baseKey = getBaseKey(reportKey, data);
+      if (data.containsKey('season')) {
+        data.remove('season');
+      }
       // Submit to Airtable
       final AirtableRecord record = await kUpdatesBases[baseKey].createRecord(
         kReportTables[reportKey],
