@@ -83,13 +83,13 @@ class UserController extends GetxController {
       }
 
       //fetch unSynced Daily reports
-      Data<List<Map<String, dynamic>>> localDailyReports =
+      Data<List> localDailyReports =
           await _reportRepo.fetchLocalReports(reportKey: 'PGCReport');
       localDailyReports.status
           ? unSyncedDailyReports.value = localDailyReports.data!.length
           : unSyncedDailyReports.value = 0;
       //fetch unSynced Compliance reports
-      Data<List<Map<String, dynamic>>> localComplianceReports =
+      Data<List> localComplianceReports =
           await _reportRepo.fetchLocalReports(reportKey: 'GardenCompliance');
       localComplianceReports.status
           ? unSyncedComplianceReports.value =
