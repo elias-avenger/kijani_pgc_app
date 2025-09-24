@@ -66,7 +66,7 @@ class Garden {
       treesSurviving: data['Total Trees Surviving'] as int,
       gardenPhotos: gPhotos as List? ?? [],
       speciesData: updatesData as List? ?? [],
-      season: data['Season'].toString() as String? ?? '',
+      season: data['Season'][0] as String? ?? '',
       plantingDate: data['Initial planting date'] as String? ?? 'No date',
     );
   }

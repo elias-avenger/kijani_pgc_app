@@ -66,8 +66,12 @@ class ReportRepository {
     }
 
     try {
+      String baseKey = getBaseKey(reportKey, data);
+      if (data.containsKey('season')) {
+        data.remove('season');
+      }
       // Submit to Airtable
-      final AirtableRecord record = await currentGardensBase.createRecord(
+      final AirtableRecord record = await kUpdatesBases[baseKey].createRecord(
         kReportTables[reportKey],
         data,
       );
@@ -95,6 +99,10 @@ class ReportRepository {
     }
   }
 
+  String getBaseKey(String reportKey, Map<String, dynamic> data) {
+    return reportKey == 'SurvivingTrees' ? data['season'] : 'current';
+  }
+
   /// Saves a report locally using StorageService.
   Future<Data<String>> saveReport(
       Map<String, dynamic> report, String key) async {
@@ -107,7 +115,7 @@ class ReportRepository {
       if (!storedReports.status) {
         return Data<String>.failure(storedReports.toString());
       }
-      List<Map<String, dynamic>> storedReportsList = storedReports.data ?? [];
+      List storedReportsList = storedReports.data ?? [];
       // Add a new report to the available ones
       storedReportsList.add(report);
       // Save the updated list
@@ -141,8 +149,8 @@ class ReportRepository {
         return Data<List<AirtableRecord>>.failure(
             'No internet connection for syncing reports');
       }
-      List<Map<String, dynamic>> storedData;
-      Data<List<Map<String, dynamic>>> localDailyReports =
+      List storedData;
+      Data<List> localDailyReports =
           await fetchLocalReports(reportKey: 'PGCReport');
       localDailyReports.status
           ? storedData = localDailyReports.data ?? []
@@ -223,8 +231,7 @@ class ReportRepository {
   }
 
   //function to fetch locally saved reports
-  Future<Data<List<Map<String, dynamic>>>> fetchLocalReports(
-      {required String reportKey}) async {
+  Future<Data<List>> fetchLocalReports({required String reportKey}) async {
     try {
       final storedData =
           myPrefs.fetchEntityUnits(kUnSyncedReportsKey, reportKey);
@@ -232,20 +239,18 @@ class ReportRepository {
         if (kDebugMode) {
           print('No local reports found');
         }
-        return Data<List<Map<String, dynamic>>>.success(
-            []); // Return empty list instead of failure
+        return Data<List>.success([]); // Return empty list instead of failure
       }
 
       if (kDebugMode) {
         print('Fetched ${storedData.length} local reports');
       }
-      return Data<List<Map<String, dynamic>>>.success(storedData);
+      return Data<List>.success(storedData);
     } catch (e) {
       if (kDebugMode) {
         print('Error fetching local reports: $e');
       }
-      return Data<List<Map<String, dynamic>>>.failure(
-          "Failed to fetch local reports: $e");
+      return Data<List>.failure("Failed to fetch local reports: $e");
     }
   }
 }

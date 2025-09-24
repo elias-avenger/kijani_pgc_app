@@ -7,9 +7,9 @@ import 'package:kijani_pgc_app/repositories/report_repository.dart';
 class SyncingController extends GetxController {
   ReportRepository reportRepo = ReportRepository();
   // Reactive list of unsynced data items
-  var unSyncedDailyReports = <Map<String, dynamic>>[].obs;
-  var unSyncedComplianceReports = <Map<String, dynamic>>[].obs;
-  var unSyncedDataList = <Map<String, dynamic>>[].obs;
+  var unSyncedDailyReports = [].obs;
+  var unSyncedComplianceReports = [].obs;
+  var unSyncedDataList = [].obs;
 
   //on initialisation
   @override
@@ -45,15 +45,15 @@ class SyncingController extends GetxController {
   //get unsynced reports data
   Future<void> getUnsyncedReports() async {
     String errorMsg = '';
-    List<Map<String, dynamic>> allUnsyncedReports = [];
+    List allUnsyncedReports = [];
     //fetch unSynced Daily reports
-    Data<List<Map<String, dynamic>>> localDailyReports =
+    Data<List> localDailyReports =
         await reportRepo.fetchLocalReports(reportKey: 'PGCReport');
     localDailyReports.status
         ? unSyncedDailyReports.assignAll(localDailyReports.data!)
         : errorMsg = '${errorMsg}Unsynced Daily reports fetch failed';
     //fetch unSynced Compliance reports
-    Data<List<Map<String, dynamic>>> localComplianceReports =
+    Data<List> localComplianceReports =
         await reportRepo.fetchLocalReports(reportKey: 'GardenCompliance');
     localComplianceReports.status
         ? unSyncedComplianceReports.assignAll(localComplianceReports.data!)

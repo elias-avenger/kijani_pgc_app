@@ -8,6 +8,8 @@ import 'package:kijani_pgc_app/components/widgets/multi_select.dart';
 import 'package:kijani_pgc_app/components/widgets/text_area_field.dart';
 import 'package:kijani_pgc_app/models/farmer.dart';
 
+import '../../controllers/training_report.dart';
+
 class GroupTrainingReport extends StatefulWidget {
   const GroupTrainingReport({super.key});
 
@@ -17,24 +19,29 @@ class GroupTrainingReport extends StatefulWidget {
 
 class _GroupTrainingReportState extends State<GroupTrainingReport> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController detailsController = TextEditingController();
+
   late final List<Farmer> farmers;
+  late final String groupId;
 
   // Current values (kept to preserve your existing behavior)
   List<Farmer> picked = const [];
-  List<String> _attendanceImages = [];
-  List<String> _trainingImages = [];
+  // List<String> _attendanceImages = [];
+  // List<String> _trainingImages = [];
+
+  late final TrainingReportController c;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    c = Get.put(TrainingReportController());
     if (kDebugMode) {
       print("########################################################");
       print("Arguments: ${Get.arguments}");
       print("########################################################");
     }
     farmers = Get.arguments['farmers'] ?? [];
+    groupId = Get.arguments['groupId'];
   }
 
   @override
@@ -70,7 +77,7 @@ class _GroupTrainingReportState extends State<GroupTrainingReport> {
 
                 // --- Users Multi-select (refactored with _ValidatedField) ---
                 _ValidatedField<List<Farmer>>(
-                  initialValue: picked,
+                  initialValue: c.farmers,
                   validator: (value) => (value == null || value.isEmpty)
                       ? 'Please select at least one user.'
                       : null,
@@ -89,7 +96,7 @@ class _GroupTrainingReportState extends State<GroupTrainingReport> {
                           placeholder: "Select users",
                           accentColor: const Color(0xFF265E3C),
                           onChanged: (values) {
-                            setState(() => picked = values);
+                            setState(() => c.farmers.value = values);
                             field.didChange(values);
                             debugPrint("Picked: ${values.map((u) => u.id)}");
                           },
@@ -109,20 +116,17 @@ class _GroupTrainingReportState extends State<GroupTrainingReport> {
 
                 // --- Attendance images (refactored) ---
                 _ValidatedField<List<String>>(
-                  initialValue: _attendanceImages,
-                  validator: (value) => (value == null || value.isEmpty)
-                      ? 'Please upload at least one attendance photo.'
-                      : null,
+                  initialValue: c.attendanceListImage,
                   builder: (field) => Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       ImagePickerWidget(
                         onImagesSelected: (values) {
-                          _attendanceImages = values;
+                          c.attendanceListImage.value = values;
                           field.didChange(values);
                         },
                         label: "Attendance List",
-                        maxImages: 2,
+                        maxImages: 1,
                       ),
                       _ErrorText(field.errorText),
                     ],
@@ -133,7 +137,7 @@ class _GroupTrainingReportState extends State<GroupTrainingReport> {
 
                 // --- Training session images (refactored) ---
                 _ValidatedField<List<String>>(
-                  initialValue: _trainingImages,
+                  initialValue: c.trainingImages,
                   validator: (value) => (value == null || value.isEmpty)
                       ? 'Please upload at least one training session photo.'
                       : null,
@@ -142,7 +146,7 @@ class _GroupTrainingReportState extends State<GroupTrainingReport> {
                     children: [
                       ImagePickerWidget(
                         onImagesSelected: (values) {
-                          _trainingImages = values;
+                          c.trainingImages.value = values;
                           field.didChange(values);
                         },
                         label: "Training Session",
@@ -162,9 +166,9 @@ class _GroupTrainingReportState extends State<GroupTrainingReport> {
 
                 // --- Comments textarea (refactored) ---
                 _ValidatedField<String>(
-                  initialValue: detailsController.text,
+                  initialValue: c.detailsController.text,
                   validator: (value) =>
-                      ((value ?? detailsController.text).trim().isEmpty)
+                      ((value ?? c.detailsController.text).trim().isEmpty)
                           ? 'Please enter your training comments.'
                           : null,
                   builder: (field) => Column(
@@ -173,7 +177,7 @@ class _GroupTrainingReportState extends State<GroupTrainingReport> {
                       TextAreaWidget(
                         label:
                             "Please share you experience from the training session",
-                        controller: detailsController,
+                        controller: c.detailsController,
                         onChanged: (value) => field.didChange(value),
                       ),
                       _ErrorText(field.errorText),
@@ -189,14 +193,7 @@ class _GroupTrainingReportState extends State<GroupTrainingReport> {
                   onPressed: () async {
                     if (_formKey.currentState!.validate()) {
                       // Pint the data to be submitted
-                      if (kDebugMode) {
-                        print({
-                          "farmers": picked,
-                          "attendance image": _attendanceImages,
-                          "Training Images": _trainingImages,
-                          "comment": detailsController.text
-                        });
-                      }
+                      c.submitReport(groupId);
                     } else {
                       debugPrint("Form not valid");
                     }
