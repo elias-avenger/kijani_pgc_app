@@ -13,6 +13,7 @@ class GardenComplianceController extends GetxController {
   ReportRepository reportRepo = ReportRepository();
   UserController userController = Get.find<UserController>();
   Locator location = Locator();
+  RxBool isLoading = false.obs;
 
   final weeded = false.obs;
   final gapfilling = false.obs;
@@ -46,6 +47,8 @@ class GardenComplianceController extends GetxController {
   Future<void> submitReport(gardenId) async {
     String userLocation = await location.getPointCoordinates();
 
+    isLoading.value = true;
+
     List<Photo> gardenPhoto = (gardenPhotos.toList() as List<dynamic>?)
             ?.map((e) => Photo.fromPath(e.toString()))
             .toList() ??
@@ -70,6 +73,7 @@ class GardenComplianceController extends GetxController {
       'Visited by': userController.branchData['ID'].trim(),
       'User Location': userLocation,
     };
+
     Data<AirtableRecord> isSubmitted = await reportRepo.submitReport(
       data: data,
       reportKey: 'GardenCompliance',
@@ -87,7 +91,7 @@ class GardenComplianceController extends GetxController {
         );
         userController.unSyncedReports.value += 1;
         _clearForm();
-        Get.back();
+        Get.back(closeOverlays: true);
         return;
       } else if (isSubmitted.message ==
           "Photo upload failed, report saved locally") {
@@ -98,7 +102,7 @@ class GardenComplianceController extends GetxController {
           colorText: Colors.white,
         );
         _clearForm();
-        Get.back();
+        Get.back(closeOverlays: true);
         return;
       } else if (isSubmitted.message ==
           "No internet and failed to save locally") {
@@ -109,7 +113,7 @@ class GardenComplianceController extends GetxController {
           colorText: Colors.white,
         );
         _clearForm();
-        Get.back();
+        Get.back(closeOverlays: true);
         return;
       }
       Get.snackbar(
@@ -126,9 +130,11 @@ class GardenComplianceController extends GetxController {
       backgroundColor: Colors.green,
       colorText: Colors.white,
     );
+
+    isLoading.value = false;
     _clearForm();
     // Navigate to previous screen
-    Get.back();
+    Get.back(closeOverlays: true);
   }
 
   List getGardenCompliance() {

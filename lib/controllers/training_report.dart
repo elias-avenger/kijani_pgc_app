@@ -62,7 +62,7 @@ class TrainingReportController extends GetxController {
         );
         userController.unSyncedReports.value += 1;
         _clearForm();
-        Get.back();
+        Get.back(closeOverlays: true);
         return;
       } else if (isSubmitted.message ==
           "Photo upload failed, report saved locally") {
@@ -73,7 +73,7 @@ class TrainingReportController extends GetxController {
           colorText: Colors.white,
         );
         _clearForm();
-        Get.back();
+        Get.back(closeOverlays: true);
         return;
       } else if (isSubmitted.message ==
           "No internet and failed to save locally") {
@@ -84,7 +84,7 @@ class TrainingReportController extends GetxController {
           colorText: Colors.white,
         );
         _clearForm();
-        Get.back();
+        Get.back(closeOverlays: true);
         return;
       }
       Get.snackbar(
@@ -103,7 +103,7 @@ class TrainingReportController extends GetxController {
     );
     _clearForm();
     // Navigate to previous screen
-    Get.back();
+    Get.back(closeOverlays: true);
   }
 
   void _clearForm() {
