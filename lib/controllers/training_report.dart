@@ -14,6 +14,7 @@ class TrainingReportController extends GetxController {
   ReportRepository reportRepo = ReportRepository();
   UserController userController = Get.find<UserController>();
   Locator location = Locator();
+  RxBool isSubmitting = false.obs;
 
   final RxList<Farmer> farmers = <Farmer>[].obs;
   final RxList<String> attendanceListImage = <String>[].obs;
@@ -22,6 +23,7 @@ class TrainingReportController extends GetxController {
   final TextEditingController detailsController = TextEditingController();
 
   Future<void> submitReport(groupId) async {
+    isSubmitting.value = true;
     String userLocation = await location.getPointCoordinates();
     List<String> farmerIds = farmers.map((farmer) => farmer.id).toList();
     List<Photo> attendancePhoto =
@@ -101,6 +103,7 @@ class TrainingReportController extends GetxController {
       backgroundColor: Colors.green,
       colorText: Colors.white,
     );
+    isSubmitting.value = false;
     _clearForm();
     // Navigate to previous screen
     Get.back(closeOverlays: true);
