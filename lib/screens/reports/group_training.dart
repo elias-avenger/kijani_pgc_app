@@ -93,7 +93,7 @@ class _GroupTrainingReportState extends State<GroupTrainingReport> {
                           items: farmers,
                           labelFor: (u) => u.name,
                           subtitleFor: (u) => "Phone Number: ${u.phone}",
-                          placeholder: "Select users",
+                          placeholder: "Select Farmers",
                           accentColor: const Color(0xFF265E3C),
                           onChanged: (values) {
                             setState(() => c.farmers.value = values);
@@ -188,16 +188,19 @@ class _GroupTrainingReportState extends State<GroupTrainingReport> {
                 const SizedBox(height: 16.0),
 
                 // Submit (kept same; onPressed must be async for PrimaryButton)
-                PrimaryButton(
-                  text: "Submit",
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      // Pint the data to be submitted
-                      c.submitReport(groupId);
-                    } else {
-                      debugPrint("Form not valid");
-                    }
-                  },
+                Obx(
+                  () => PrimaryButton(
+                    isLoading: c.isSubmitting.value,
+                    text: "Submit",
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        // Pint the data to be submitted
+                        c.submitReport(groupId);
+                      } else {
+                        debugPrint("Form not valid");
+                      }
+                    },
+                  ),
                 ),
 
                 const SizedBox(height: 16.0),

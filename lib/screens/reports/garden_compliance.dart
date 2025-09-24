@@ -4,8 +4,8 @@ import 'package:kijani_pgc_app/components/app_bar.dart';
 import 'package:kijani_pgc_app/components/widgets/buttons/primary_button.dart';
 import 'package:kijani_pgc_app/controllers/garden_compliance_report.dart';
 import 'package:kijani_pgc_app/screens/reports/compliancesections/section_one.dart';
-import 'package:kijani_pgc_app/screens/reports/compliancesections/section_three.dart';
 import 'package:kijani_pgc_app/screens/reports/compliancesections/section_two.dart';
+import 'package:kijani_pgc_app/screens/reports/compliancesections/section_three.dart';
 
 class GardenComplianceForm extends StatefulWidget {
   const GardenComplianceForm({super.key});
@@ -18,71 +18,64 @@ class _GardenComplianceFormState extends State<GardenComplianceForm> {
   final _pageController = PageController();
   int _currentStep = 0;
 
-  var gardenId = Get.arguments ?? 'Garden';
+  // Expecting a String gardenId, fallback for safety
+  final String gardenId =
+      (Get.arguments is String) ? Get.arguments as String : 'Garden';
 
   late final GardenComplianceController c;
 
   @override
   void initState() {
     super.initState();
-    // Make controller available to all sections (no Get.arguments needed)
     c = Get.put(GardenComplianceController());
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-    // If this form is one-time, uncomment to dispose controller when leaving
-    // Get.delete<GardenComplianceController>();
     super.dispose();
   }
 
-  // garden_compliance_form.dart
-  // in GardenComplianceForm._nextStep()
-  void _nextStep() {
-    final c = Get.find<GardenComplianceController>();
+  Future<void> _nextStep() async {
+    if (c.isLoading.value) return;
 
     if (_currentStep == 0) {
       final ok = c.section1FormKey.currentState?.validate() ?? false;
       if (!ok) return;
     } else if (_currentStep == 1) {
       final ok = c.section2FormKey.currentState?.validate() ?? false;
-      final polyOk = c.polypotsCompliance.value.isNotEmpty;
+      final polyOk = c.polypotsCompliance.isNotEmpty;
       if (!ok || !polyOk) return;
     } else if (_currentStep == 2) {
       final ok = c.section3FormKey.currentState?.validate() ?? false;
       if (!ok) return;
-      _submit();
+      await _submit(); // final step -> submit
       return;
     }
 
     setState(() => _currentStep++);
-    _pageController.nextPage(
+    await _pageController.nextPage(
       duration: const Duration(milliseconds: 250),
       curve: Curves.easeOut,
     );
   }
 
-  void _previousStep() {
+  Future<void> _previousStep() async {
+    if (c.isLoading.value) return;
     if (_currentStep > 0) {
       setState(() => _currentStep--);
-      _pageController.previousPage(
+      await _pageController.previousPage(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeOut,
       );
+    } else {
+      // First step: normal back
+      Get.back();
     }
   }
 
-  void _submit() {
-    c.submitReport(gardenId);
-    Get.snackbar(
-      'Success',
-      'Garden compliance report for "$gardenId" submitted successfully!',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.green,
-      colorText: Colors.white,
-    );
-    Get.back(); // Go back to previous screen
+  Future<void> _submit() async {
+    await c.submitReport(gardenId);
   }
 
   @override
@@ -97,7 +90,7 @@ class _GardenComplianceFormState extends State<GardenComplianceForm> {
       backgroundColor: Colors.white,
       appBar: MyAppBar(
         title: title,
-        onBack: () => _currentStep == 0 ? Get.back() : _previousStep(),
+        onBack: _previousStep,
       ),
       body: Column(
         children: [
@@ -117,9 +110,12 @@ class _GardenComplianceFormState extends State<GardenComplianceForm> {
             padding: const EdgeInsets.all(16),
             margin: const EdgeInsets.only(bottom: 12),
             width: double.infinity,
-            child: PrimaryButton(
-              text: _currentStep == 2 ? 'Submit' : 'Next',
-              onPressed: _nextStep,
+            child: Obx(
+              () => PrimaryButton(
+                text: _currentStep == 2 ? 'Submit' : 'Next',
+                isLoading: c.isLoading.value,
+                onPressed: _nextStep,
+              ),
             ),
           ),
         ],

@@ -14,6 +14,7 @@ class TrainingReportController extends GetxController {
   ReportRepository reportRepo = ReportRepository();
   UserController userController = Get.find<UserController>();
   Locator location = Locator();
+  RxBool isSubmitting = false.obs;
 
   final RxList<Farmer> farmers = <Farmer>[].obs;
   final RxList<String> attendanceListImage = <String>[].obs;
@@ -22,6 +23,7 @@ class TrainingReportController extends GetxController {
   final TextEditingController detailsController = TextEditingController();
 
   Future<void> submitReport(groupId) async {
+    isSubmitting.value = true;
     String userLocation = await location.getPointCoordinates();
     List<String> farmerIds = farmers.map((farmer) => farmer.id).toList();
     List<Photo> attendancePhoto =
@@ -62,7 +64,7 @@ class TrainingReportController extends GetxController {
         );
         userController.unSyncedReports.value += 1;
         _clearForm();
-        Get.back();
+        Get.back(closeOverlays: true);
         return;
       } else if (isSubmitted.message ==
           "Photo upload failed, report saved locally") {
@@ -73,7 +75,7 @@ class TrainingReportController extends GetxController {
           colorText: Colors.white,
         );
         _clearForm();
-        Get.back();
+        Get.back(closeOverlays: true);
         return;
       } else if (isSubmitted.message ==
           "No internet and failed to save locally") {
@@ -84,7 +86,7 @@ class TrainingReportController extends GetxController {
           colorText: Colors.white,
         );
         _clearForm();
-        Get.back();
+        Get.back(closeOverlays: true);
         return;
       }
       Get.snackbar(
@@ -101,9 +103,10 @@ class TrainingReportController extends GetxController {
       backgroundColor: Colors.green,
       colorText: Colors.white,
     );
+    isSubmitting.value = false;
     _clearForm();
     // Navigate to previous screen
-    Get.back();
+    Get.back(closeOverlays: true);
   }
 
   void _clearForm() {

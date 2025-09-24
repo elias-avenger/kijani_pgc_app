@@ -8,15 +8,6 @@ import 'package:kijani_pgc_app/controllers/garden_compliance_report.dart';
 class GardenComplianceSectionOne extends StatelessWidget {
   const GardenComplianceSectionOne({super.key});
 
-  String? _requiredNumber(String? v, {bool allowZero = true}) {
-    if (v == null || v.trim().isEmpty) return 'Required';
-    final n = int.tryParse(v.trim());
-    if (n == null) return 'Enter a valid number';
-    if (!allowZero && n <= 0) return 'Must be greater than 0';
-    if (allowZero && n < 0) return 'Must be ≥ 0';
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     final c = Get.find<GardenComplianceController>();
